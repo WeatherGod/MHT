@@ -83,7 +83,7 @@ double BFindBestAssignment( ROW_COL_COST *rcc, int numRCCs,
                             int numRows, int numCols,
                             VECTOR_OF< void * > &tag, int *numTags )
 {
-  BGN
+  
 
   if( numRCCs == 0 )
   {
@@ -102,7 +102,7 @@ double BFindBestAssignment( ROW_COL_COST *rcc, int numRCCs,
 static void setupProblem( ROW_COL_COST *rcc, int numRCCs,
                           int numRows, int numCols )
 {
-  BGN
+  
 
   int row, col;
   int i;
@@ -163,7 +163,7 @@ static void setupProblem( ROW_COL_COST *rcc, int numRCCs,
 
 static double solveProblem()
 {
-  BGN
+  
 
   int i;
 
@@ -191,14 +191,13 @@ static double solveProblem()
 
 static void search( int level, double costSoFar )
 {
-  BGN
+  
 
   int row, col;
   int i;
 
   if( level <= g_maxRow )
   {
-    TRACE
 
     row = level;
 
@@ -227,7 +226,6 @@ static void search( int level, double costSoFar )
   }
   else if( level <= g_maxRow + 1 + g_maxCol )
   {
-    TRACE
 
     col = level - g_maxRow - 1;
 
@@ -256,8 +254,6 @@ static void search( int level, double costSoFar )
   }
   else if( costSoFar < g_bestSolutionCost )
   {
-    TRACE
-
     for( i = 0; i < g_solutionSize; i++ )
       g_bestSolution[ i ] = g_solution[ i ];
     g_bestSolutionSize = g_solutionSize;
@@ -267,7 +263,7 @@ static void search( int level, double costSoFar )
 
 static double storeSolution( VECTOR_OF< void * > &tag, int *numTags )
 {
-  BGN
+  
 
   int i;
 

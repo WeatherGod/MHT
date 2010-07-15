@@ -49,7 +49,7 @@
 
 void MDL_MHT::measureAndValidate()
 {
-  BGN
+  
 
   PTR_INTO_ptrDLIST_OF< T_HYPO > tHypoPtr;
   MDL_T_HYPO *tHypo;
@@ -96,7 +96,7 @@ void MDL_MHT::measureAndValidate()
 
 void MDL_ROOT_T_HYPO::makeDefaultChildren()
 {
-  BGN
+  
 
   installChild( new MDL_DUMMY_T_HYPO( m_mdlMht ) );
 }
@@ -109,7 +109,7 @@ void MDL_ROOT_T_HYPO::makeDefaultChildren()
 
 void MDL_ROOT_T_HYPO::makeChildrenFor( MDL_REPORT *report )
 {
-  BGN
+  
 
   PTR_INTO_ptrDLIST_OF< MODEL > modelPtr;
   MODEL *mdl;
@@ -147,7 +147,7 @@ void MDL_ROOT_T_HYPO::makeChildrenFor( MDL_REPORT *report )
 
 void MDL_DUMMY_T_HYPO::makeDefaultChildren()
 {
-  BGN
+  
 
   installChild( new MDL_DUMMY_T_HYPO( m_mdlMht, m_logLikelihood ) );
 }
@@ -162,7 +162,7 @@ void MDL_DUMMY_T_HYPO::makeDefaultChildren()
 
 void MDL_CONTINUE_T_HYPO::makeDefaultChildren()
 {
-  BGN
+  
 
   MODEL *mdl = m_state->getMdl();
   double endLogLikelihood = mdl->getEndLogLikelihood( m_state );
@@ -208,7 +208,7 @@ void MDL_CONTINUE_T_HYPO::makeDefaultChildren()
 
 void MDL_CONTINUE_T_HYPO::makeChildrenFor( MDL_REPORT *report )
 {
-  BGN
+  
 
   MODEL *mdl = m_state->getMdl();
   double continueLogLikelihood =

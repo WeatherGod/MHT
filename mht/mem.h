@@ -159,9 +159,10 @@
 #ifndef MEM_H
 #define MEM_H
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "except.h"
+#include <assert.h>
 
 #ifdef DECLARE_MEM
   #define GLOBAL

@@ -80,7 +80,7 @@ using std::endl;
 
 CORNER_TRACK *findTrack( int id )
 {
-BGN
+
   PTR_INTO_iDLIST_OF< CORNER_TRACK > p;
   CORNER_TRACK *newTrack;
 
@@ -119,7 +119,7 @@ void verify( int trackId, double r_x, double r_y, double s_x, double s_y,
                     double logLikelihood,
                     int modelType, int frame)
 {
-BGN
+
   CORNER_TRACK *track;
   
 //  printf("Verifying trackId=%d r_x=%lf r_y=%lf s_x=%lf s_y=%lf frame=%d\n",
@@ -136,7 +136,7 @@ BGN
 
 void CORNER_TRACK_MHT::measure()
 {
-BGN
+
   PTR_INTO_ptrDLIST_OF< T_HYPO > tHypoPtr;
   PTR_INTO_iDLIST_OF< CORNER > cornerPtr;
 
@@ -179,7 +179,7 @@ static const double LOG_NORMFACTOR =
 
 void CONSTVEL_STATE::setup( double processVariance, const MATRIX &R )
 {
-  BGN
+  
 
   /* don't do this more than once */
   if( m_hasBeenSetup )
@@ -311,7 +311,7 @@ MDL_STATE* CONSTVEL_MDL::getNewState( int stateNum,
                                     MDL_STATE *mdlState,
                                     MDL_REPORT *mdlReport )
     {
-BGN
+
       CONSTVEL_STATE *state = (CONSTVEL_STATE *) mdlState;
       CONSTPOS_REPORT *report = (CONSTPOS_REPORT *) mdlReport;
       double dx,dy;
@@ -335,7 +335,7 @@ BGN
            return (MDL_STATE*) newState;
            }
           default: 
-            THROW_ERR("Too many calls to CONSTVEL_MDL::getNewState()");
+            assert(false);//("Too many calls to CONSTVEL_MDL::getNewState()");
        }
 
 }
@@ -603,7 +603,7 @@ CONSTVEL_MDL::CONSTVEL_MDL( double positionMeasureVarianceX,
       m_R( 2, 2 ),
       m_startP( 4, 4 )
     {
-      BGN
+      
       printf("\nSTARTING A NEW CONSTVEL_MDL\n");
 
       double pVx = positionMeasureVarianceX;
@@ -641,7 +641,7 @@ CONSTVEL_MDL::CONSTVEL_MDL( double positionMeasureVarianceX,
 
 int getTrackColor( int trackId )
 {
-  BGN
+  
 
   static unsigned char color[] =
   {
@@ -654,7 +654,7 @@ int getTrackColor( int trackId )
 
 void CORNER_TRACK_MHT::describe(int spaces)
 {
-  BGN
+  
 
   PTR_INTO_ptrDLIST_OF< T_HYPO > tHypoPtr;
   PTR_INTO_iDLIST_OF< GROUP > groupPtr;
@@ -840,10 +840,10 @@ double CONSTVEL_MDL::getCorr(CONSTVEL_STATE *state, CONSTPOS_REPORT *report)
            }
         }
         corr = corr / (9.0 * reportSigma * stateSigma);
-        if (corr < -1.0 || corr > 1.0) {
-           fprintf(stderr, "Error in corr calculation\n");
-           exit(1);
-	 }
+        assert(corr >= -1.0 && corr <= 1.0);// {
+        //   fprintf(stderr, "Error in corr calculation\n");
+        //   exit(1);
+	// }
         if (corr > maxCorr) maxCorr = corr;
 
 #ifdef DEBUG3

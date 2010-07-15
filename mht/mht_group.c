@@ -175,8 +175,8 @@ struct G_HYPO_PAIR
   {
   }
 
-  G_HYPO *getGHypo0() const { BGN return g_gHypoArray0[ i0 ]; }
-  G_HYPO *getGHypo1() const { BGN return g_gHypoArray1[ i1 ]; }
+  G_HYPO *getGHypo0() const { return g_gHypoArray0[ i0 ]; }
+  G_HYPO *getGHypo1() const { return g_gHypoArray1[ i1 ]; }
 
   double getLogLikelihood() const
   {
@@ -209,7 +209,7 @@ struct G_HYPO_PAIR
 
 static int compareGHypoPtrs( const void *addr0, const void *addr1 )
 {
-  BGN
+  
 
   #define gHypo0 (*(G_HYPO **)addr0)
   #define gHypo1 (*(G_HYPO **)addr1)
@@ -226,7 +226,7 @@ static int compareGHypoPtrs( const void *addr0, const void *addr1 )
 
 static void setupArray0( iDLIST_OF< G_HYPO > &gHypoList, int numGHypos )
 {
-  BGN
+  
 
   int compareGHypoPtrs( const void *addr0, const void *addr1 );
 
@@ -251,7 +251,7 @@ static void setupArray0( iDLIST_OF< G_HYPO > &gHypoList, int numGHypos )
 
 static void setupArray1( iDLIST_OF< G_HYPO > &gHypoList, int numGHypos )
 {
-  BGN
+  
 
   int compareGHypoPtrs( const void *addr0, const void *addr1 );
 
@@ -284,7 +284,7 @@ void GROUP::merge( GROUP *src,
                    double logMinGHypoRatio,
                    int maxGHypos )
 {
-  BGN
+  
 
   #define G_HYPO_PAIR_USED( g0, g1 ) \
     g_gHypoPairUsed[ ((g0) * maxGHypos) + g1 ]
@@ -301,7 +301,7 @@ void GROUP::merge( GROUP *src,
 
   numGHypos1 = src->m_gHypoList.getLength();
   numGHypos0 = m_gHypoList.getLength();
-  CheckMem();
+  //CheckMem();
 
   if( numGHypos1 == 1 )
   {
@@ -309,7 +309,7 @@ void GROUP::merge( GROUP *src,
     LOOP_DLIST( gHypoPtr, m_gHypoList )
     {
       (*gHypoPtr).merge( src->m_gHypoList.getHead() );
-       CheckMem();
+       //CheckMem();
     }
     src->m_gHypoList.removeAll();
 
@@ -331,7 +331,7 @@ void GROUP::merge( GROUP *src,
     gHypo->merge( gHypoPair.getGHypo0() );
     gHypo->merge( gHypoPair.getGHypo1() );
     newGHypoList.append( gHypo );
-    CheckMem();
+    //CheckMem();
     if( gHypoPair.i0 + 1 < numGHypos0 &&
         ! G_HYPO_PAIR_USED( gHypoPair.i0 + 1, gHypoPair.i1 ) )
     {
@@ -360,10 +360,10 @@ void GROUP::merge( GROUP *src,
 */
 
   m_gHypoList.removeAll();
-  CheckMem();
+  //CheckMem();
 
   src->m_gHypoList.removeAll();
-  CheckMem();
+  //CheckMem();
   m_gHypoList.splice( newGHypoList );
 
   #undef G_HYPO_PAIR_USED
@@ -419,7 +419,7 @@ void GROUP::merge( GROUP *src,
 
 void GROUP::splitIfYouMust()
 {
-  BGN
+  
 
   GROUP *newGroup;
   int groupId;
@@ -466,7 +466,7 @@ void GROUP::splitIfYouMust()
 
 void GROUP::removeRepeats()
 {
-  BGN
+  
 
   PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr0;
   PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr1;
@@ -496,7 +496,7 @@ void GROUP::pruneAndHypothesize( int maxDepth,
                                  double logMinGHypoRatio,
                                  int maxGHypos )
 {
-  BGN
+  
 
   Timer timer0;
   Timer timer1;
@@ -586,7 +586,7 @@ void GROUP::pruneAndHypothesize( int maxDepth,
 
 void GROUP::clear( int maxDepth)
 {
-  BGN
+  
 
   PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr;
 
@@ -611,22 +611,22 @@ void GROUP::clear( int maxDepth)
 
 void GROUP::check()
 {
-  BGN
+  
 
   PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr;
   int numTHypos;
   int groupId;
 
   numTHypos = (*m_gHypoList).getNumTHypos();
-  if( numTHypos == 0 )
-    THROW_ERR( "Group with 0 trees" )
+  assert( numTHypos != 0 );
+  //  THROW_ERR( "Group with 0 trees" )
   groupId = (*m_gHypoList).getGroupId();
   LOOP_DLIST( gHypoPtr, m_gHypoList )
   {
-    if( (*gHypoPtr).getNumTHypos() != numTHypos )
-      THROW_ERR( "Group with different numbers of tHypos" )
-    if( (*gHypoPtr).getGroupId() != groupId )
-      THROW_ERR( "More than one group id in same group" )
+    assert( (*gHypoPtr).getNumTHypos() == numTHypos );
+    //  THROW_ERR( "Group with different numbers of tHypos" )
+    assert( (*gHypoPtr).getGroupId() == groupId );
+    //  THROW_ERR( "More than one group id in same group" )
   }
 }
 
@@ -636,11 +636,11 @@ void GROUP::check()
 
 void GROUP::describe( int spaces )
 {
-  BGN
+  
 
   PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr;
 
-  Indent( spaces ); cout << "CLUSTER "; print(); cout << endl;
+  Indent( spaces ); std::cout << "CLUSTER "; print(); std::cout << std::endl;
 
   LOOP_LINKS( gHypoPtr, m_gHypoList )
   {
@@ -660,7 +660,7 @@ G_HYPO::G_HYPO( VECTOR_OF< void * > &solution, int solutionSize ):
   m_numTHyposUsedInProblem( 0 ),
   m_tHypoLinks()
 {
-  BGN
+  
 
   int i;
   for( i = 0; i < solutionSize; i++ )
@@ -771,7 +771,7 @@ G_HYPO::G_HYPO( VECTOR_OF< void * > &solution, int solutionSize ):
 
 void G_HYPO::makeProblem()
 {
-  BGN
+  
 
   PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
   PTR_INTO_iTREE_OF< T_HYPO > childPtr;
@@ -793,8 +793,8 @@ void G_HYPO::makeProblem()
   LOOP_LINKS( tHypoPtr, m_tHypoLinks )
   {
     #ifdef TSTBUG
-      if( (*tHypoPtr).isLeaf() )
-        THROW_ERR( "THypo has no children for next iteration" )
+      assert( ! (*tHypoPtr).isLeaf() );
+      //  THROW_ERR( "THypo has no children for next iteration" )
     #endif
 
     numRCCs += (*tHypoPtr).getNumChildren();
@@ -856,7 +856,7 @@ void G_HYPO::makeProblem()
 
 void G_HYPO::nScanBackPrune( int maxDepth )
 {
-  BGN
+  
 
   PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
   PTR_INTO_iTREE_OF< T_HYPO > parentPtr;
@@ -893,7 +893,7 @@ void G_HYPO::nScanBackPrune( int maxDepth )
 
 void G_HYPO::recomputeLogLikelihood()
 {
-  BGN
+  
 
   PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
 
@@ -913,7 +913,7 @@ void G_HYPO::recomputeLogLikelihood()
 
 int G_HYPO::mustSplit()
 {
-  BGN
+  
 
   PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
   int groupId;
@@ -939,7 +939,7 @@ int G_HYPO::mustSplit()
 
 G_HYPO *G_HYPO::split( int groupId )
 {
-  BGN
+  
 
   G_HYPO *newGHypo = new G_HYPO();
   PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
@@ -966,7 +966,7 @@ G_HYPO *G_HYPO::split( int groupId )
 
 void G_HYPO::merge( G_HYPO *src )
 {
-  BGN
+  
 
   PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
 
@@ -983,7 +983,7 @@ void G_HYPO::merge( G_HYPO *src )
 
 void G_HYPO::setFlags()
 {
-  BGN
+  
 
   PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
 
@@ -1000,7 +1000,7 @@ void G_HYPO::setFlags()
 
 void G_HYPO::resetFlags()
 {
-  BGN
+  
 
   PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
 
@@ -1017,7 +1017,7 @@ void G_HYPO::resetFlags()
 
 int G_HYPO::allFlagsAreSet()
 {
-  BGN
+  
 
   PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
 
@@ -1036,32 +1036,32 @@ int G_HYPO::allFlagsAreSet()
 
 void G_HYPO::describe( int spaces )
 {
-  BGN
+  
 
   PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
   int k;
 
-  Indent( spaces ); cout << "G_HYPO "; print(); cout << endl;
+  Indent( spaces ); std::cout << "G_HYPO "; print(); std::cout << std::endl;
 
-  Indent( spaces ); cout << "|";
-  cout << " numTHyposUsed = " << m_numTHyposUsedInProblem;
-  cout << ", logLikelihood = " << m_logLikelihood;
-  cout << endl;
+  Indent( spaces ); std::cout << "|";
+  std::cout << " numTHyposUsed = " << m_numTHyposUsedInProblem;
+  std::cout << ", logLikelihood = " << m_logLikelihood;
+  std::cout << std::endl;
 
-  Indent( spaces ); cout << "| tHypo's:";
+  Indent( spaces ); std::cout << "| tHypo's:";
   k = 0;
 
   LOOP_LINKS( tHypoPtr, m_tHypoLinks )
   {
     if( k++ >= 3 )
     {
-      cout << endl;
-      Indent( spaces ); cout << "|         ";
+      std::cout << std::endl;
+      Indent( spaces ); std::cout << "|         ";
       k = 0;
     }
 
-    cout << " "; (*tHypoPtr).print();
+    std::cout << " "; (*tHypoPtr).print();
   }
-  cout << endl;
+  std::cout << std::endl;
 }
 

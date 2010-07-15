@@ -85,6 +85,7 @@
 #define STACK_H
 
 #include "except.h"
+#include <assert.h>
 
 template< class TYPE >
   class STACK_OF
@@ -115,11 +116,9 @@ template< class TYPE >
 
       void resize( int size )
       {
-        BGN
-
         #ifdef TSTBUG
-          if( ! isEmpty() )
-            THROW_ERR( "Stack is not empty" )
+          assert( isEmpty() );
+          //  THROW_ERR( "Stack is not empty" )
         #endif
 
         if( size > m_size )
@@ -136,13 +135,11 @@ template< class TYPE >
 
       void put( const TYPE &info )
       {
-        BGN
-
         #ifdef TSTBUG
-          if( m_data == 0 )
-            THROW_ERR( "Trying to put() onto unallocated stack" )
-          if( m_top >= m_size )
-            THROW_ERR( "Stack overflow" );
+          assert( m_data != 0 );
+            //THROW_ERR( "Trying to put() onto unallocated stack" )
+          assert( m_top < m_size );
+            //THROW_ERR( "Stack overflow" );
         #endif
 
         m_data[ m_top++ ] = info;
@@ -150,13 +147,11 @@ template< class TYPE >
 
       TYPE get()
       {
-        BGN
-
         #ifdef TSTBUG
-          if( m_data == 0 )
-            THROW_ERR( "Trying to get() from unallocated stack" )
-          if( m_top == 0 )
-            THROW_ERR( "Stack underflow" );
+          assert( m_data != 0 );
+          //  THROW_ERR( "Trying to get() from unallocated stack" )
+          assert( m_top != 0 );
+          //  THROW_ERR( "Stack underflow" );
         #endif
 
         return m_data[ --m_top ];
@@ -164,13 +159,11 @@ template< class TYPE >
 
       TYPE peek()
       {
-        BGN
-
         #ifdef TSTBUG
-          if( m_data == 0 )
-            THROW_ERR( "Trying to peek() into unallocated stack" )
-          if( m_top == 0 )
-            THROW_ERR( "Stack underflow" );
+          assert( m_data != 0 );
+          //  THROW_ERR( "Trying to peek() into unallocated stack" )
+          assert( m_top != 0 );
+          //  THROW_ERR( "Stack underflow" );
         #endif
 
         return m_data[ m_top - 1 ];

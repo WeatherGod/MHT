@@ -234,12 +234,12 @@
 #ifndef EXCEPT_H
 #define EXCEPT_H
 
-#include <unistd.h>
-#include <string>
-#include <stdio.h>
+//#include <unistd.h>
+//#include <string>
+//#include <stdio.h>
 #include <iostream>
-#include "strstream"
-#include <stdlib.h>
+//#include "strstream"
+//#include <stdlib.h>
 
 //#include "portspecs.h"
 #include "safeglobal.h"
@@ -250,10 +250,12 @@
   #define GLOBAL extern
 #endif
 
+/*
 using std::cout;
 using std::endl;
 using std::strstream; 
 using std::ostrstream;
+*/
 /*-------------------------------------------------------------------*
  | Automatic declaration of TSTBUG
  *-------------------------------------------------------------------*/
@@ -265,14 +267,14 @@ using std::ostrstream;
 /*-------------------------------------------------------------------*
  | Declarations of stuff found in this file.
  *-------------------------------------------------------------------*/
-
+/*
 class SCOPE_TRACER;
 class ERR_STREAM;
-
+*/
 /*-------------------------------------------------------------------*
  | RECURSION_CHECKER -- class used in CANT_RECUR macro
  *-------------------------------------------------------------------*/
-
+/*
 class RECURSION_CHECKER
 {
   private:
@@ -300,12 +302,12 @@ class RECURSION_CHECKER
       m_busyFlag = 0;
     }
 };
-
+*/
 /*-------------------------------------------------------------------*
  | CANT_RECUR macro -- make sure that a routine is not called
  |                     recursively
  *-------------------------------------------------------------------*/
-
+/*
 #ifdef TSTBUG
 
   #define CANT_RECUR                                                  \
@@ -317,14 +319,14 @@ class RECURSION_CHECKER
   #define CANT_RECUR
 
 #endif
-
+*/
 /*-------------------------------------------------------------------*
  | SCOPE_TRACER -- object used in tracing scopes
  |
  | This class should only be used explicitly by the BGN,
  | TRACE, and ACTION macros.
  *-------------------------------------------------------------------*/
-
+/*
 class SCOPE_TRACER
 {
   private:
@@ -384,12 +386,12 @@ class SCOPE_TRACER
 #ifdef DECLARE_EXCEPT
   SCOPE_TRACER *SCOPE_TRACER::M_currentScope = 0;
 #endif
-
+*/
 /*-------------------------------------------------------------------*
  | BGN, ACTION(), and TRACE -- macros for constructing trace of where
  |                             errors occur
  *-------------------------------------------------------------------*/
-
+/*
 #ifdef TSTBUG
 
   #define BGN                                                         \
@@ -411,16 +413,16 @@ class SCOPE_TRACER
   #define TRACE
 
 #endif
-
+*/
 /*-------------------------------------------------------------------*
  | Global variables used in THROW_ERR()
  *-------------------------------------------------------------------*/
-
+/*
 GLOBAL char G_errHasHappened;        // set to 1 by THROW_ERR()
 GLOBAL char XG_msg[ 1000 ];          // description of error
 GLOBAL char XG_msgStreamExists;      // flag set when XG_errStream is
                                      //   initialized
-
+*/
 /*-------------------------------------------------------------------*
  | ERR_STREAM -- contains an ostrstream for building XG_msg
  |
@@ -430,7 +432,7 @@ GLOBAL char XG_msgStreamExists;      // flag set when XG_errStream is
  | because errors might occur during initialization before the
  | ostrstream is constructed.
  *-------------------------------------------------------------------*/
-
+/*
 class ERR_STREAM
 {
   private:
@@ -466,11 +468,11 @@ class ERR_STREAM
 };
 
 SAFE_GLOBAL( ERR_STREAM, XG_errStream )
-
+*/
 /*-------------------------------------------------------------------*
  | THROW_ERR() -- macro to spit out an error message and exit
  *-------------------------------------------------------------------*/
-
+/*
 #define THROW_ERR( description )                                      \
   {                                                                   \
     G_errHasHappened = 1;                                             \
@@ -480,14 +482,14 @@ SAFE_GLOBAL( ERR_STREAM, XG_errStream )
       strncpy( XG_msg, #description, sizeof( XG_msg ) );              \
     XDoErr( __LINE__, __FILE__ );                                     \
   }                                                                   \
-
+*/
 /*-------------------------------------------------------------------*
  | External routines
  *-------------------------------------------------------------------*/
 
 GLOBAL void Indent( int numSpaces ); // routine to indent cout
-GLOBAL void DumpCore();              // routine to crash with core dump
-GLOBAL void XDoErr( int line, char *file );
+//GLOBAL void DumpCore();              // routine to crash with core dump
+//GLOBAL void XDoErr( int line, char *file );
 
 #undef GLOBAL
 #endif

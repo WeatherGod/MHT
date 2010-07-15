@@ -1,10 +1,12 @@
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include <string.h>
-#include <math.h>
+#include <cmath>
+#include <iostream>	// for std::cout, std::endl, std::cerr
 #include "param.h"       //  contains values of needed parameters 
 #include "motionModel.h"
 
+#include <stdexcept>	// for std::runtime_error
 /* 
  * External Variables
  */
@@ -18,8 +20,8 @@ Parameter g_param;
 
 int main(int argc, char **argv)
 {
-  void read_param(char*);
-  void writeCornerTrackFile(char *name);
+  void read_param(const char*);
+  void writeCornerTrackFile(const char *name);
   void readCorners(iDLIST_OF<CORNERLIST> *in);
   int numPixels;
   iDLIST_OF<CORNERLIST> *inputData;
@@ -31,7 +33,7 @@ int main(int argc, char **argv)
 
   if ( argc < 2 )
   {
-    std::cerr<<"Usage:"<< argv[0]<<" OutDataFile -p paramFile"<< "InDataFile" << std::endl;
+    std::cerr<<"Usage:"<< argv[0]<<" OutDataFile -p paramFile < InDataFile" << std::endl;
     exit( -1 );
   }
 
@@ -49,13 +51,13 @@ int main(int argc, char **argv)
  * Read the parameters
  */
 
-  char *paramFile;
+  const char *paramFile;
   if (argc > 2) {
      if (argv[2][0] =='-' && argv[2][1] == 'p')
        paramFile = argv[3];
      printf("%s %s\n",argv[3],paramFile);
   } else {
-    paramFile="Parameters";
+    paramFile = "Parameters";
   }
   read_param(paramFile);
 
@@ -160,18 +162,21 @@ int main(int argc, char **argv)
  * a comment. So skip the comments.
  *----------------------------------------------------------*/
 
-void read_param(char* paramFile)
+void read_param(const char* paramFile)
 {
-BGN
+
   FILE *fp;
 
   fp = fopen( paramFile, "r" );
 //  cout << "Open Parameter File :" <<paramFile<<endl;
-  if (fp == 0) 
-      THROW_ERR("Couldn't open file parameter File")
-  else if( fp != 0 )
+  if (fp <= 0)
   {
-    std::cout << "Using Parameter File :" << paramFile << std::endl;
+	throw std::runtime_error("Couldn't open parameter file");
+  //    THROW_ERR("Couldn't open file parameter File")
+  }
+  else
+  {
+    std::cout << "Using Parameter File: " << paramFile << std::endl;
     char buf[ 100 ];
     char *f;
 
@@ -264,11 +269,6 @@ BGN
   std::cout << " maxDistance1= " << g_param.maxDistance1 << std::endl;
   std::cout << " maxDistance2= " << g_param.maxDistance2 << std::endl;
   std::cout << " maxDistance3= " << g_param.maxDistance3 << std::endl;
-
-
-
-
-
 }
 
 /*----------------------------------------------------------*
@@ -276,9 +276,9 @@ BGN
  * the CORNER_TRACKs into a file.
  *----------------------------------------------------------*/
 
-void writeCornerTrackFile(char *name)
+void writeCornerTrackFile(const char *name)
 {
-BGN
+
   PTR_INTO_iDLIST_OF< CORNER_TRACK > cornerTrack;
   PTR_INTO_iDLIST_OF< CORNER_TRACK_ELEMENT > cornerTrackEl;
   PTR_INTO_iDLIST_OF< FALARM > falarm;
@@ -286,6 +286,11 @@ BGN
 
   FILE *CornerTrackFile;
   CornerTrackFile = fopen( name, "w" );
+
+  if (CornerTrackFile <= 0)
+  {
+    throw std::runtime_error("Could not open corner track file...");
+  }
 
   fprintf(CornerTrackFile,
 		"#INFORMATION REGARDING THIS CORNER TRACKER\n");
@@ -412,7 +417,7 @@ BGN
 
 void readCorners( iDLIST_OF<CORNERLIST> *inputData)
 {
-BGN
+
   int i;
   PTR_INTO_iDLIST_OF<CORNERLIST> cptr;
   PTR_INTO_iDLIST_OF<CORNER> ptr;
@@ -452,6 +457,12 @@ BGN
     sprintf(fname,"%s.%d",basename,i++);
 //    printf("Reading file %s\n",fname);
     inDataFile = fopen( fname, "r" );
+
+    if (inDataFile <= 0)
+    {
+       throw std::runtime_error("Could not open the input data file...\n");
+    }
+    
     int j=0;
     while (fgets(str,strSize,inDataFile) && j <ncorners[i-startFrame-1]) 
     {
@@ -474,23 +485,4 @@ BGN
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

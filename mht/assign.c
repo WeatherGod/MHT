@@ -223,14 +223,14 @@ static int compareRCCs( const void *addr0, const void *addr1 );
 
 void SortAssignmentProblem( ROW_COL_COST *rcc, int numRCCs )
 {
-  BGN
+  
 
   qsort( (void *)rcc, numRCCs, sizeof( *rcc ), compareRCCs );
 }
 
 static int compareRCCs( const void *addr0, const void *addr1 )
 {
-  BGN
+  
 
   #define rcc0 (*(ROW_COL_COST *)addr0)
   #define rcc1 (*(ROW_COL_COST *)addr1)
@@ -260,7 +260,7 @@ double FindBestAssignment( ROW_COL_COST *rcc, int numRCCs,
                            int numRows, int numCols,
                            VECTOR_OF< void * > &tag, int *numTags )
 {
-  BGN
+  
 
   G_numAssignCalls++;
   G_totalAssignSizes += numRCCs;
@@ -291,7 +291,7 @@ double FindBestAssignment( ROW_COL_COST *rcc, int numRCCs,
 static void setupProblem( ROW_COL_COST *rcc, int numRCCs,
                           int numRows, int numCols )
 {
-  BGN
+  
   
   register int row, col;
   register int i;
@@ -406,7 +406,7 @@ static void setupProblem( ROW_COL_COST *rcc, int numRCCs,
 
 static void jumpStartProblem()
 {
-  BGN
+  
 
   register int row, col;
   register int i;
@@ -478,7 +478,7 @@ static void jumpStartProblem()
 
 static double solveProblem()
 {
-  BGN
+  
 
   #ifdef DEBUG
     int numIterationsWithoutProgress = 0;
@@ -508,10 +508,10 @@ static double solveProblem()
       #ifdef DEBUG
         if( g_numAssignmentsMade == oldNumAssignmentsMade )
         {
-          if( ++numIterationsWithoutProgress >= END_OF_PATIENCE )
-            THROW_ERR( "Giving up on Hungarian after " <<
-                       numIterationsWithoutProgress <<
-                       " iterations without progress" );
+          assert( ++numIterationsWithoutProgress < END_OF_PATIENCE );
+          //  THROW_ERR( "Giving up on Hungarian after " <<
+          //             numIterationsWithoutProgress <<
+          //             " iterations without progress" );
         }
         else
           numIterationsWithoutProgress = 0;
@@ -541,8 +541,8 @@ static double solveProblem()
         return UNSOLVABLE;
 
       #ifdef TSTBUG
-        if( minCost == 0 )
-          THROW_ERR( "Big, hairy, Hungarian bug -- minCost == 0" )
+        assert( minCost != 0 );
+        //  THROW_ERR( "Big, hairy, Hungarian bug -- minCost == 0" )
       #endif
 
       /* construct the new subgraph */
@@ -582,7 +582,7 @@ static double solveProblem()
 
 static int augment()
 {
-  BGN
+  
 
   int row, col;
   int mateForCol;
@@ -659,7 +659,7 @@ static int augment()
 
 static double storeSolution( VECTOR_OF< void * > &tag, int *numTags )
 {
-  BGN
+  
 
   ROW_COL_COST *usedRCC;
   double cost;

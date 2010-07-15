@@ -43,6 +43,7 @@
 
 #include <stdarg.h>
 #include <math.h>
+#include <iostream>
 
 #include "vector.h"
 #include "matrix.h"
@@ -67,7 +68,7 @@ static int luDecompose( MATRIX &mat, int *originalRow );
 
 MATRIX &MATRIX::operator=( double val )
 {
-  BGN
+  
 
   int i;
   double *p = m_data;
@@ -93,7 +94,7 @@ void MATRIX::set( double firstVal, ... )
 
 void MATRIX::vset( double firstVal, va_list ap )
 {
-  BGN
+  
 
   int i;
   double *p = m_data;
@@ -111,7 +112,7 @@ void MATRIX::vset( double firstVal, va_list ap )
 
 int MATRIX::isIdentity() const
 {
-  BGN
+  
 
   int row, col;
   double *p = m_data;
@@ -136,7 +137,7 @@ int MATRIX::isIdentity() const
 
 tmpMATRIX MATRIX::trans()
 {
-  BGN
+  
 
   tmpMATRIX tmp( m_numCols, m_numRows );
   int row, col;
@@ -166,14 +167,14 @@ tmpMATRIX MATRIX::trans()
 
 tmpMATRIX MATRIX::reduce( int numRows, int numCols )
 {
-  BGN
+  
 
   #ifdef TSTBUG
-    if( numRows > m_numRows || numCols > m_numCols )
-      THROW_ERR( "Can't reduce "
-                 << m_numRows << "x" << m_numCols << " matrix "
-                 << "to"
-                 << numRows << "x" << numCols )
+    assert( numRows <= m_numRows && numCols <= m_numCols );
+    //  THROW_ERR( "Can't reduce "
+    //             << m_numRows << "x" << m_numCols << " matrix "
+    //             << "to"
+    //             << numRows << "x" << numCols )
   #endif
 
   tmpMATRIX tmp( numRows, numCols );
@@ -205,7 +206,7 @@ tmpMATRIX MATRIX::reduce( int numRows, int numCols )
 
 tmpMATRIX MATRIX::inv()
 {
-  BGN
+  
 
   static VECTOR_OF< int > originalRow; originalRow.resize( m_numRows );
   static VECTOR_OF< double > colBuf; colBuf.resize( m_numRows );
@@ -246,13 +247,13 @@ tmpMATRIX MATRIX::inv()
 
 double MATRIX::det()
 {
-  BGN
+  
 
   #ifdef TSTBUG
-    if( m_numRows != m_numCols )
-      THROW_ERR( "Can't find determinant of "
-                 << m_numRows << "x" << m_numCols << " matrix -- "
-                 << "must be square" )
+    assert( m_numRows == m_numCols );
+    //  THROW_ERR( "Can't find determinant of "
+    //             << m_numRows << "x" << m_numCols << " matrix -- "
+    //             << "must be square" )
   #endif
 
   MATRIX lu( *this );
@@ -281,7 +282,7 @@ double MATRIX::det()
 
 void MATRIX::print( int numSpaces ) const
 {
-  BGN
+  
 
   int row, col;
   double *p = m_data;
@@ -295,10 +296,10 @@ void MATRIX::print( int numSpaces ) const
 
     for( col = 0; col < m_numCols; col++ )
     {
-      cout << DBL( *p ) << " ";
+      std::cout << DBL( *p ) << " ";
       p++;
     }
-    cout << endl;
+    std::cout << std::endl;
   }
 
   #undef DBL
@@ -313,15 +314,15 @@ void MATRIX::print( int numSpaces ) const
 tmpMATRIX::tmpMATRIX( const MATRIX &m0, const MATRIX &m1 ):
   MATRIX( m0.getNumRows(), m1.getNumCols() )
 {
-  BGN
+  
 
   #ifdef TSTBUG
-    if( m1.getNumRows() != m0.getNumCols() )
-      THROW_ERR( "Bad multiply -- "
-                 << m0.getNumRows() << "x" << m0.getNumCols()
-                 << " matrix * "
-                 << m1.getNumRows() << "x" << m1.getNumRows()
-                 << " matrix" )
+    assert( m1.getNumRows() == m0.getNumCols() );
+    //  THROW_ERR( "Bad multiply -- "
+    //             << m0.getNumRows() << "x" << m0.getNumCols()
+    //             << " matrix * "
+    //             << m1.getNumRows() << "x" << m1.getNumRows()
+    //             << " matrix" )
   #endif
 
   const int num_m0Cols_m1Rows =      // both the number of rows in m1
@@ -362,16 +363,16 @@ tmpMATRIX::tmpMATRIX( const MATRIX &m0, const MATRIX &m1 ):
 
 tmpMATRIX &tmpMATRIX::add( const MATRIX &src )
 {
-  BGN
+  
 
   #ifdef TSTBUG
-    if( m_numRows != src.getNumRows() ||
-        m_numCols != src.getNumCols() )
-      THROW_ERR( "Bad add -- "
-                 << m_numRows << "x" << m_numCols
-                 << " matrix + "
-                 << src.getNumRows() << "x" << src.getNumRows()
-                 << " matrix" )
+    assert( m_numRows == src.getNumRows() &&
+        m_numCols == src.getNumCols() );
+    //  THROW_ERR( "Bad add -- "
+    //             << m_numRows << "x" << m_numCols
+    //             << " matrix + "
+    //             << src.getNumRows() << "x" << src.getNumRows()
+    //             << " matrix" )
   #endif
 
   int i;
@@ -391,16 +392,16 @@ tmpMATRIX &tmpMATRIX::add( const MATRIX &src )
 
 tmpMATRIX &tmpMATRIX::subtract( const MATRIX &src )
 {
-  BGN
+  
 
   #ifdef TSTBUG
-    if( m_numRows != src.getNumRows() ||
-        m_numCols != src.getNumCols() )
-      THROW_ERR( "Bad subtract -- "
-                 << m_numRows << "x" << m_numCols
-                 << " matrix - "
-                 << src.getNumRows() << "x" << src.getNumRows()
-                 << " matrix" )
+    assert( m_numRows == src.getNumRows() &&
+        m_numCols == src.getNumCols() );
+    //  THROW_ERR( "Bad subtract -- "
+    //             << m_numRows << "x" << m_numCols
+    //             << " matrix - "
+    //             << src.getNumRows() << "x" << src.getNumRows()
+    //             << " matrix" )
   #endif
 
   int i;
@@ -420,16 +421,16 @@ tmpMATRIX &tmpMATRIX::subtract( const MATRIX &src )
 
 tmpMATRIX &tmpMATRIX::subtractFrom( const MATRIX &src )
 {
-  BGN
+  
 
   #ifdef TSTBUG
-    if( m_numRows != src.getNumRows() ||
-        m_numCols != src.getNumCols() )
-      THROW_ERR( "Bad subtract -- "
-                 << m_numRows << "x" << m_numCols
-                 << " matrix - "
-                 << src.getNumRows() << "x" << src.getNumRows()
-                 << " matrix" )
+    assert( m_numRows == src.getNumRows() &&
+        m_numCols == src.getNumCols() );
+    //  THROW_ERR( "Bad subtract -- "
+    //             << m_numRows << "x" << m_numCols
+    //             << " matrix - "
+    //             << src.getNumRows() << "x" << src.getNumRows()
+    //             << " matrix" )
   #endif
 
   int i;
@@ -453,7 +454,7 @@ tmpMATRIX &tmpMATRIX::subtractFrom( const MATRIX &src )
 
 tmpMATRIX &tmpMATRIX::multiply( double src )
 {
-  BGN
+  
 
   int i;
   double *p = m_data;
@@ -508,7 +509,7 @@ tmpMATRIX &tmpMATRIX::multiply( double src )
 static void luSolve( const MATRIX &lu, int *originalRow,
                      double *colBuf )
 {
-  BGN
+  
 
   int firstNonZeroRow = -1;
   double sum = -1;
@@ -619,7 +620,7 @@ static void luSolve( const MATRIX &lu, int *originalRow,
 
 static int luDecompose( MATRIX &mat, int *originalRow )
 {
-  BGN
+  
 
   int numSwapsIsOdd = 0;
   int row, col;
@@ -645,8 +646,8 @@ static int luDecompose( MATRIX &mat, int *originalRow )
         biggest = tmpDbl;
 
     #ifdef TSTBUG
-      if( biggest == 0 )
-        THROW_ERR( "Trying to LU-decompose singular matrix" );
+      assert( biggest != 0 );
+      //  THROW_ERR( "Trying to LU-decompose singular matrix" );
     #endif
 
     scaler[ row ] = 1. / biggest;

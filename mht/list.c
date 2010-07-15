@@ -49,7 +49,7 @@
 
 DLISTnode *DLISTnode::XgetHead() const
 {
-  BGN
+  
 
   DLISTnode const*node;
 
@@ -58,8 +58,8 @@ DLISTnode *DLISTnode::XgetHead() const
   for( node = m_prev; node->isNode(); node = node->m_prev )
   {
     #ifdef TSTBUG
-      if( node == this )
-        THROW_ERR( "Dlist has no head" )
+      assert( node != this );
+      //  THROW_ERR( "Dlist has no head" )
     #endif
   }
 
@@ -72,7 +72,7 @@ DLISTnode *DLISTnode::XgetHead() const
 
 DLISTnode *DLISTnode::XgetTail() const
 {
-  BGN
+  
 
   DLISTnode const*node;
 
@@ -81,8 +81,8 @@ DLISTnode *DLISTnode::XgetTail() const
   for( node = m_prev; node->isNode(); node = node->m_prev )
   {
     #ifdef TSTBUG
-      if( node == this )
-        THROW_ERR( "Dlist has no tail" )
+      assert( node != this );
+      //  THROW_ERR( "Dlist has no tail" )
     #endif
   }
 
@@ -99,13 +99,13 @@ DLISTnode *DLISTnode::XgetTail() const
 
   void DLISTnode::check() const
   {
-    BGN
+    
 
     DLISTnode const*node;
     int listHasHeader;
 
-    if( m_prev == 0 || m_next == 0 )
-      THROW_ERR( "Bad dlist node -- NULL link" );
+    assert( m_prev != 0 && m_next != 0 );
+    //  THROW_ERR( "Bad dlist node -- NULL link" );
 
     if( ! isOnList() )
       return;
@@ -114,14 +114,14 @@ DLISTnode *DLISTnode::XgetTail() const
     node = this;
     do
     {
-      if( node->m_prev->m_next != node ||
-          node->m_next->m_prev != node )
-        THROW_ERR( "Bad dlist node -- links don't match" )
+      assert( node->m_prev->m_next == node &&
+          node->m_next->m_prev == node );
+      //  THROW_ERR( "Bad dlist node -- links don't match" )
 
       if( ! node->isNode() )
       {
-        if( listHasHeader )
-          THROW_ERR( "More than one header on dlist" )
+        assert( ! listHasHeader );
+        //  THROW_ERR( "More than one header on dlist" )
         listHasHeader = 1;
       }
 
@@ -129,8 +129,8 @@ DLISTnode *DLISTnode::XgetTail() const
     }
     while( node != this );
 
-    if( ! listHasHeader )
-      THROW_ERR( "Dlist without header" )
+    assert( listHasHeader );
+    //  THROW_ERR( "Dlist without header" )
   }
 
 #endif
@@ -142,7 +142,7 @@ DLISTnode *DLISTnode::XgetTail() const
 
 void DLISTbase::XprependCopy( const DLISTbase &dlist )
 {
-  BGN
+  
 
   DLISTnode const*node;
 
@@ -157,7 +157,7 @@ void DLISTbase::XprependCopy( const DLISTbase &dlist )
 
 void DLISTbase::XappendCopy( const DLISTbase &dlist )
 {
-  BGN
+  
 
   DLISTnode const*node;
 
@@ -173,7 +173,7 @@ void DLISTbase::XappendCopy( const DLISTbase &dlist )
 
 void DLISTbase::Xsplice( DLISTbase &dlist )
 {
-  BGN
+  
 
   if( dlist.isEmpty() )
     return;
@@ -213,7 +213,7 @@ void DLISTbase::Xsplice( DLISTbase &dlist )
 
 int DLISTbase::getLength() const
 {
-  BGN
+  
 
   DLISTnode const*node;
   int length;
@@ -231,7 +231,7 @@ int DLISTbase::getLength() const
 
 void DLISTbase::removeAll()
 {
-  BGN
+  
 
   while( ! isEmpty() )
     removeHead();

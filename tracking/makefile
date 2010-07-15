@@ -16,15 +16,14 @@ INC = ../mht
 C++ = g++
 #C++FLAGS = -O 
 #C++FLAGS = -O -D__SGICC__ -DSDBG
-C++FLAGS = -O -I../mht
+C++FLAGS = -O -I$(INC)
 
 build = $(C++) $(C++FLAGS) -o $@
 touch = touch $@
 
 trackCorners: param.h motionModel.h $(INC)/assign.h \
-		trackCorners.o  motionModel.o
-	$(build) trackCorners.o motionModel.o \
-	-L../mht -lmht -lm
+		trackCorners.o  motionModel.o $(INC)/libmht.a
+	$(build) trackCorners.o motionModel.o -L$(INC) -lmht -lm 
 
 motionModel.o: motionModel.c motionModel.h param.h \
 	$(INC)/except.h $(INC)/mdlmht.h $(INC)/matrix.h\

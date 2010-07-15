@@ -647,8 +647,6 @@ class MDL_DUMMY_T_HYPO: public MDL_T_HYPO
     MDL_DUMMY_T_HYPO( MDL_MHT *mdlMht, double logLikelihood = 0 ):
       MDL_T_HYPO( mdlMht )
     {
-      BGN
-
       m_endsTrack = 1;
       m_mustVerify = 0;
       m_logLikelihood = logLikelihood;
@@ -678,8 +676,6 @@ class MDL_FALARM_T_HYPO: public MDL_DUMMY_T_HYPO
     MDL_FALARM_T_HYPO( MDL_MHT *mdlMht, MDL_REPORT *report ):
       MDL_DUMMY_T_HYPO( mdlMht, report )
     {
-      BGN
-
       m_endsTrack = 1;
       m_mustVerify = 1;
       m_logLikelihood = report->getFalarmLogLikelihood();
@@ -688,8 +684,6 @@ class MDL_FALARM_T_HYPO: public MDL_DUMMY_T_HYPO
 
     virtual void verify()
     {
-      BGN
-
       m_mdlMht->falseAlarm( getTimeStamp(),
                             (MDL_REPORT *)getReport() );
     }
@@ -736,8 +730,6 @@ class MDL_CONTINUE_T_HYPO: public MDL_T_HYPO
       MDL_T_HYPO( mdlMht, report ),
       m_state( state )
     {
-      BGN
-
       m_endsTrack = 0;
       m_mustVerify = 1;
       m_logLikelihood = trackLogLikelihood +
@@ -752,8 +744,6 @@ class MDL_CONTINUE_T_HYPO: public MDL_T_HYPO
     virtual void makeChildrenFor( MDL_REPORT *report );
     virtual void verify()
     {
-      BGN
-
       m_mdlMht->continueTrack( getTrackStamp(), getTimeStamp(),
                                m_state, (MDL_REPORT *)getReport() );
     }
@@ -783,8 +773,6 @@ class MDL_START_T_HYPO: public MDL_CONTINUE_T_HYPO
                       MDL_STATE *state, MDL_REPORT *report ):
       MDL_CONTINUE_T_HYPO( mdlMht, report )
     {
-      BGN
-
       m_state = state;
       m_endsTrack = 0;
       m_mustVerify = 1;
@@ -793,8 +781,6 @@ class MDL_START_T_HYPO: public MDL_CONTINUE_T_HYPO
 
     virtual void verify()
     {
-      BGN
-
       m_mdlMht->startTrack( getTrackStamp(), getTimeStamp(),
                             m_state, (MDL_REPORT *)getReport() );
     }
@@ -825,8 +811,6 @@ class MDL_SKIP_T_HYPO: public MDL_CONTINUE_T_HYPO
                      MDL_STATE *state ):
       MDL_CONTINUE_T_HYPO( mdlMht )
     {
-      BGN
-
       m_state = state;
       m_endsTrack = 0;
       m_mustVerify = 1;
@@ -838,8 +822,6 @@ class MDL_SKIP_T_HYPO: public MDL_CONTINUE_T_HYPO
 
     virtual void verify()
     {
-      BGN
-
       m_mdlMht->skipTrack( getTrackStamp(), getTimeStamp(), m_state );
     }
 
@@ -867,8 +849,6 @@ class MDL_END_T_HYPO: public MDL_DUMMY_T_HYPO
                     double endLogLikelihood ):
       MDL_DUMMY_T_HYPO( mdlMht )
     {
-      BGN
-
       m_endsTrack = 1;
       m_mustVerify = 1;
       m_logLikelihood = trackLogLikelihood +
@@ -878,7 +858,6 @@ class MDL_END_T_HYPO: public MDL_DUMMY_T_HYPO
 
     virtual void verify()
     {
-      BGN
       m_mdlMht->endTrack( getTrackStamp(), getTimeStamp() );
     }
 

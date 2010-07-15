@@ -215,7 +215,6 @@ class CONSTPOS_REPORT: public MDL_REPORT
       m_frameNo(f)
 
     {
-BGN     
       m_z.set( x, y);
       m_int[0] = i1;        m_int[4] = i5;
       m_int[1] = i2;        m_int[5] = i6;
@@ -523,7 +522,7 @@ class CONSTVEL_STATE: public MDL_STATE
 
     void cleanup()
     {
-      BGN
+      
 
       if( m_hasBeenSetup )
       {
@@ -543,19 +542,19 @@ class CONSTVEL_STATE: public MDL_STATE
 
     int getNumSkipped() { return m_numSkipped;}
     double getLogLikelihoodCoef()
-      { BGN checkSetup(); return m_logLikelihoodCoef; }
-    MATRIX &getPrediction() { BGN checkSetup(); return *m_x1; }
-    MATRIX &getNextP() { BGN checkSetup(); return *m_nextP; }
-    MATRIX &getSinv() { BGN checkSetup(); return *m_Sinv; }
-    MATRIX &getW() { BGN checkSetup(); return *m_W; }
+      { checkSetup(); return m_logLikelihoodCoef; }
+    MATRIX &getPrediction() { checkSetup(); return *m_x1; }
+    MATRIX &getNextP() { checkSetup(); return *m_nextP; }
+    MATRIX &getSinv() { checkSetup(); return *m_Sinv; }
+    MATRIX &getW() { checkSetup(); return *m_W; }
 
     #ifdef TSTBUG
 
       void checkSetup()
       {
-        if( ! m_hasBeenSetup )
-          THROW_ERR( "Trying to get derived info from a CONSTPOS state"
-                     " that hasn't been setup()" )
+        assert( m_hasBeenSetup );
+        //  THROW_ERR( "Trying to get derived info from a CONSTPOS state"
+        //             " that hasn't been setup()" )
       }
 
     #else
@@ -577,12 +576,12 @@ class CONSTVEL_STATE: public MDL_STATE
     void setDX(double val) { m_x( 1 )=val; }
     void setDY(double val) { m_x( 3 )=val; }
 
-    double getX1() { BGN checkSetup(); return (*m_x1)( 0 ); }
-    double getDX1() { BGN checkSetup(); return (*m_x1)( 1 ); }
-    double getY1() { BGN checkSetup(); return (*m_x1)( 2 ); }
-    double getDY1() { BGN checkSetup(); return (*m_x1)( 3 ); }
+    double getX1() { checkSetup(); return (*m_x1)( 0 ); }
+    double getDX1() { checkSetup(); return (*m_x1)( 1 ); }
+    double getY1() { checkSetup(); return (*m_x1)( 2 ); }
+    double getDY1() { checkSetup(); return (*m_x1)( 3 ); }
 
-    double getDS() { BGN checkSetup(); return m_ds; }
+    double getDS() { checkSetup(); return m_ds; }
 };
 
 /*-------------------------------------------------------------------*

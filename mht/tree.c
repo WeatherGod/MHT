@@ -50,8 +50,6 @@
 
 TREEnode *TREEnode::XgetFirstLeaf() const
 {
-  BGN
-
   TREEnode const*node;
 
   for( node = this; ! node->isLeaf(); node = node->XgetFirstChild() )
@@ -67,8 +65,6 @@ TREEnode *TREEnode::XgetFirstLeaf() const
 
 TREEnode *TREEnode::XgetLastLeaf() const
 {
-  BGN
-
   TREEnode const*node;
 
   for( node = this; ! node->isLeaf(); node = node->XgetLastChild() )
@@ -84,7 +80,7 @@ TREEnode *TREEnode::XgetLastLeaf() const
 
 TREEnode *TREEnode::XgetRoot() const
 {
-  BGN
+  
 
   TREEnode const*node;
 
@@ -105,7 +101,7 @@ TREEnode *TREEnode::XgetRoot() const
 
 TREEnode *TREEnode::XgetPreOrderNext() const
 {
-  BGN
+  
 
   TREEnode const*node;
 
@@ -130,7 +126,7 @@ TREEnode *TREEnode::XgetPreOrderNext() const
 
 TREEnode *TREEnode::XgetPostOrderNext() const
 {
-  BGN
+  
 
   TREEnode const*node;
 
@@ -149,7 +145,7 @@ TREEnode *TREEnode::XgetPostOrderNext() const
 
 void TREEnode::XinsertParent( TREEnode *node )
 {
-  BGN
+  
 
   node->m_parent = m_parent;
   Xprepend( node );
@@ -167,7 +163,7 @@ void TREEnode::XinsertParent( TREEnode *node )
 
 int TREEnode::getDepth() const
 {
-  BGN
+  
 
   TREEnode const*node;
   int depth;
@@ -198,31 +194,31 @@ int TREEnode::getDepth() const
       DLISTnode::check();
       checkNotOnList();
 
-      if( ! m_childList.isEmpty() )
-        THROW_ERR( "Tree node has children but isn't on tree" )
+      assert( m_childList.isEmpty() );
+      //  THROW_ERR( "Tree node has children but isn't on tree" )
 
       return;
     }
 
     for( node = this; node->isNode(); node = node->m_parent )
     {
-      if( node->m_parent == node )
-        THROW_ERR( "Tree node has children but isn't on tree" )
+      assert( node->m_parent != node );
+      //  THROW_ERR( "Tree node has children but isn't on tree" )
     }
 
     node->DLISTnode::check();
 
-    if( node->m_parent != node )
-      THROW_ERR( "Corrupted tree -- node->m_parent != node" )
-    if( ! node->m_childList.isEmpty() &&
-        ! node->m_childList.hasOneMember() )
-      THROW_ERR( "Tree has more than one root" )
+    assert( node->m_parent == node );
+    //  THROW_ERR( "Corrupted tree -- node->m_parent != node" )
+    assert( node->m_childList.isEmpty() ||
+            node->m_childList.hasOneMember() );
+    //  THROW_ERR( "Tree has more than one root" )
 
     if( node->m_childList.hasOneMember() )
     {
       node->m_childList.check();
-      if( (*node->m_childList).m_parent != node )
-        THROW_ERR( "Corrupted tree root -- doesn't point to parent" )
+      assert( (*node->m_childList).m_parent == node );
+      //  THROW_ERR( "Corrupted tree root -- doesn't point to parent" )
       (*node->m_childList).XrcrsvCheck();
     }
   }
@@ -236,15 +232,15 @@ int TREEnode::getDepth() const
 
 void TREEnode::XrcrsvCheck() const
 {
-  BGN
+  
 
   PTR_INTO_iDLIST_OF< TREEnode > child;
 
   m_childList.check();
   LOOP_DLIST( child, *(iDLIST_OF< TREEnode > *)&m_childList )
   {
-    if( (*child).m_parent != this )
-      THROW_ERR( "Corrupted tree node -- doesn't point to parent" )
+    assert( (*child).m_parent == this );
+    //  THROW_ERR( "Corrupted tree node -- doesn't point to parent" )
     (*child).XrcrsvCheck();
   }
 }
@@ -256,7 +252,7 @@ void TREEnode::XrcrsvCheck() const
 
 void TREEnode::XrcrsvCopy( const TREEnode *node )
 {
-  BGN
+  
 
   TREEnode *newNode;
 
@@ -283,7 +279,7 @@ void TREEnode::XrcrsvCopy( const TREEnode *node )
 
 int TREEbase::getHeight() const
 {
-  BGN
+  
 
   int height;
   TREEnode const*node;
@@ -304,14 +300,17 @@ int TREEbase::getHeight() const
 
 void TREEbase::removeRoot()
 {
-  BGN
+  
 
   TREEnode *oldRoot;
 
   checkNotEmpty();
 
   oldRoot = XgetRoot();
-  oldRoot->checkHasOneChild();
+  // I think this check is invalid.
+  // The splice will work, no matter how many children exists.
+  // I can't see a reason why there has to be one and only one child.
+  //oldRoot->checkHasOneChild();
 
   m_vnode.m_childList.splice( oldRoot->m_childList );
   delete oldRoot;

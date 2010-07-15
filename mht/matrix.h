@@ -193,6 +193,7 @@
 #include <string.h>
 
 #include "except.h"
+#include <assert.h>
 
 /*-------------------------------------------------------------------*
  | Declarations of stuff found in this file
@@ -240,8 +241,6 @@ class MATRIX
       m_size( src.m_size ),
       m_data( new double[ src.m_numRows * src.m_numCols ] )
     {
-      BGN
-
       memcpy( m_data, src.m_data, m_size * sizeof( *m_data ) );
     }
 
@@ -249,8 +248,6 @@ class MATRIX
 
     virtual ~MATRIX()
     {
-      BGN
-
       if( m_data != 0 )
         delete [] m_data;
       m_data = 0;
@@ -260,14 +257,12 @@ class MATRIX
 
     MATRIX &operator=( const MATRIX &src )
     {
-      BGN
-
       #ifdef TSTBUG
-        if( m_numRows != src.m_numRows || m_numCols != src.m_numCols )
-          THROW_ERR( "Bad assignment -- "
-                     << m_numRows << "x" << m_numCols << " matrix = "
-                     << src.m_numRows << "x" << src.m_numCols
-                     << " matrix" )
+        assert( m_numRows == src.m_numRows && m_numCols == src.m_numCols );
+          //THROW_ERR( "Bad assignment -- "
+                     //<< m_numRows << "x" << m_numCols << " matrix = "
+                     //<< src.m_numRows << "x" << src.m_numCols
+                     //<< " matrix" )
       #endif
 
       memcpy( m_data, src.m_data, m_size * sizeof( *m_data ) );
@@ -278,14 +273,12 @@ class MATRIX
 
     double &operator()( int row = 0, int col = 0 ) const
     {
-      BGN
-
       #ifdef TSTBUG
-        if( 0 > row || row >= m_numRows ||
-            0 > col || col >= m_numCols )
-          THROW_ERR( "Matrix index <" << row << "," << col << ">"
-                     << " out of bounds in "
-                     << m_numRows << "x" << m_numCols << " matrix" )
+        assert( 0 <= row && row < m_numRows &&
+            0 <= col && col < m_numCols );
+          //THROW_ERR( "Matrix index out of bounds. -- <" << row << "," << col << ">"
+                     //<< " out of bounds in "
+                     //<< m_numRows << "x" << m_numCols << " matrix" )
       #endif
 
       return m_data[ row * m_numCols + col ];
@@ -338,13 +331,11 @@ class tmpMATRIX: public MATRIX
 
     double *stealData() const /* not really const */
     {
-      BGN
-
       double *data;
 
       #ifdef TSTBUG
-        if( m_data == 0 )
-          THROW_ERR( "Trying to steal nonexistant tmpMATRIX data" )
+        assert( m_data != 0 );
+        //  THROW_ERR( "Trying to steal nonexistant tmpMATRIX data" )
       #endif
 
       data = m_data;
@@ -357,14 +348,12 @@ class tmpMATRIX: public MATRIX
 
     double &operator()( int row = 0, int col = 0 ) const
     {
-      BGN
-
       #ifdef TSTBUG
-        if( 0 > row || row >= m_numRows ||
-            0 > col || col >= m_numCols )
-          THROW_ERR( "Matrix index <" << row << "," << col << ">"
-                     << " out of bounds in "
-                     << m_numRows << "x" << m_numCols << " matrix" )
+        assert( 0 <= row && row < m_numRows &&
+            0 <= col && col < m_numCols );
+          //THROW_ERR( "Matrix index out of bounds -- <" // << row << "," << col << ">"
+                     //<< " out of bounds in "
+                     //<< m_numRows << "x" << m_numCols << " matrix" )
       #endif
 
       return m_data[ row * m_numCols + col ];
@@ -414,14 +403,12 @@ inline MATRIX::MATRIX( const tmpMATRIX &src ):
 
 inline MATRIX &MATRIX::operator=( const tmpMATRIX &src )
 {
-  BGN
-
   #ifdef TSTBUG
-    if( m_numRows != src.m_numRows || m_numCols != src.m_numCols )
-      THROW_ERR( "Bad assignment -- "
-                 << m_numRows << "x" << m_numCols << " matrix = "
-                 << src.m_numRows << "x" << src.m_numCols
-                 << " matrix" )
+    assert( m_numRows == src.m_numRows && m_numCols == src.m_numCols );
+      //THROW_ERR( "Bad assignment -- "
+                 //<< m_numRows << "x" << m_numCols << " matrix = "
+                 //<< src.m_numRows << "x" << src.m_numCols
+                 //<< " matrix" )
   #endif
 
   delete [] m_data;
@@ -437,8 +424,6 @@ inline MATRIX &MATRIX::operator=( const tmpMATRIX &src )
 inline tmpMATRIX operator+( const MATRIX &m0,
                             const MATRIX &m1 )
 {
-  BGN
-
   tmpMATRIX tmp( m0 );
   tmp.add( m1 );
   return tmp;
@@ -447,8 +432,6 @@ inline tmpMATRIX operator+( const MATRIX &m0,
 inline tmpMATRIX operator+( const MATRIX &m0,
                             const tmpMATRIX &m1 )
 {
-  BGN
-
   tmpMATRIX tmp( m1 );
   tmp.add( m0 );
   return tmp;
@@ -461,8 +444,6 @@ inline tmpMATRIX operator+( const MATRIX &m0,
 inline tmpMATRIX operator-( const MATRIX &m0,
                             const MATRIX &m1 )
 {
-  BGN
-
   tmpMATRIX tmp( m0 );
   tmp.subtract( m1 );
   return tmp;
@@ -471,8 +452,6 @@ inline tmpMATRIX operator-( const MATRIX &m0,
 inline tmpMATRIX operator-( const MATRIX &m0,
                             const tmpMATRIX &m1 )
 {
-  BGN
-
   tmpMATRIX tmp( m1 );
   tmp.subtractFrom( m0 );
   return tmp;
@@ -485,8 +464,6 @@ inline tmpMATRIX operator-( const MATRIX &m0,
 inline tmpMATRIX operator*( const MATRIX &m0,
                             const MATRIX &m1 )
 {
-  BGN
-
   tmpMATRIX tmp( m0, m1 );
   return tmp;
 }
@@ -494,8 +471,6 @@ inline tmpMATRIX operator*( const MATRIX &m0,
 inline tmpMATRIX operator*( const MATRIX &m,
                             double num )
 {
-  BGN
-
   tmpMATRIX tmp( m );
   tmp.multiply( num );
   return tmp;

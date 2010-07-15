@@ -160,6 +160,7 @@
 #include "except.h"
 #include "list.h"
 #include "assign.h"
+#include <assert.h>
 
 /*-------------------------------------------------------------------*
  | Declarations of stuff found in this file.
@@ -242,8 +243,7 @@ class apqSOLUTION: public DLISTnode
 
     ~apqSOLUTION()
     {
-      BGN
-
+      
       delete [] m_solutionTag;
       delete [] m_baseSolutionTag;
       delete [] m_rcc;
@@ -298,7 +298,6 @@ class ASSIGNMENT_PQUEUE
 
     void removeAllProblems()
     {
-      BGN
 
       m_solutionList.removeAll();
     }
@@ -312,13 +311,13 @@ class ASSIGNMENT_PQUEUE
 
     double getNextSolutionCost()
     {
-      BGN
 
       findBestSolution();
 
       #ifdef TSTBUG
-        if( m_bestSolution == 0 )
-          THROW_ERR( "Assignment priority queue is empty" );
+        // NOTE: Assertion boolean was negated from original for the if-statement
+        assert( m_bestSolution != 0 );
+        //  THROW_ERR("Assignment priority queue is empty")
       #endif
 
       return m_bestSolution->getCost();

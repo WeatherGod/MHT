@@ -446,14 +446,18 @@
 #ifndef MHT_H
 #define MHT_H
 
-#include <math.h>
+#include <cmath>
+#include <string.h>		// for strncopy()
+#include <iostream>		// for std::cout, std::endl
+#include <assert.h>
 
 #include "except.h"
 #include "list.h"
 #include "tree.h"
 #include "links.h"
 #include "vector.h"
-#include "mem.h"
+//#include "mem.h"
+
 
 #ifdef DECLARE_MHT
   #define GLOBAL
@@ -598,8 +602,6 @@ class T_HYPO: public TREEnode
       m_endsTrack( 0 ),
       m_mustVerify( 0 )
     {
-      BGN
-
       MAKE_LINK( this, m_reportLink,
                  report, m_tHypoLinks );
     }
@@ -610,8 +612,6 @@ class T_HYPO: public TREEnode
 
     void installChild( T_HYPO *child )
     {
-      BGN
-
       PTR_INTO_iTREE_OF< T_HYPO > p = this;
 
       p.insertFirstChild( child );
@@ -625,8 +625,8 @@ class T_HYPO: public TREEnode
     double getLogLikelihood()
     {
       #ifdef TSTBUG
-        if( m_logLikelihood == DOUBLE_NOT_READY )
-          THROW_ERR( "THypo wasn't given a logLikelihood" );
+        assert( m_logLikelihood != DOUBLE_NOT_READY );
+      //    THROW_ERR( "THypo wasn't given a logLikelihood" );
       #endif
 
       return m_logLikelihood;
@@ -641,7 +641,7 @@ class T_HYPO: public TREEnode
     REPORT *getReport() { return m_reportLink.getHead(); }
 
     virtual void verify()
-      { THROW_ERR( "Call to T_HYPO::verify()" ) }
+      { assert(false);}//THROW_ERR( "Call to T_HYPO::verify()" ) }
 
   private:
 
@@ -724,8 +724,6 @@ class G_HYPO: public DLISTnode
 
     void addTHypo( T_HYPO *tHypo )
     {
-      BGN
-
       m_logLikelihood += tHypo->getLogLikelihood();
 
       MAKE_LINK( this, m_tHypoLinks,
@@ -905,8 +903,6 @@ class MHT
 
     void installTree( T_HYPO *rootNode, int timeOffset = 0 )
     {
-      BGN
-
       T_TREE *tree = new T_TREE( rootNode,
                                  m_lastTrackIdUsed++,
                                  m_currentTime + timeOffset );
@@ -920,7 +916,7 @@ class MHT
   protected:
 
     virtual void measureAndValidate()
-      { THROW_ERR( "Call to MHT::measureAndValidate()" ) }
+      { assert(false);}//THROW_ERR( "Call to MHT::measureAndValidate()" ) }
 
   public:
 
@@ -979,9 +975,9 @@ class MHT
 inline int T_HYPO::getTrackStamp()
 {
   #ifdef TSTBUG
-    if( m_tree == 0 )
-      THROW_ERR( "Trying to get track stamp from "
-                 "uninitialized tHypo" )
+    assert( m_tree != 0 );
+    //  THROW_ERR( "Trying to get track stamp from "
+    //             "uninitialized tHypo" )
   #endif
 
   return m_tree->getId();
@@ -990,9 +986,9 @@ inline int T_HYPO::getTrackStamp()
 inline int T_HYPO::getGroupId()
 {
   #ifdef TSTBUG
-    if( m_tree == 0 )
-      THROW_ERR( "Trying to get group id from "
-                 "uninitialized tHypo" )
+    assert( m_tree != 0 );
+    //  THROW_ERR( "Trying to get group id from "
+    //             "uninitialized tHypo" )
   #endif
 
   return m_tree->getGroupId();

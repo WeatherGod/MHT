@@ -40,6 +40,8 @@
  *********************************************************************/
 
 #include <math.h>
+#include <string.h>		// for memcpy(), memmove() 
+#include <iostream>
 
 #include "apqueue.h"
 /*DBG BEGIN */
@@ -127,7 +129,6 @@ void apqSOLUTION::setup( void **baseSolutionTag,
                          ROW_COL_COST *rcc,
                          double parentCost )
 {
-  BGN
 
 #ifdef NEVER
   static VECTOR_OF< double > lowestCostForRow;
@@ -221,8 +222,6 @@ void apqSOLUTION::setup( void **baseSolutionTag,
 
 void apqSOLUTION::solve( void )
 {
-  BGN
-
   static VECTOR_OF< void * > solutionTag;
   int solutionSize;
   int i;
@@ -273,8 +272,6 @@ void apqSOLUTION::solve( void )
 
 void apqSOLUTION::partition()
 {
-  BGN
-
   void *doomedRCCtag;
   ROW_COL_COST doomedRCC;
   char rowIsNotEmpty;
@@ -306,8 +303,8 @@ void apqSOLUTION::partition()
         break;
 /*
     #ifdef TSTBUG */
-      if( i >= m_numRCCs )
-        THROW_ERR( "ASSIGNMENT_PQUEUE looking for non-existant tag" )
+      assert( i < m_numRCCs );
+      //  THROW_ERR( "ASSIGNMENT_PQUEUE looking for non-existant tag" )
 /*    #endif*/
 
 #ifdef SDBG
@@ -419,8 +416,6 @@ void apqSOLUTION::partition()
 void apqSOLUTION::
 getSolutionTags( VECTOR_OF< void * > &solutionTag, int *solutionSize )
 {
-  BGN
-
   int i;
 
   solutionTag.resize( m_solutionSize );
@@ -436,25 +431,23 @@ getSolutionTags( VECTOR_OF< void * > &solutionTag, int *solutionSize )
 
 void apqSOLUTION::print()
 {
-  BGN
-
   int i, j;
   ROW_COL_COST *rcc;
 
   if( m_cost == UNSOLVABLE )
-    cout << "#";
+    std::cout << "#";
   else
-    cout << m_cost;
+    std::cout << m_cost;
 
   for( i = 0; i < m_solutionSize; i++ )
   {
     rcc = (ROW_COL_COST *)m_solutionTag[ i ];
     if( i < m_baseSolutionSize )
-      cout << " [" << rcc->row << ","
+      std::cout << " [" << rcc->row << ","
                    << rcc->col << ","
                    << rcc->cost << "]";
     else
-      cout << " (" << rcc->row << ","
+      std::cout << " (" << rcc->row << ","
                    << rcc->col << ","
                    << rcc->cost << ")";
   }
@@ -465,7 +458,7 @@ void apqSOLUTION::print()
       if( m_solutionTag[ j ] == m_rcc[ i ].tag )
         break;
     if( j >= m_solutionSize )
-      cout << "  " << m_rcc[ i ].row << ","
+      std::cout << "  " << m_rcc[ i ].row << ","
                    << m_rcc[ i ].col << ","
                    << m_rcc[ i ].cost << " ";
   }
@@ -482,8 +475,6 @@ void ASSIGNMENT_PQUEUE::addProblem( void *problemTag,
                                     int numRows,
                                     int numCols )
 {
-  BGN
-
   apqSOLUTION *solution = new apqSOLUTION( problemTag,
                                            rcc,
                                            numRCCs,
@@ -502,8 +493,6 @@ void ASSIGNMENT_PQUEUE::addProblem( void *problemTag,
 
 void ASSIGNMENT_PQUEUE::removeProblem( void *problemTag )
 {
-  BGN
-
   PTR_INTO_iDLIST_OF< apqSOLUTION > ptr;
 
   LOOP_DLIST( ptr, m_solutionList )
@@ -519,8 +508,6 @@ void ASSIGNMENT_PQUEUE::removeProblem( void *problemTag )
 void *ASSIGNMENT_PQUEUE::
 getNextSolution( VECTOR_OF< void * > &solutionTag, int *solutionSize )
 {
-  BGN
-
   void *problemTag;
 
   findBestSolution();
@@ -545,8 +532,6 @@ getNextSolution( VECTOR_OF< void * > &solutionTag, int *solutionSize )
 
 void ASSIGNMENT_PQUEUE::findBestSolution()
 {
-  BGN
-
   PTR_INTO_iDLIST_OF< apqSOLUTION > ptr;
   double estimatedCost;
 
@@ -576,14 +561,13 @@ void ASSIGNMENT_PQUEUE::findBestSolution()
     {
       estimatedCost = m_bestSolution->getCost();
       m_bestSolution->solve();
-
 /*
       #ifdef TSTBUG
 */
-        if( m_bestSolution->getCost()- estimatedCost<-0.001 )
-          THROW_ERR( "Estimated cost (" << estimatedCost << ")"
-                     " higher than actual (" <<
-                     m_bestSolution->getCost() << ")" );
+        assert( m_bestSolution->getCost()- estimatedCost >= -0.001 );
+        //  THROW_ERR( "Estimated cost (" << estimatedCost << ")"
+        //             " higher than actual (" <<
+        //             m_bestSolution->getCost() << ")" );
 /*
       #endif
 */

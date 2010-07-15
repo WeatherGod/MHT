@@ -47,61 +47,60 @@
 
 void T_HYPO::describe( int spaces, int depth )
 {
-  BGN
 
   PTR_INTO_LINKS_TO< G_HYPO > gHypoPtr;
   int i, k;
 
   Indent( spaces - 1);
   for( i = 0; i < depth; i++ )
-    cout << " |";
-  cout << " **T_HYPO "; print(); cout << endl;
+    std::cout << " |";
+  std::cout << " **T_HYPO "; print(); std::cout << std::endl;
 
   Indent( spaces - 1 );
   for( i = 0; i <= depth; i++ )
-    cout << " |";
-  cout << "   track = " << getTrackStamp();
-  cout << ", time = " << m_timeStamp;
-  cout << ", group id = " << getGroupId();
-  cout << endl;
+    std::cout << " |";
+  std::cout << "   track = " << getTrackStamp();
+  std::cout << ", time = " << m_timeStamp;
+  std::cout << ", group id = " << getGroupId();
+  std::cout << std::endl;
 
   Indent( spaces - 1 );
   for( i = 0; i <= depth; i++ )
-    cout << " |";
+    std::cout << " |";
   if( m_reportLink.isEmpty() )
-    cout << "   NO REPORT";
+    std::cout << "   NO REPORT";
   else
   {
-    cout << "   report = "; (*m_reportLink).print();
+    std::cout << "   report = "; (*m_reportLink).print();
   }
-  cout << ", logLikelihood = " << m_logLikelihood;
+  std::cout << ", logLikelihood = " << m_logLikelihood;
   if( ! m_mustVerify )
-    cout << ", NEED NOT VERIFY";
+    std::cout << ", NEED NOT VERIFY";
   if( m_endsTrack )
-    cout << ", ENDS TRACK";
-  cout << endl;
+    std::cout << ", ENDS TRACK";
+  std::cout << std::endl;
 
   Indent( spaces - 1 );
   for( i = 0; i <= depth; i++ )
-    cout << " |";
-  cout << "   gHypo's:";
+    std::cout << " |";
+  std::cout << "   gHypo's:";
   k = 0;
 
   LOOP_LINKS( gHypoPtr, m_gHypoLinks )
   {
     if( k++ >= 3 )
     {
-      cout << endl;
+      std::cout << std::endl;
       Indent( spaces - 1 );
       for( i = 0; i <= depth; i++ )
-        cout << " |";
-      cout << "           ";
+        std::cout << " |";
+      std::cout << "           ";
       k = 0;
     }
 
-    cout << " "; (*gHypoPtr).print();
+    std::cout << " "; (*gHypoPtr).print();
   }
-  cout << endl;
+  std::cout << std::endl;
 }
 
 /*-------------------------------------------------------------------*
@@ -110,7 +109,6 @@ void T_HYPO::describe( int spaces, int depth )
 
 void T_HYPO::describeTree( int spaces, int depth )
 {
-  BGN
 
   PTR_INTO_iTREE_OF< T_HYPO > childPtr;
 

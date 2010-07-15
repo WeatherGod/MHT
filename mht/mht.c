@@ -52,7 +52,7 @@
 
 int MHT::scan()
 {
-  BGN
+  
 
   Timer timer;
 
@@ -109,7 +109,7 @@ int MHT::scan()
 
 void MHT::importNewReports()
 {
-  BGN
+  
 
   PTR_INTO_iDLIST_OF< REPORT > reportPtr;
   int rowNum;
@@ -129,7 +129,7 @@ void MHT::importNewReports()
 
 void MHT::makeNewGroups()
 {
-  BGN
+  
 
   for( ; m_nextNewTTree.isValid(); ++m_nextNewTTree )
   {
@@ -172,7 +172,7 @@ void MHT::makeNewGroups()
 
 void MHT::findGroupLabels()
 {
-  BGN
+  
 
   PTR_INTO_iDLIST_OF< T_TREE > tTreePtr;
   PTR_INTO_iDLIST_OF< REPORT > reportPtr;
@@ -197,8 +197,8 @@ void MHT::findGroupLabels()
   }
 
   #ifdef TSTBUG
-    if( ! m_newReportList.isEmpty() )
-      THROW_ERR( "m_newReportList must be empty in findGroupLabels()" )
+    assert( m_newReportList.isEmpty() );
+    //  THROW_ERR( "m_newReportList must be empty in findGroupLabels()" )
   #endif
 
   #ifdef DEBUG
@@ -217,7 +217,7 @@ void MHT::findGroupLabels()
 
 void MHT::splitGroups()
 {
-  BGN
+  
 
   PTR_INTO_iDLIST_OF< GROUP > groupPtr;
 
@@ -240,7 +240,7 @@ void MHT::splitGroups()
 
 void MHT::mergeGroups()
 {
-  BGN
+  
 
   PTR_INTO_iDLIST_OF< GROUP > groupPtr0;
   PTR_INTO_iDLIST_OF< GROUP > groupPtr1;
@@ -270,7 +270,7 @@ void MHT::mergeGroups()
 
 void MHT::pruneAndHypothesize()
 {
-  BGN
+  
 
   PTR_INTO_iDLIST_OF< GROUP > groupPtr;
 
@@ -284,7 +284,7 @@ void MHT::pruneAndHypothesize()
 
 void MHT::clear()
 {
-  BGN
+  
 
   PTR_INTO_iDLIST_OF< GROUP > groupPtr;
   for (int i=m_maxDepth; i>=0; i--) 
@@ -309,7 +309,7 @@ void MHT::clear()
 
 void MHT::removeUnusedTHypos()
 {
-  BGN
+  
 
   PTR_INTO_iDLIST_OF< T_TREE > tTreePtr;
   PTR_INTO_iTREE_OF< T_HYPO > tHypoPtr;
@@ -331,7 +331,7 @@ void MHT::removeUnusedTHypos()
 
 void MHT::verifyTTreeRoots()
 {
-  BGN
+  
 
   PTR_INTO_iDLIST_OF< T_TREE > tTreePtr;
   iTREE_OF< T_HYPO > *tTree;
@@ -361,7 +361,7 @@ void MHT::verifyTTreeRoots()
 
 void MHT::verifyLastTTreeRoots()
 {
-  BGN
+  
 
   PTR_INTO_iDLIST_OF< T_TREE > tTreePtr;
   iTREE_OF< T_HYPO > *tTree;
@@ -401,7 +401,7 @@ void MHT::verifyLastTTreeRoots()
 
 void MHT::removeUnusedTTrees()
 {
-  BGN
+  
 
   PTR_INTO_iDLIST_OF< T_TREE > tTreePtr;
   iTREE_OF< T_HYPO > *tTree;
@@ -437,7 +437,7 @@ void MHT::removeUnusedTTrees()
 
 void MHT::removeUnusedReports()
 {
-  BGN
+  
 
   PTR_INTO_iDLIST_OF< REPORT > reportPtr;
 
@@ -453,7 +453,7 @@ void MHT::removeUnusedReports()
 
 void MHT::removeUnusedGroups()
 {
-  BGN
+  
 
   PTR_INTO_iDLIST_OF< GROUP > groupPtr;
 
@@ -469,7 +469,7 @@ void MHT::removeUnusedGroups()
 
 void MHT::updateActiveTHypoList()
 {
-  BGN
+  
 
   PTR_INTO_iDLIST_OF< T_TREE > tTreePtr;
   PTR_INTO_iTREE_OF< T_HYPO > tHypoPtr;
@@ -490,7 +490,7 @@ void MHT::updateActiveTHypoList()
 
 void MHT::checkGroups()
 {
-  BGN
+  
 
   PTR_INTO_iDLIST_OF< GROUP > groupPtr0;
   PTR_INTO_iDLIST_OF< GROUP > groupPtr1;
@@ -506,8 +506,8 @@ void MHT::checkGroups()
     groupId = (*groupPtr0).getGroupId();
 
     for( (groupPtr1 = groupPtr0),++groupPtr1; groupPtr1.isValid(); ++groupPtr1)
-      if( (*groupPtr1).getGroupId() == groupId )
-        THROW_ERR( "Two groups with same id" )
+      assert( (*groupPtr1).getGroupId() != groupId );
+      //  THROW_ERR( "Two groups with same id" )
   }
 }
 
@@ -517,7 +517,7 @@ void MHT::checkGroups()
 
 void MHT::describe( int spaces )
 {
-  BGN
+  
 
   PTR_INTO_ptrDLIST_OF< T_HYPO > tHypoPtr;
   PTR_INTO_iDLIST_OF< GROUP > groupPtr;
@@ -525,63 +525,63 @@ void MHT::describe( int spaces )
   PTR_INTO_iDLIST_OF< T_TREE > tTreePtr;
   int k;
 
-  Indent( spaces ); cout << "MHT "; print(); cout << endl;
+  Indent( spaces ); std::cout << "MHT "; print(); std::cout << std::endl;
   spaces += 2;
 
   Indent( spaces );
-  cout << "lastTrackUsed = " << m_lastTrackIdUsed;
-  cout << ", time = " << m_currentTime;
-  cout << endl;
+  std::cout << "lastTrackUsed = " << m_lastTrackIdUsed;
+  std::cout << ", time = " << m_currentTime;
+  std::cout << std::endl;
 
   Indent( spaces );
-  cout << "maxDepth = " << m_maxDepth;
-  cout << ", logMinRatio = " << m_logMinGHypoRatio;
-  cout << ", maxGHypos = " << m_maxGHypos;
-  cout << endl;
+  std::cout << "maxDepth = " << m_maxDepth;
+  std::cout << ", logMinRatio = " << m_logMinGHypoRatio;
+  std::cout << ", maxGHypos = " << m_maxGHypos;
+  std::cout << std::endl;
 
-  Indent( spaces ); cout << "active tHypo's:";
+  Indent( spaces ); std::cout << "active tHypo's:";
   k = 0;
 
   LOOP_DLIST( tHypoPtr, m_activeTHypoList )
   {
     if( k++ >= 3 )
     {
-      cout << endl;
-      Indent( spaces ); cout << "               ";
+      std::cout << std::endl;
+      Indent( spaces ); std::cout << "               ";
       k = 0;
     }
 
-    cout << " "; (*tHypoPtr).print();
+    std::cout << " "; (*tHypoPtr).print();
   }
-  cout << endl;
+  std::cout << std::endl;
 
-  Indent( spaces ); cout << "===== clusters"; cout << endl;
+  Indent( spaces ); std::cout << "===== clusters"; std::cout << std::endl;
   LOOP_DLIST( groupPtr, m_groupList )
   {
     (*groupPtr).describe( spaces + 2 );
   }
 
-  Indent( spaces ); cout << "===== oldReports"; cout << endl;
+  Indent( spaces ); std::cout << "===== oldReports"; std::cout << std::endl;
   LOOP_DLIST( reportPtr, m_oldReportList )
   {
     (*reportPtr).describe( spaces + 2 );
   }
 
-  Indent( spaces ); cout << "===== newReports"; cout << endl;
+  Indent( spaces ); std::cout << "===== newReports"; std::cout << std::endl;
   LOOP_DLIST( reportPtr, m_newReportList )
   {
     (*reportPtr).describe( spaces + 2 );
   }
 
-  Indent( spaces ); cout << "===== oldTrees"; cout << endl;
+  Indent( spaces ); std::cout << "===== oldTrees"; std::cout << std::endl;
   LOOP_DLIST( tTreePtr, m_tTreeList )
   {
     if( tTreePtr == m_nextNewTTree )
     {
-      Indent( spaces ); cout << "===== newTrees"; cout << endl;
+      Indent( spaces ); std::cout << "===== newTrees"; std::cout << std::endl;
     }
 
-    cout << endl;
+    std::cout << std::endl;
     (**(*tTreePtr).getTree()).describeTree( spaces + 2 );
   }
 }
@@ -593,7 +593,7 @@ void MHT::describe( int spaces )
 
 void MHT::printStats( int spaces )
 {
-  BGN
+  
 
   int totalTTrees = m_tTreeList.getLength();
   int totalTHypos = m_activeTHypoList.getLength();
@@ -614,20 +614,20 @@ void MHT::printStats( int spaces )
       maxGHypos = numGHypos;
   }
 
-  Indent( spaces ); cout << "track trees ---------------- "
-                         << totalTTrees << endl;
-  Indent( spaces ); cout << "  track hypos:          "
-                         << totalTHypos << endl;
-  Indent( spaces ); cout << "  hypos per tree:       "
-                         << (double)totalTHypos / totalTTrees << endl;
-  Indent( spaces ); cout << "groups --------------------- "
-                         << totalGroups << endl;
-  Indent( spaces ); cout << "  group hypos:          "
-                         << totalGHypos << endl;
-  Indent( spaces ); cout << "  hypos per group:      "
-                         << (double)totalGHypos / totalGroups << endl;
-  Indent( spaces ); cout << "  max hypos in a group: "
-                         << maxGHypos << endl;
+  Indent( spaces ); std::cout << "track trees ---------------- "
+                         << totalTTrees << std::endl;
+  Indent( spaces ); std::cout << "  track hypos:          "
+                         << totalTHypos << std::endl;
+  Indent( spaces ); std::cout << "  hypos per tree:       "
+                         << (double)totalTHypos / totalTTrees << std::endl;
+  Indent( spaces ); std::cout << "groups --------------------- "
+                         << totalGroups << std::endl;
+  Indent( spaces ); std::cout << "  group hypos:          "
+                         << totalGHypos << std::endl;
+  Indent( spaces ); std::cout << "  hypos per group:      "
+                         << (double)totalGHypos / totalGroups << std::endl;
+  Indent( spaces ); std::cout << "  max hypos in a group: "
+                         << maxGHypos << std::endl;
 }
 
 /*-------------------------------------------------------------------*
@@ -636,43 +636,43 @@ void MHT::printStats( int spaces )
 
 void MHT::doDbgA()
 {
-  BGN
+  
 
-  cout << endl;
-  cout << "  ************************** MHT after measureAndValidate()"
-       << endl;
+  std::cout << std::endl;
+  std::cout << "  ************************** MHT after measureAndValidate()"
+       << std::endl;
 
   describe( 4 );
 
-  cout << "  HIT RETURN..." << endl;
+  std::cout << "  HIT RETURN..." << std::endl;
   getchar();
 }
 
 void MHT::doDbgB()
 {
-  BGN
+  
 
-  cout << endl;
-  cout << "  ******************************* MHT after group formation"
-       << endl;
+  std::cout << std::endl;
+  std::cout << "  ******************************* MHT after group formation"
+       << std::endl;
 
   describe( 4 );
 
-  cout << "  HIT RETURN..." << endl;
+  std::cout << "  HIT RETURN..." << std::endl;
   getchar();
 }
 
 void MHT::doDbgC()
 {
-  BGN
+  
 
-  cout << endl;
-  cout << "  *************************************** MHT after pruning"
-       << endl;
+  std::cout << std::endl;
+  std::cout << "  *************************************** MHT after pruning"
+       << std::endl;
 
   describe( 4 );
 
-  cout << "  HIT RETURN..." << endl;
+  std::cout << "  HIT RETURN..." << std::endl;
   getchar();
 }
 

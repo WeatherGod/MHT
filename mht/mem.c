@@ -50,9 +50,9 @@
 
 #define DECLARE_MEM
 
-#include <stdlib.h>
-#include <malloc.h>
-#include <new.h>
+#include <cstdlib>
+#include <malloc.h>		// for malloc()
+#include <new>			// for std::set_new_handler()
 
 #include "mem.h"
 
@@ -161,12 +161,12 @@ static inline HANDLER_FOR_NEW getHandlerForNew();
 
 void *operator new( size_t size )
 {
-  CANT_RECUR
-  BGN
+  //CANT_RECUR
+  
 
   #ifdef TSTBUG
-    if( size <= 0 )
-      THROW_ERR( "Illegal size given to new() -- " << size )
+    assert( size > 0 );
+  //    THROW_ERR( "Illegal size given to new() -- " << size )
   #endif
 
   void *mem;
@@ -189,8 +189,8 @@ void *operator new( size_t size )
 
 void operator delete( void *mem )
 {
-  CANT_RECUR
-  BGN
+  //CANT_RECUR
+  
 
   if( mem != 0 )
   {
@@ -211,7 +211,7 @@ void operator delete( void *mem )
 
 void CollectGarbage()
 {
-  BGN
+  
 
   chunkCleanup();
 }
@@ -234,26 +234,26 @@ void CollectGarbage()
       return;
     isBusy = 1;
 
-    if( poolArray[ 0 ] != 0 )
-      THROW_ERR( "Pool for zero size chunks exists" )
+    assert( poolArray[ 0 ] == 0 );
+    //  THROW_ERR( "Pool for zero size chunks exists" )
 
     for( i = 1; i < NUM_POOLS; i++ )
       for( mem = poolArray[ i ]; mem != 0; mem = nextMem )
       {
         nextMem = chunkHeaderFor( mem ).link.next;
 
-        if( chunkHeaderFor( mem ).magicNumber != HEADER_FREE ||
-            chunkFooterFor( mem ).magicNumber != FOOTER_FREE )
-          THROW_ERR( "Corrupted heap at " << mem )
+        assert( chunkHeaderFor( mem ).magicNumber == HEADER_FREE &&
+            chunkFooterFor( mem ).magicNumber == FOOTER_FREE );
+        //  THROW_ERR( "Corrupted heap at " << mem )
       }
 
     for( mem = g_allocedList.nextAlloced; mem != 0; mem = nextMem )
     {
       nextMem = chunkHeaderFor( mem ).nextAlloced;
 
-      if( chunkHeaderFor( mem ).magicNumber != HEADER_ALLOCED ||
-          chunkFooterFor( mem ).magicNumber != FOOTER_ALLOCED )
-        THROW_ERR( "Corrupted heap at " << mem )
+      assert( chunkHeaderFor( mem ).magicNumber == HEADER_ALLOCED &&
+          chunkFooterFor( mem ).magicNumber == FOOTER_ALLOCED );
+      //  THROW_ERR( "Corrupted heap at " << mem )
     }
 
     isBusy = 0;
@@ -275,10 +275,10 @@ void CollectGarbage()
       head = chunkHeaderFor( mem ).magicNumber;
       foot = chunkFooterFor( mem ).magicNumber;
 
-      if( (head != HEADER_ALLOCED && head != HEADER_FREE) ||
-          (head == HEADER_ALLOCED && foot != FOOTER_ALLOCED) ||
-          (head == HEADER_FREE && foot != FOOTER_FREE) )
-        THROW_ERR( "Corrupted heap at " << mem );
+      assert( (head == HEADER_ALLOCED || head == HEADER_FREE) &&
+          (head != HEADER_ALLOCED || foot == FOOTER_ALLOCED) &&
+          (head != HEADER_FREE || foot == FOOTER_FREE) );
+      //  THROW_ERR( "Corrupted heap at " << mem );
     }
 
     isBusy = 0;
@@ -293,7 +293,7 @@ void CollectGarbage()
 
 static inline int isSimpleMem( void *mem )
 {
-  BGN
+  
 
   return chunkHeaderFor( mem ).link.pool == 0;
 }
@@ -304,7 +304,7 @@ static inline int isSimpleMem( void *mem )
 
 static inline void *simpleAlloc( size_t originalSize )
 {
-  BGN
+  
   size_t size;
   void *mem;
 
@@ -339,18 +339,19 @@ static inline void *simpleAlloc( size_t originalSize )
 
 static inline void simpleDealloc( void *mem )
 {
-  BGN
+  
 
   #ifdef DEBUG
     if( chunkHeaderFor( mem ).magicNumber != HEADER_ALLOCED ||
         chunkFooterFor( mem ).magicNumber != FOOTER_ALLOCED )
     {
-      if( chunkHeaderFor( mem ).magicNumber == HEADER_FREE &&
-          chunkFooterFor( mem ).magicNumber == FOOTER_FREE )
-        THROW_ERR( "Memory deallocated twice -- " << mem )
+      assert( chunkHeaderFor( mem ).magicNumber != HEADER_FREE ||
+          chunkFooterFor( mem ).magicNumber != FOOTER_FREE );
+      //  THROW_ERR( "Memory deallocated twice -- " << mem )
 
-      THROW_ERR( "Corrupted heap or deallocating bad address at "
-                 << mem )
+      assert(false);
+      //THROW_ERR( "Corrupted heap or deallocating bad address at "
+      //           << mem )
     }
 
     chunkHeaderFor( mem ).magicNumber = HEADER_FREE;
@@ -367,7 +368,7 @@ static inline void simpleDealloc( void *mem )
 
 static inline void *chunkAlloc( size_t size )
 {
-  BGN
+  
 
   int poolNum;
   register void *mem;
@@ -382,9 +383,9 @@ static inline void *chunkAlloc( size_t size )
     mem = chunkGroupAlloc( poolNum );
 
   #ifdef DEBUG
-    if( chunkHeaderFor( mem ).magicNumber != HEADER_FREE ||
-        chunkFooterFor( mem ).magicNumber != FOOTER_FREE )
-      THROW_ERR( "Corrupted heap at " << mem );
+    assert( chunkHeaderFor( mem ).magicNumber == HEADER_FREE &&
+        chunkFooterFor( mem ).magicNumber == FOOTER_FREE );
+    //  THROW_ERR( "Corrupted heap at " << mem );
   #endif
 
   *pool = chunkHeaderFor( mem ).link.next;
@@ -407,18 +408,19 @@ static inline void *chunkAlloc( size_t size )
 
 static inline void chunkDealloc( void *mem )
 {
-  BGN
+  
 
   #ifdef DEBUG
     if( chunkHeaderFor( mem ).magicNumber != HEADER_ALLOCED ||
         chunkFooterFor( mem ).magicNumber != FOOTER_ALLOCED )
     {
-      if( chunkHeaderFor( mem ).magicNumber == HEADER_FREE &&
-          chunkFooterFor( mem ).magicNumber == FOOTER_FREE )
-        THROW_ERR( "Memory deallocated twice" )
+      assert( chunkHeaderFor( mem ).magicNumber != HEADER_FREE ||
+          chunkFooterFor( mem ).magicNumber != FOOTER_FREE );
+      //  THROW_ERR( "Memory deallocated twice" )
 
-      THROW_ERR( "Corrupted heap or deallocating bad address at "
-                 << mem )
+      assert(false);
+      //THROW_ERR( "Corrupted heap or deallocating bad address at "
+      //           << mem )
     }
   #endif
 
@@ -442,7 +444,7 @@ static inline void chunkDealloc( void *mem )
 
 static void *chunkGroupAlloc( int poolNum )
 {
-  BGN
+  
 
   size_t originalSize;
   size_t chunkSize;
@@ -510,7 +512,7 @@ static void *chunkGroupAlloc( int poolNum )
 
 static void chunkCleanup()
 {
-  BGN
+  
 
   GROUP_HEADER *prevGroup;
   GROUP_HEADER *group;
@@ -609,7 +611,7 @@ static void chunkCleanup()
 
 static inline CHUNK_HEADER &chunkHeaderFor( void *mem )
 {
-  BGN
+  
 
   return ((CHUNK_HEADER *)mem)[ -1 ];
 }
@@ -680,7 +682,7 @@ static inline CHUNK_HEADER &chunkHeaderFor( void *mem )
 
 static inline int isEmergencyMem( void *mem )
 {
-  BGN
+  
 
   return (mem >= (void *)emergencyBuf &&
           mem < (void *)(emergencyBuf + EMERGENCY_BUF_LONGS));
@@ -692,7 +694,7 @@ static inline int isEmergencyMem( void *mem )
 
 static void *emergencyAlloc( size_t size )
 {
-  BGN
+  
 
   long i, j;
 
@@ -705,7 +707,8 @@ static void *emergencyAlloc( size_t size )
   if( i > EMERGENCY_BUF_LONGS || emergencyBuf[ i ] == 0 )
   {
     fprintf( stderr, "\nEmergency buffer is corrupted\n" );
-    DumpCore();
+    //DumpCore();
+    assert(false);
   }
 
   for( i = 0; i < EMERGENCY_BUF_LONGS; i += labs( emergencyBuf[ i ] ) )
@@ -727,7 +730,8 @@ static void *emergencyAlloc( size_t size )
     fprintf( stderr, "\nOut of emergency buffer space "
                      "(looking for %d bytes)\n",
                      size * 2 );
-    DumpCore();
+    //DumpCore();
+    assert(false);
   }
 
   if( size < emergencyBuf[ i ] )
@@ -744,7 +748,7 @@ static void *emergencyAlloc( size_t size )
 
 static inline void emergencyDealloc( void *mem )
 {
-  BGN
+  
 
   if( ((long *)mem)[ -1 ] < 0 )
     ((long *)mem)[ -1 ] *= -1;
@@ -756,7 +760,7 @@ static inline void emergencyDealloc( void *mem )
 
 static void *alloc( size_t originalSize )
 {
-  BGN
+  
 
   void *mem;
   size_t size;
@@ -777,8 +781,8 @@ static void *alloc( size_t originalSize )
       mem = malloc( size );
     }
 
-    if( mem == 0 )
-      THROW_ERR( "Can't allocate " << size << " bytes of memory" )
+    assert( mem != 0 );
+    //  THROW_ERR( "Can't allocate " << size << " bytes of memory" )
   }
 
   G_allocatedMemory += size;
@@ -796,7 +800,7 @@ static void *alloc( size_t originalSize )
 
 static inline void dealloc( void *mem )
 {
-  BGN
+  
 
   size_t size;
 
@@ -805,8 +809,8 @@ static inline void dealloc( void *mem )
   size = *((size_t *)mem);
 
   #ifdef TSTBUG
-    if( size < sizeof( size_t ) )
-      THROW_ERR( "Corrupted heap at " << mem )
+    assert( size >= sizeof( size_t ) );
+    //  THROW_ERR( "Corrupted heap at " << mem )
     *((size_t *)mem) = 0;
   #endif
 
@@ -822,12 +826,12 @@ static inline void dealloc( void *mem )
 
 static inline HANDLER_FOR_NEW getHandlerForNew()
 {
-  BGN
+  
 
   HANDLER_FOR_NEW handlerForNew;
 
-  handlerForNew = set_new_handler( 0 );
-  set_new_handler( handlerForNew );
+  handlerForNew = std::set_new_handler( 0 );
+  std::set_new_handler( handlerForNew );
 
   return handlerForNew;
 }

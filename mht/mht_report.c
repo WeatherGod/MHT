@@ -59,7 +59,6 @@
 
 void REPORT::setAllGroupIds( int groupId )
 {
-  BGN
 
   PTR_INTO_iDLIST_OF< REPORT > reportPtr;
   PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
@@ -92,7 +91,6 @@ void REPORT::setAllGroupIds( int groupId )
 
 void REPORT::checkGroupIds()
 {
-  BGN
 
   PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
   T_TREE *tree;
@@ -101,8 +99,8 @@ void REPORT::checkGroupIds()
   {
     tree = (*tHypoPtr).getTree();
 
-    if( tree->getGroupId() != m_groupId )
-      THROW_ERR( "Bad group id for report" )
+    assert( tree->getGroupId() == m_groupId );
+    //  THROW_ERR( "Bad group id for report" )
   }
 }
 
@@ -112,27 +110,26 @@ void REPORT::checkGroupIds()
 
 void REPORT::describe( int spaces )
 {
-  BGN
 
   PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
   int k;
 
-  Indent( spaces ); cout << "REPORT "; print(); cout << endl;
+  Indent( spaces ); std::cout << "REPORT "; print(); std::cout << std::endl;
 
-  Indent( spaces ); cout << "| tHypo's:";
+  Indent( spaces ); std::cout << "| tHypo's:";
   k = 0;
 
   LOOP_LINKS( tHypoPtr, m_tHypoLinks )
   {
     if( k++ >= 3 )
     {
-      cout << endl;
-      Indent( spaces ); cout << "|         ";
+      std::cout << std::endl;
+      Indent( spaces ); std::cout << "|         ";
       k = 0;
     }
 
-    cout << " "; (*tHypoPtr).print();
+    std::cout << " "; (*tHypoPtr).print();
   }
-  cout << endl;
+  std::cout << std::endl;
 }
 

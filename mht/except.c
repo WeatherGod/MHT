@@ -43,12 +43,12 @@
  *********************************************************************/
 
 #define DECLARE_EXCEPT
-
+/*
 #include <sys/types.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+*/
 #include "except.h"
 
 /*-------------------------------------------------------------------*
@@ -60,13 +60,13 @@ void Indent( int numSpaces )
   int i;
 
   for( i = 0; i < numSpaces; i++ )
-    cout << " ";
+    std::cout << " ";
 }
 
 /*-------------------------------------------------------------------*
  | DumpCore() -- crash the program so that it does a core dump
  *-------------------------------------------------------------------*/
-
+/*
 void DumpCore()
 {
   int dummy;
@@ -78,26 +78,26 @@ void DumpCore()
   _exit( -1 );          // just in case "one / zero" didn't cause a
                         // crash for some reason
 }
-
+*/
 
 
 /*-------------------------------------------------------------------*
  | TraceScope() -- construct string describing the current scope
  *-------------------------------------------------------------------*/
-
+/*
 void TraceScope( char *buf, int bufSize )
 {
   static char scope_overflow_msg[] = "** TOO MANY SCOPES **\n";
   SCOPE_TRACER *scope;
 
-  /* loop through scopes on stack */
+  // loop through scopes on stack
   *buf = 0;
   for( scope = SCOPE_TRACER::M_currentScope;
        scope;
        scope = scope->m_prevScope )
   {
-    /* make sure there's enough room left in buf for the description
-       of this scope */
+    // make sure there's enough room left in buf for the description
+    //   of this scope
     if( bufSize <= strlen( scope->m_file ) +      // room for filename
                    1 +                            //  ... " "
                    5 +                            //  ... line number
@@ -111,16 +111,16 @@ void TraceScope( char *buf, int bufSize )
       break;
     }
 
-    /* make sure that the line number is not out of range (probably
-       only happens if it's garbage) */
+    // make sure that the line number is not out of range (probably
+    //   only happens if it's garbage)
     if( scope->m_line < 0 )
       scope->m_line = 0;
     if( scope->m_line > 99999 )
       scope->m_line = 99999;
 
-    /* use sprintf to build the descriptions, instead of a stream,
-       since making a stream might compound with an error we've
-       just detected (such as out of memory) */
+    // use sprintf to build the descriptions, instead of a stream,
+    //   since making a stream might compound with an error we've
+    //   just detected (such as out of memory)
     if( *scope->m_action != 0 )
       sprintf( buf, "%s %d: %s\n",
                     scope->m_file,
@@ -131,7 +131,7 @@ void TraceScope( char *buf, int bufSize )
                     scope->m_file,
                     scope->m_line );
 
-    /* move pointer on to beginning of record for next scope */
+    // move pointer on to beginning of record for next scope
     while( *buf != 0 )
     {
       buf++;
@@ -139,10 +139,11 @@ void TraceScope( char *buf, int bufSize )
     }
   }
 }
+*/
 /*-------------------------------------------------------------------*
  | XDoErr() -- print out an error and exit
  *-------------------------------------------------------------------*/
-
+/*
 void XDoErr( int line, char *file )
 {
   static char scopeStr[ 10000 ];
@@ -166,3 +167,4 @@ void XDoErr( int line, char *file )
   fprintf( stderr, "ABORTING EXECUTION\n" );
   _exit( -1 );
 }
+*/

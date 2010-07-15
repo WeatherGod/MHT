@@ -52,18 +52,16 @@
 template< class TYPE >
   void PQUEUE_OF< TYPE >::put( const TYPE &info )
   {
-    BGN
-
     int i;
 
     m_numObjects++;
 
     #ifdef TSTBUG
-      if( m_data == 0 )
-        THROW_ERR( "Trying to put() "
-                   "onto unallocated priority queue" )
-      if( m_numObjects >= m_size )
-        THROW_ERR( "Priority queue overflow" )
+      assert( m_data != 0 );
+      //  THROW_ERR( "Trying to put() "
+      //             "onto unallocated priority queue" )
+      assert( m_numObjects < m_size );
+      //  THROW_ERR( "Priority queue overflow" )
     #endif
 
     for( i = m_numObjects;
@@ -82,8 +80,6 @@ template< class TYPE >
 template< class TYPE >
   void PQUEUE_OF< TYPE >::heapify( int i )
   {
-    BGN
-
     int left = i << 1;
     int right = left + 1;
     int largest = i;

@@ -82,6 +82,8 @@
 #define VECTOR_H
 
 #include "except.h"
+#include <assert.h>
+#include <string.h>		// for memset()
 
 template< class TYPE >
   class VECTOR_OF
@@ -125,21 +127,17 @@ template< class TYPE >
 
       ~VECTOR_OF()
       {
-        BGN
-
         delete [] m_buf;
       }
 
       TYPE &operator[]( int index )
       {
-        BGN
-
         #ifdef TSTBUG
-          if( m_buf == 0 )
-            THROW_ERR( "Trying to index into unallocated vector" )
-          if( m_lowIndex > index || index > m_highIndex )
-            THROW_ERR( "Index " << index
-                       << " out of bounds in vector" )
+          // NOTE: the assertion booleans have been negated from their original if statements.
+          assert( m_buf != 0 );
+          //  THROW_ERR("Trying to index into unallocated vector")
+          assert( m_lowIndex <= index && index <= m_highIndex );
+          //  THROW_ERR("Index out of bounds in vector" << index )
         #endif
 
         return m_data[ index ];
@@ -147,8 +145,6 @@ template< class TYPE >
 
       void resize( int highIndex )
       {
-        BGN
-
         int newSize = highIndex + 1;
 
         if( newSize > m_size )
@@ -165,8 +161,6 @@ template< class TYPE >
 
       void resize( int lowIndex, int highIndex )
       {
-        BGN
-
         int newSize = highIndex - lowIndex + 1;
 
         if( newSize > m_size )
@@ -183,8 +177,6 @@ template< class TYPE >
 
       void clear()
       {
-        BGN
-
         if( m_buf != 0 )
           memset( m_buf, 0,
                   (m_highIndex - m_lowIndex + 1) * sizeof( TYPE ) );

@@ -359,6 +359,7 @@
 
 #include "except.h"
 #include "list.h"
+#include <assert.h>
 
 /*-------------------------------------------------------------------*
  | Declarations of stuff found in this file.
@@ -395,7 +396,8 @@ class LINK_NODE: public DLISTnode
     LINK_NODE(): DLISTnode(), m_thatObj( 0 ), m_partner( 0 ) {}
     LINK_NODE( const LINK_NODE & )
     {
-      THROW_ERR( "Trying to copy a LINK_NODE (don't know how)" )
+      assert(false);
+      //THROW_ERR( "Trying to copy a LINK_NODE (don't know how)" )
     }
 
   protected:
@@ -538,8 +540,6 @@ template< class TYPE >
       PTR_INTO_LINKS_TO< TYPE >
         &operator=( const PTR_INTO_LINKS_TO< TYPE > &ptr )
       {
-        BGN
-
         *(PTR_INTO_LINKSbase *)this =
           *(const PTR_INTO_LINKSbase *)&ptr;
         return *this;

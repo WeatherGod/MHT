@@ -92,6 +92,7 @@
 #define PQUEUE_H
 
 #include "except.h"
+#include <assert.h>
 
 template< class TYPE >
   class PQUEUE_OF
@@ -122,11 +123,9 @@ template< class TYPE >
 
       void resize( int size )
       {
-        BGN
-
         #ifdef TSTBUG
-          if( ! isEmpty() )
-            THROW_ERR( "Priority queue is not empty" )
+          assert( isEmpty() );
+          //  THROW_ERR( "Priority queue is not empty" )
         #endif
 
         size++;
@@ -149,16 +148,14 @@ template< class TYPE >
 
       TYPE get()
       {
-        BGN
-
         TYPE info;
 
         #ifdef TSTBUG
-          if( m_data == 0 )
-            THROW_ERR( "Trying to get() "
-                       "from unallocated priority queue" )
-          if( isEmpty() )
-            THROW_ERR( "Priority queue underflow" );
+          assert( m_data != 0 );
+          //  THROW_ERR( "Trying to get() "
+          //             "from unallocated priority queue" )
+          assert( ! isEmpty() );
+          //  THROW_ERR( "Priority queue underflow" );
         #endif
 
         info = m_data[ 1 ];
@@ -170,14 +167,12 @@ template< class TYPE >
 
       TYPE peek()
       {
-        BGN
-
         #ifdef TSTBUG
-          if( m_data == 0 )
-            THROW_ERR( "Trying to peek() "
-                       "into unallocated priority queue" )
-          if( isEmpty() )
-            THROW_ERR( "Priority queue underflow" );
+          assert( m_data != 0 );
+          //  THROW_ERR( "Trying to peek() "
+          //             "into unallocated priority queue" )
+          assert( ! isEmpty() );
+          //  THROW_ERR( "Priority queue underflow" );
         #endif
 
         return m_data[ 1 ];

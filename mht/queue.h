@@ -85,6 +85,7 @@
 #define QUEUE_H
 
 #include "except.h"
+#include <assert.h>
 
 template< class TYPE >
   class QUEUE_OF
@@ -118,11 +119,9 @@ template< class TYPE >
 
       void resize( int size )
       {
-        BGN
-
         #ifdef TSTBUG
-          if( ! isEmpty() )
-            THROW_ERR( "Queue is not empty" )
+          assert( isEmpty() );
+          //  THROW_ERR( "Queue is not empty" )
         #endif
 
         size += 2;
@@ -145,11 +144,9 @@ template< class TYPE >
 
       void put( const TYPE &info )
       {
-        BGN
-
         #ifdef TSTBUG
-          if( m_data == 0 )
-            THROW_ERR( "Trying to put() onto unallocated queue" )
+          assert( m_data != 0 );
+          //  THROW_ERR( "Trying to put() onto unallocated queue" )
         #endif
 
         m_data[ m_writePos++ ] = info;
@@ -157,26 +154,24 @@ template< class TYPE >
           m_writePos = 0;
 
         #ifdef TSTBUG
-          if( m_writePos == m_readPos )
-            THROW_ERR( "Queue overflow" )
+          assert( m_writePos != m_readPos );
+          //  THROW_ERR( "Queue overflow" )
         #endif
       }
 
       TYPE get()
       {
-        BGN
-
         #ifdef TSTBUG
-          if( m_data == 0 )
-            THROW_ERR( "Trying to get() from unallocated queue" )
+          assert( m_data != 0 );
+          //  THROW_ERR( "Trying to get() from unallocated queue" )
         #endif
 
         if( ++m_readPos >= m_size )
           m_readPos = 0;
 
         #ifdef TSTBUG
-          if( m_readPos == m_writePos )
-            THROW_ERR( "Queue underflow" );
+          assert( m_readPos != m_writePos );
+          //  THROW_ERR( "Queue underflow" );
         #endif
 
         return m_data[ m_readPos ];
@@ -184,11 +179,9 @@ template< class TYPE >
 
       TYPE peek()
       {
-        BGN
-
         #ifdef TSTBUG
-          if( m_data == 0 )
-            THROW_ERR( "Trying to peek() into unallocated queue" )
+          assert( m_data != 0 );
+          //  THROW_ERR( "Trying to peek() into unallocated queue" )
         #endif
 
         int readPos;
@@ -198,8 +191,8 @@ template< class TYPE >
           readPos = 0;
 
         #ifdef TSTBUG
-          if( readPos == m_writePos )
-            THROW_ERR( "Queue underflow" );
+          assert( readPos != m_writePos );
+          //  THROW_ERR( "Queue underflow" );
         #endif
 
         return m_data[ readPos ];
