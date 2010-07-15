@@ -1,0 +1,73 @@
+
+*********************Tracking example***********************
+
+../trackCorners OutData.Seg -p Parameters < InDataFile
+
+
+The algorithm may need tuning for your particular application.  This
+is accomplished by modifying the parameters in the file Parameters.
+
+1.  Determine that the Kalman filter parameters,
+
+	position varianceX
+	position varianceY
+	gradient variance
+	intensity Variance
+	process variance
+and
+	Intensity Threshold
+	maximum mahalanobis distance for validationi MODEL 1
+	maximum mahalanobis distance for validationi MODEL 2 (CONSTANTVEL with z=2)
+	maximum mahalanobis distance for validationi MODEL 3
+	Initial state Variance(Velocity component)
+
+are set correctly.  To do so, create a data file in which there is
+only one typical track.  If the MHT does not correctly group all
+measurements with a single track, it may be that measurements are not
+correctly validating to a track.  In this case, it may be necessary to
+increase the process or measurement noise or lower thresholds.  These
+tests should be performed with the MHT pruning parameters (see (3))
+set as high as possible to avoid errors due to pruning.
+
+2.  Determine that the MHT parameters
+
+	probability of detection
+	probability of termination (Lamda_x)
+	mean new tracks per scan
+	mean false alarms per scan
+ 
+are set correctly.  These should probably not need to be changed from
+the default settings.  The algorithm is robust to these values.  No
+major suggestions, but start with simple examples, such as (i) single
+track, (ii) two intersecting tracks, (iii) single track and false
+alarms etc. and verify that the correct interpretation is found.  If
+not, try to look at probabilities to understand why incorrect
+hypothesis was preferred.  These tests should be performed with the
+MHT pruning parameters (see (3)) set as high as possible to avoid
+errors due to pruning.
+
+3.  Determine pruning parameters
+
+	maximum number of global hypotheses per group
+	maximum depth of track trees
+	minimum ratio between likelihoods of worst and best global hypotheses
+
+are set correctly.  These should initially be set as large as possible
+to avoid problems due to pruning.  Then, when other parameters are
+set, adjust the pruning parameters to minimize the number of
+hypotheses examined while still getting correct answer.
+
+
+To view Tracks 
+______________
+
+Place X fallback resource file "X.DrawTracks" in home directory.
+Usage:
+
+drawTracks start end Corner_file_stem Image_file_stem maxCorners < trackFile
+
+Example:
+
+../drawTracks/drawTracks 5 55 Corner_file_stem  Image_file_stem 350 < OutData.Seg
+
+

@@ -1,0 +1,132 @@
+!
+!
+!DrawTracks*fontList:		variable
+drawTracks*fontList:               -adobe-helvetica-bold-r-normal--12-120-75-75-p-70-iso8859-1
+
+drawTracks.width:			400
+drawTracks.height:			200
+
+!
+!	Display Option  Custom Dialog Resources
+!
+!
+!	size of the dialog
+!
+*DisplayOptions.width:		450
+*DisplayOptions.height:		500
+!
+!	default title for the dialog
+!
+*DisplayOptions.dialogTitle:	Display Options
+!
+!	file name and size label location
+!
+*displayTitleLabel.x:			100
+*displayTitleLabel.labelString:Display Options:
+!
+!*dialogFrame.x:			10
+*dialogFrame.y:			30
+!
+!
+!	toggle1 push button
+!
+*Toggle1.x:			30
+*Toggle1.y:			70
+*Toggle1.labelString:False Alarms
+!
+!	toggle2 push button
+!
+*Toggle2.x:			30
+*Toggle2.y:			100
+*Toggle2.labelString:Grouped Meas
+!
+!	toggle3 push button
+!
+*Toggle3.x:			30
+*Toggle3.y:			130
+*Toggle3.labelString:Smooth Contour
+!
+!	toggle4 push button
+!
+*Toggle4.x:			30
+*Toggle4.y:			160
+*Toggle4.labelString:Points On Trajectory 
+!
+!
+!	toggle5 push button
+!
+*Toggle5.x:			30
+*Toggle5.y:			190
+*Toggle5.labelString:Corners
+!
+*startFrameValLabel.height:30
+*startFrameLabel.x:			80
+*startFrameLabel.y:			220
+*startFrameLabel.labelString:Start Frame:
+!
+*endFrameValLabel.height:30
+*endFrameLabel.x:			80
+*endFrameLabel.y:			260
+*endFrameLabel.labelString:End Frame:
+!
+*cornerFrameValLabel.height:30
+*cornerFrameLabel.x:			80
+*cornerFrameLabel.y:			290
+*cornerFrameLabel.labelString:Corner Frame:
+!
+*minLenValLabel.height:30
+*minLenValLabel.x:			120
+*minLenValLabel.y:			330
+*minLenLabel.x:			80
+*minLenLabel.y:			330
+*minLenLabel.labelString:Min Contour Length:
+!
+*scale.x:			30
+*scale.y:			420
+!	Apply push button
+!
+*Apply.x:			30
+*Apply.y:			460
+!
+!	Close push button
+!
+*Close.x:		190
+*Close.y:		460
+!
+!
+!	Info Display  Custom Dialog Resources
+!
+!
+!	size of the dialog
+!
+*InfoDialog.width:		1200
+*InfoDialog.height:		260
+!
+!	default title for the dialog
+!
+*InfoDialog.dialogTitle:	Contour Information
+!
+!	file name and size label location
+!
+*infoTitleLabel.x:			65
+*infoTitleLabel.y:			10
+*infoTitleLabel.labelString:Contour Information
+*infoDisplayLabel.x:		10
+*infoDisplayLabel.y:		50
+*infoDisplayLabel1.x:		10
+*infoDisplayLabel1.y:		80
+!
+*sortFrame.y:			140
+*actionFrame.y:			190
+*displayAllPB.labelString:Display All
+*firstPB.labelString:First
+*nextPB.labelString:Next
+*changeColorPB.x:100
+*changeColorPB.y:230
+*changeColorPB.labelString:Change Color
+*closeInfoPB.x:190
+*closeInfoPB.y:270
+*closeInfoPB.labelString:Close
+!
+!	end of file
+!

@@ -1,0 +1,84 @@
+
+			**** trackCorners ****
+
+Usage:
+
+trackCorners OutDataFile -p paramFile < InDataFile
+
+paramFile:
+
+is the name of the parameter file containing values for parameters of
+multiple hypothesis algorithm.  If not provided, the default parameter
+file name, Parameters, is used.  See Toy/Parameters for a description
+of the syntax.  Note that lines beginning with a semicolumn are ignored.
+
+
+InDataFile:
+
+baseName N S
+N1
+.
+.
+.
+NN
+
+contains the basename, baseName, of the files containing corners found
+in each frame of the motion sequence, total number of frames, N, start
+frame, S, and the number of corners per frame, N1...NN.  See
+Toy/InDataFile for an example.
+
+Each file baseName.A etc, contains the list of corners found in frame A.
+
+Each corner is represented by a 27-dimensional vector separated by spaces.
+
+Each corner ends with a linefeed.
+
+The first two entries are the x,y position of the corner.
+
+The remaining 25 entries are the intensity values of a 5x5 window
+centered on the x,y position of the corner.
+
+This 5x5 window of intensities is used to suppliment the Mahalanobis
+test to validate potentially corresponding corners.
+
+******* To turn off intensity correlation *******
+
+If only the x,y position information is to be used, it may be
+easier to provide dummy values for the 25 intensity values and set the
+intensityThreshold parameter in the Parameter file to a small number,
+e.g. 0.05.
+Otherwise, the code in motionModel.c (::getNextState) must be modified at the point where measurements are validated to tracks.
+
+
+======================================================================
+
+
+OutDataFile:
+
+is created by trackCorners.  It contains the partitioning of the
+corners into corresponding tracks.
+
+OutDataFile:
+
+(1) lists all parameters used by the MHT tracking code,
+(2) number of tracks
+(3) number of false alarms
+(4) the list of measurements in each track.  Format is:
+	track_id number_of_measurements_in_track
+	list of measurements
+Note M denotes actual measurement
+     S denotes a skipped measurement
+
+
+======================================================================
+
+
+			 **** drawTracks ****
+
+
+The program drawTracks (in subdirectory drawTracks) can be used to
+view the final segmentation.
+
+Note: The X fallback resource file "drawTracks/X.DrawTracks" must be
+placed in the user's home directory
+

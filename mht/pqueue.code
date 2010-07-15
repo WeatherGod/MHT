@@ -1,0 +1,109 @@
+
+/*********************************************************************
+ * FILE: pqueue.code                                                 *
+ *                                                                   *
+ * AUTHOR: Matthew Miller (mlm)                                      *
+ *                                                                   *
+ * HISTORY:                                                          *
+ *    2 JUN 93 -- (mlm) created                                      *
+ *                                                                   *
+ * CONTENTS:                                                         *
+ *                                                                   *
+ *   Those member functions of the PQUEUE_OF<> template that can't   *
+ *   be inline, because they contain loops or are recursive.         *
+ *                                                                   *
+ *   See pqueue.H for details of the PQUEUE_OF<> template.           *
+ *                                                                   *
+ * ----------------------------------------------------------------- *
+ *                                                                   *
+ *             Copyright (c) 1993, NEC Research Institute            *
+ *                       All Rights Reserved.                        *
+ *                                                                   *
+ *   Permission to use, copy, and modify this software and its       *
+ *   documentation is hereby granted only under the following terms  *
+ *   and conditions.  Both the above copyright notice and this       *
+ *   permission notice must appear in all copies of the software,    *
+ *   derivative works or modified versions, and any portions         *
+ *   thereof, and both notices must appear in supporting             *
+ *   documentation.                                                  *
+ *                                                                   *
+ *   Correspondence should be directed to NEC at:                    *
+ *                                                                   *
+ *                     Ingemar J. Cox                                *
+ *                                                                   *
+ *                     NEC Research Institute                        *
+ *                     4 Independence Way                            *
+ *                     Princeton                                     *
+ *                     NJ 08540                                      *
+ *                                                                   *
+ *                     phone:  609 951 2722                          *
+ *                     fax:  609 951 2482                            *
+ *                     email:  ingemar@research.nj.nec.com (Inet)    *
+ *                                                                   *
+ *********************************************************************/
+
+/*-------------------------------------------------------------------*
+ | PQUEUE_OF<>::put() -- put an object on the priority queue
+ |
+ | This routine must reorder some other objects on the priority queue
+ | to make sure that the heap property is maintained.
+ *-------------------------------------------------------------------*/
+
+template< class TYPE >
+  void PQUEUE_OF< TYPE >::put( const TYPE &info )
+  {
+    BGN
+
+    int i;
+
+    m_numObjects++;
+
+    #ifdef TSTBUG
+      if( m_data == 0 )
+        THROW_ERR( "Trying to put() "
+                   "onto unallocated priority queue" )
+      if( m_numObjects >= m_size )
+        THROW_ERR( "Priority queue overflow" )
+    #endif
+
+    for( i = m_numObjects;
+         i > 1 && info > m_data[ i >> 1 ];
+         i = i >> 1 )
+      m_data[ i ] = m_data[ i >> 1 ];
+
+    m_data[ i ] = info;
+  }
+
+/*-------------------------------------------------------------------*
+ | PQUEUE_OF<>::heapify() -- recursively restore the heap property
+ |                           in a priority queue
+ *-------------------------------------------------------------------*/
+
+template< class TYPE >
+  void PQUEUE_OF< TYPE >::heapify( int i )
+  {
+    BGN
+
+    int left = i << 1;
+    int right = left + 1;
+    int largest = i;
+    TYPE tmp;
+
+    if( left <= m_numObjects &&
+        m_data[ left ] > m_data[ largest ] )
+      largest = left;
+
+    if( right <= m_numObjects &&
+        m_data[ right ] > m_data[ largest ] )
+      largest = right;
+
+    if( largest != i )
+    {
+      tmp = m_data[ i ];
+      m_data[ i ] = m_data[ largest ];
+      m_data[ largest ] = tmp;
+
+      heapify( largest );
+    }
+  }
+
