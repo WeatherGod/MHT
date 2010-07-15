@@ -1,0 +1,44 @@
+The mht_tracking project seeks to adapt the original MHT tracking algorithm
+for use in tracking storm cells in radar images.  v1.0, v1.1, v1.2 are
+official releases from the original author. The master branch, however,
+has significant differences that may introduce undesired behaviors for your
+application, but which are desired for storm cell tracking.
+
+This library was originally written by Ingemar J. Cox.
+Benjamin Root has been given permission to host the original source code
+on GitHub.
+
+The original website can be found here:
+    http://www.cs.ucl.ac.uk/staff/ingemar/Content/Downloads.html
+
+The following is project's original copyright notice.
+ * ----------------------------------------------------------------- *
+ *                                                                   *
+ *             Copyright (c) 1993, NEC Research Institute            *
+ *                       All Rights Reserved.                        *
+ *                                                                   *
+ *   Permission to use, copy, and modify this software and its       *
+ *   documentation is hereby granted only under the following terms  *
+ *   and conditions.  Both the above copyright notice and this       *
+ *   permission notice must appear in all copies of the software,    *
+ *   derivative works or modified versions, and any portions         *
+ *   thereof, and both notices must appear in supporting             *
+ *   documentation.                                                  *
+ *                                                                   *
+ *   Correspondence should be directed to NEC at:                    *
+ *                                                                   *
+ *                     Ingemar J. Cox                                *
+ *                                                                   *
+ *                     NEC Research Institute                        *
+ *                     4 Independence Way                            *
+ *                     Princeton                                     *
+ *                     NJ 08540                                      *
+ *                                                                   *
+ *                     phone:  609 951 2722                          *
+ *                     fax:  609 951 2482                            *
+ *                     email:  ingemar@research.nj.nec.com (Inet)    *
+ *                                                                   *
+ *********************************************************************
+
+All inquiries regarding this project hosted on GitHub should be directed
+at Benjamin Root first.
