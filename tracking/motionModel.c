@@ -70,6 +70,8 @@ extern int g_time;
 extern iDLIST_OF<FALARM> *g_falarms_ptr;
 extern iDLIST_OF<CORNER_TRACK> *g_cornerTracks_ptr;
 
+using std::cout;
+using std::endl;
 /*------------------------------------------------------*
  * findTrack():  look for the track with given id in the
  * global cornerTrackList and return a ptr to it.  If
@@ -780,7 +782,8 @@ double CONSTVEL_MDL::getCorr(CONSTVEL_STATE *state, CONSTPOS_REPORT *report)
   /* Precompute the previous Mean and sigma */
   xm=ym=2;
   stateMean=stateSigma=0.0;
-  for (int j=-1; j<=1 ; j++) {
+  int j = -1;
+  for (j=-1; j<=1 ; j++) {
     int y = ym + j ;
     for (int i=-1; i<=1; i++) {
        int x=xm + i ;

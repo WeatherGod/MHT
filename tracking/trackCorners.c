@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 
   if ( argc < 2 )
   {
-    cerr<<"Usage:"<< argv[0]<<" OutDataFile -p paramFile"<< "InDataFile" << endl;
+    std::cerr<<"Usage:"<< argv[0]<<" OutDataFile -p paramFile"<< "InDataFile" << std::endl;
     exit( -1 );
   }
 
@@ -171,7 +171,7 @@ BGN
       THROW_ERR("Couldn't open file parameter File")
   else if( fp != 0 )
   {
-    cout << "Using Parameter File :" << paramFile << endl;
+    std::cout << "Using Parameter File :" << paramFile << std::endl;
     char buf[ 100 ];
     char *f;
 
@@ -248,22 +248,22 @@ BGN
     fclose( fp );
   }
 
-  cout << " positionVarianceX = " << g_param.positionVarianceX << endl;
-  cout << " positionVarianceY = " << g_param.positionVarianceY << endl;
-  cout << " gradientVariance = " << g_param.gradientVariance << endl;
-  cout << " intensityVariance = " << g_param.intensityVariance << endl;
-  cout << " processVariance = " << g_param.processVariance << endl;
-  cout << " probDetect = " << g_param.probDetect << endl;
-  cout << " probEnd = " << g_param.probEnd << endl;
-  cout << " meanNew = " << g_param.meanNew << endl;
-  cout << " meanFalarms = " << g_param.meanFalarms << endl;
-  cout << " maxGHypos = " << g_param.maxGHypos << endl;
-  cout << " maxDepth = " << g_param.maxDepth << endl;
-  cout << " minGHypoRatio = " << g_param.minGHypoRatio << endl;
-  cout << " intensityThreshold= " << g_param.intensityThreshold << endl;
-  cout << " maxDistance1= " << g_param.maxDistance1 << endl;
-  cout << " maxDistance2= " << g_param.maxDistance2 << endl;
-  cout << " maxDistance3= " << g_param.maxDistance3 << endl;
+  std::cout << " positionVarianceX = " << g_param.positionVarianceX << std::endl;
+  std::cout << " positionVarianceY = " << g_param.positionVarianceY << std::endl;
+  std::cout << " gradientVariance = " << g_param.gradientVariance << std::endl;
+  std::cout << " intensityVariance = " << g_param.intensityVariance << std::endl;
+  std::cout << " processVariance = " << g_param.processVariance << std::endl;
+  std::cout << " probDetect = " << g_param.probDetect << std::endl;
+  std::cout << " probEnd = " << g_param.probEnd << std::endl;
+  std::cout << " meanNew = " << g_param.meanNew << std::endl;
+  std::cout << " meanFalarms = " << g_param.meanFalarms << std::endl;
+  std::cout << " maxGHypos = " << g_param.maxGHypos << std::endl;
+  std::cout << " maxDepth = " << g_param.maxDepth << std::endl;
+  std::cout << " minGHypoRatio = " << g_param.minGHypoRatio << std::endl;
+  std::cout << " intensityThreshold= " << g_param.intensityThreshold << std::endl;
+  std::cout << " maxDistance1= " << g_param.maxDistance1 << std::endl;
+  std::cout << " maxDistance2= " << g_param.maxDistance2 << std::endl;
+  std::cout << " maxDistance3= " << g_param.maxDistance3 << std::endl;
 
 
 

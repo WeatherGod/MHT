@@ -24,7 +24,7 @@ touch = touch $@
 trackCorners: param.h motionModel.h $(INC)/assign.h \
 		trackCorners.o  motionModel.o
 	$(build) trackCorners.o motionModel.o \
-	-L ../mht -lmht -lm 
+	-L../mht -lmht -lm
 
 motionModel.o: motionModel.c motionModel.h param.h \
 	$(INC)/except.h $(INC)/mdlmht.h $(INC)/matrix.h\

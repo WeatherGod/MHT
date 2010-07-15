@@ -178,8 +178,8 @@ struct CORNERLIST: public DLISTnode {
 
 class CONSTPOS_REPORT: public MDL_REPORT
 {
-  friend CONSTVEL_STATE;
-  friend CONSTVEL_MDL;
+  friend class CONSTVEL_STATE;
+  friend class CONSTVEL_MDL;
 
 
   private:
@@ -245,7 +245,7 @@ BGN
       { m_z.print();}
 
     virtual void print()
-      { cout << "  " <<m_z(0) << " " << m_z(1);}
+      { std::cout << "  " <<m_z(0) << " " << m_z(1);}
 
     virtual double getFalarmLogLikelihood()
       { return m_falarmLogLikelihood; }
@@ -361,10 +361,10 @@ class CONSTVEL_MDL: public CORNER_TRACK_MDL
 
 class CONSTVEL_STATE: public MDL_STATE
 {
-  friend CONSTPOS_REPORT;
-  friend CONSTCURV_MDL;
-  friend CONSTVEL_MDL;
-  friend CONSTPOS_MDL;
+  friend class ONSTPOS_REPORT;
+  friend class CONSTCURV_MDL;
+  friend class CONSTVEL_MDL;
+  friend class CONSTPOS_MDL;
 
   private:
 
@@ -567,7 +567,7 @@ class CONSTVEL_STATE: public MDL_STATE
     ~CONSTVEL_STATE() { cleanup(); }  //SHOULD THIS BE PRIVATE?
     virtual double getLogLikelihood() { return m_logLikelihood; }
 
-    virtual void print() {cout << "ConstVel State: "<< m_x(0) << " ,"
+    virtual void print() {std::cout << "ConstVel State: "<< m_x(0) << " ,"
 <<m_x(2);}
     double getX() { return m_x( 0 ); }
     double getDX() { return m_x( 1 ); }
