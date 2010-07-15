@@ -618,8 +618,8 @@ class START_AT_TAILdummy;
 
 class DLISTnode
 {
-  friend DLISTbase;
-  friend PTR_INTO_DLISTbase;
+  friend class DLISTbase;
+  friend class PTR_INTO_DLISTbase;
 
   private:
 
@@ -762,8 +762,8 @@ class DLISTnode
 
 class dummyDLISTnode: public DLISTnode
 {
-  friend DLISTbase;
-  friend PTR_INTO_DLISTbase;
+  friend class DLISTbase;
+  friend class PTR_INTO_DLISTbase;
 
   protected:
 
@@ -809,7 +809,7 @@ class dummyDLISTnode: public DLISTnode
 
 class DLISTbase
 {
-  friend PTR_INTO_DLISTbase;
+  friend class PTR_INTO_DLISTbase;
 
   private:
 
@@ -1123,8 +1123,8 @@ class PTR_INTO_DLISTbase
 template< class TYPE >
   class vDLIST_NODE_OF: public DLISTnode
   {
-    friend vDLIST_OF< TYPE >;
-    friend PTR_INTO_vDLIST_OF< TYPE >;
+    friend class vDLIST_OF< TYPE >;
+    friend class PTR_INTO_vDLIST_OF< TYPE >;
 
     private:
 
@@ -1222,8 +1222,8 @@ template< class TYPE >
 template< class TYPE >
   class ptrDLIST_NODE_OF: public DLISTnode
   {
-    friend ptrDLIST_OF< TYPE >;
-    friend PTR_INTO_ptrDLIST_OF< TYPE >;
+    friend class ptrDLIST_OF< TYPE >;
+    friend class PTR_INTO_ptrDLIST_OF< TYPE >;
 
     private:
 

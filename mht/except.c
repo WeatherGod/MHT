@@ -79,33 +79,7 @@ void DumpCore()
                         // crash for some reason
 }
 
-/*-------------------------------------------------------------------*
- | XDoErr() -- print out an error and exit
- *-------------------------------------------------------------------*/
 
-void XDoErr( int line, char *file )
-{
-  static char scopeStr[ 10000 ];
-
-  TraceScope( scopeStr, sizeof( scopeStr ) );
-
-  fprintf( stderr, "\n\n" );
-  fprintf( stderr, "ERROR ( line %d of %s )\n", line, file );
-
-  if( XG_msgStreamExists )
-    fprintf( stderr, "  %s\n", XG_msg );
-  else
-    fprintf( stderr, "  THROW_ERR( %s )\n", XG_msg );
-
-  if( *scopeStr )
-  {
-    fprintf( stderr, "SCOPE TRACE:\n" );
-    fprintf( stderr, "%s", scopeStr );
-  }
-
-  fprintf( stderr, "ABORTING EXECUTION\n" );
-  _exit( -1 );
-}
 
 /*-------------------------------------------------------------------*
  | TraceScope() -- construct string describing the current scope
@@ -165,4 +139,30 @@ void TraceScope( char *buf, int bufSize )
     }
   }
 }
+/*-------------------------------------------------------------------*
+ | XDoErr() -- print out an error and exit
+ *-------------------------------------------------------------------*/
 
+void XDoErr( int line, char *file )
+{
+  static char scopeStr[ 10000 ];
+
+  TraceScope( scopeStr, sizeof( scopeStr ) );
+
+  fprintf( stderr, "\n\n" );
+  fprintf( stderr, "ERROR ( line %d of %s )\n", line, file );
+
+  if( XG_msgStreamExists )
+    fprintf( stderr, "  %s\n", XG_msg );
+  else
+    fprintf( stderr, "  THROW_ERR( %s )\n", XG_msg );
+
+  if( *scopeStr )
+  {
+    fprintf( stderr, "SCOPE TRACE:\n" );
+    fprintf( stderr, "%s", scopeStr );
+  }
+
+  fprintf( stderr, "ABORTING EXECUTION\n" );
+  _exit( -1 );
+}

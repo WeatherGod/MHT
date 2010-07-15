@@ -235,13 +235,13 @@
 #define EXCEPT_H
 
 #include <unistd.h>
-#include <string.h>
+#include <string>
 #include <stdio.h>
-#include <iostream.h>
-#include <strstream.h>
+#include <iostream>
+#include "strstream"
 #include <stdlib.h>
 
-#include "portspecs.h"
+//#include "portspecs.h"
 #include "safeglobal.h"
 
 #ifdef DECLARE_EXCEPT
@@ -250,6 +250,10 @@
   #define GLOBAL extern
 #endif
 
+using std::cout;
+using std::endl;
+using std::strstream; 
+using std::ostrstream;
 /*-------------------------------------------------------------------*
  | Automatic declaration of TSTBUG
  *-------------------------------------------------------------------*/

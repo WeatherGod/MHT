@@ -494,9 +494,9 @@ class MHT;
 
 class REPORT: public DLISTnode
 {
-  friend T_HYPO;
-  friend G_HYPO;
-  friend MHT;
+  friend class T_HYPO;
+  friend class G_HYPO;
+  friend class MHT;
 
   protected: MEMBERS_FOR_DLISTnode( REPORT )
 
@@ -539,7 +539,7 @@ class REPORT: public DLISTnode
 
   public:
 
-    virtual void print() { cout << "R:" << (void *)this; }
+    virtual void print() { std::cout << "R:" << (void *)this; }
     virtual void describe( int spaces = 0 );
 };
 
@@ -549,10 +549,10 @@ class REPORT: public DLISTnode
 
 class T_HYPO: public TREEnode
 {
-  friend REPORT;
-  friend G_HYPO;
-  friend T_TREE;
-  friend MHT;
+  friend class REPORT;
+  friend class G_HYPO;
+  friend class T_TREE;
+  friend class MHT;
 
   protected: MEMBERS_FOR_TREEnode( T_HYPO )
 
@@ -661,7 +661,7 @@ class T_HYPO: public TREEnode
 
   public:
 
-    virtual void print() { cout << "T:" << (void *)this; }
+    virtual void print() { std::cout << "T:" << (void *)this; }
     virtual void describe( int spaces = 0, int depth = 0 );
     virtual void describeTree( int spaces = 0, int depth = 0 );
 };
@@ -672,10 +672,10 @@ class T_HYPO: public TREEnode
 
 class G_HYPO: public DLISTnode
 {
-  friend REPORT;
-  friend T_HYPO;
-  friend GROUP;
-  friend MHT;
+  friend class REPORT;
+  friend class T_HYPO;
+  friend class GROUP;
+  friend class MHT;
 
   protected: MEMBERS_FOR_DLISTnode( G_HYPO )
 
@@ -750,7 +750,7 @@ class G_HYPO: public DLISTnode
 
   public:
 
-    virtual void print() { cout << "G:" << (void *)this; }
+    virtual void print() { std::cout << "G:" << (void *)this; }
     virtual void describe( int spaces = 0 );
 };
 
@@ -760,7 +760,7 @@ class G_HYPO: public DLISTnode
 
 class T_TREE: public DLISTnode
 {
-  friend MHT;
+  friend class MHT;
 
   protected: MEMBERS_FOR_DLISTnode( T_TREE )
 
@@ -839,7 +839,7 @@ class GROUP: public DLISTnode
     int getNumGHypos() { return m_gHypoList.getLength(); }
 
     void check();
-    virtual void print() { cout << "C:" << (void *)this; }
+    virtual void print() { std::cout << "C:" << (void *)this; }
     virtual void describe( int spaces = 0 );
 };
 
@@ -957,7 +957,7 @@ class MHT
 
   public:
 
-    virtual void print() { cout << "M:" << (void *)this; }
+    virtual void print() { std::cout << "M:" << (void *)this; }
     virtual void describe( int spaces = 0 );
 
     virtual void printStats( int spaces = 0 );

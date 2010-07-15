@@ -625,7 +625,7 @@ static int luDecompose( MATRIX &mat, int *originalRow )
   int row, col;
   double *rowPtr, *colPtr;
   double *p0, *p1, *p2;
-  const numRows = mat.getNumRows();
+  const int numRows = mat.getNumRows();
   #define numCols numRows
   double sum;
   static VECTOR_OF< double > scaler; scaler.resize( numRows );

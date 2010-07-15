@@ -189,7 +189,7 @@
 
 #ifndef ASSIGN_H
 #define ASSIGN_H
-
+#include <math.h>
 #include "except.h"
 #include "vector.h"
 

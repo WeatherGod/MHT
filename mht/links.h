@@ -382,8 +382,8 @@ template< class TYPE > class PTR_INTO_LINKS_TO;
 
 class LINK_NODE: public DLISTnode
 {
-  friend LINKSbase;
-  friend PTR_INTO_LINKSbase;
+  friend class LINKSbase;
+  friend class PTR_INTO_LINKSbase;
   friend void XMakeLinkBase( void *obj0, LINKSbase &links0,
                              void *obj1, LINKSbase &links1 );
 
@@ -413,7 +413,7 @@ class LINK_NODE: public DLISTnode
 
 class LINKSbase
 {
-  friend PTR_INTO_LINKSbase;
+  friend class PTR_INTO_LINKSbase;
   friend void XMakeLinkBase( void *obj0, LINKSbase &links0,
                              void *obj1, LINKSbase &links1 );
 

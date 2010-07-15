@@ -16,7 +16,7 @@
 # flags.
 
 C++ = g++
-AR = /usr/local/bin/ar
+AR = /usr/bin/ar
 ARFLAGS = -ruc 
 C++FLAGS = -O 
 build = $(C++) $(C++FLAGS) -o $@ 
@@ -36,10 +36,10 @@ libmht.a: libmht.a(apqueue.o) libmht.a(assign.o) \
 .c.a:;
 
 apqueue_test: apqueue_test.o libmht.a
-	$(build) apqueue_test.o -L . -lmht -lm
+	$(build) apqueue_test.o -L. -lmht -lm
 
 assign_test: assign_test.o bassign.o libmht.a
-	$(build) assign_test.o bassign.o -L . -lmht -lm
+	$(build) assign_test.o bassign.o -L. -lmht -lm
 
 mdlmht.o: mdlmht.h mht.h except.h safeglobal.h list.h tree.h links.h vector.h
 	$(C++) -c $(C++FLAGS) mdlmht.c

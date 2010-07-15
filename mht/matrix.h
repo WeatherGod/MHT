@@ -315,13 +315,14 @@ class MATRIX
 
 class tmpMATRIX: public MATRIX
 {
-  friend MATRIX;
-
+  friend class MATRIX;
+  public:
+  tmpMATRIX ( const tmpMATRIX &src ): MATRIX( src ) {}
+  
   private:
 
     tmpMATRIX( const MATRIX &m0, const MATRIX &m1 ); // m0 * m1
     tmpMATRIX( const MATRIX &src ): MATRIX( src ) {}
-    tmpMATRIX( const tmpMATRIX &src ): MATRIX( src ) {}
     tmpMATRIX( int nRows, int nCols ): MATRIX( nRows, nCols ) {}
     tmpMATRIX( int numRows, int numCols, double *data ):
       MATRIX( numRows, numCols, data )

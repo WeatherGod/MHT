@@ -174,7 +174,7 @@ class ASSIGNMENT_PQUEUE;
 
 class apqSOLUTION: public DLISTnode
 {
-  friend ASSIGNMENT_PQUEUE;
+  friend class ASSIGNMENT_PQUEUE;
 
   private:
 

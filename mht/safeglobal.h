@@ -115,7 +115,7 @@
 #ifndef SAFEGLOBAL_H
 #define SAFEGLOBAL_H
 
-#include "portspecs.h"
+//#include "portspecs.h"
 
 /*-------------------------------------------------------------------*
  | SAFE_GLOBAL() -- macro to make a safe global variable

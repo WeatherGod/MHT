@@ -451,14 +451,14 @@ class MODEL
 
 class MDL_STATE
 {
-  friend MDL_MHT;
-  friend MDL_ROOT_T_HYPO;
-  friend MDL_FALARM_T_HYPO;
-  friend MDL_DUMMY_T_HYPO;
-  friend MDL_CONTINUE_T_HYPO;
-  friend MDL_START_T_HYPO;
-  friend MDL_SKIP_T_HYPO;
-  friend MDL_END_T_HYPO;
+  friend class MDL_MHT;
+  friend class MDL_ROOT_T_HYPO;
+  friend class MDL_FALARM_T_HYPO;
+  friend class MDL_DUMMY_T_HYPO;
+  friend class MDL_CONTINUE_T_HYPO;
+  friend class MDL_START_T_HYPO;
+  friend class MDL_SKIP_T_HYPO;
+  friend class MDL_END_T_HYPO;
 
   private:
 
@@ -477,7 +477,7 @@ class MDL_STATE
 
     virtual double getLogLikelihood() { return -INFINITY; }
 
-    virtual void print() { cout << "S:" << (void *)this; }
+    virtual void print() { std::cout << "S:" << (void *)this; }
 };
 
 /*-------------------------------------------------------------------*
@@ -500,13 +500,13 @@ class MDL_REPORT: public REPORT
 
 class MDL_MHT: public MHT
 {
-  friend MDL_ROOT_T_HYPO;
-  friend MDL_FALARM_T_HYPO;
-  friend MDL_DUMMY_T_HYPO;
-  friend MDL_START_T_HYPO;
-  friend MDL_CONTINUE_T_HYPO;
-  friend MDL_SKIP_T_HYPO;
-  friend MDL_END_T_HYPO;
+  friend class MDL_ROOT_T_HYPO;
+  friend class MDL_FALARM_T_HYPO;
+  friend class MDL_DUMMY_T_HYPO;
+  friend class MDL_START_T_HYPO;
+  friend class MDL_CONTINUE_T_HYPO;
+  friend class MDL_SKIP_T_HYPO;
+  friend class MDL_END_T_HYPO;
 
   protected:
 
@@ -573,7 +573,7 @@ class MDL_MHT: public MHT
 
 class MDL_T_HYPO: public T_HYPO
 {
-  friend MDL_MHT;
+  friend class MDL_MHT;
 
   protected:
 
@@ -601,13 +601,13 @@ class MDL_T_HYPO: public T_HYPO
 
 class MDL_ROOT_T_HYPO: public MDL_T_HYPO
 {
-  friend MDL_MHT;
-  friend MDL_FALARM_T_HYPO;
-  friend MDL_DUMMY_T_HYPO;
-  friend MDL_START_T_HYPO;
-  friend MDL_CONTINUE_T_HYPO;
-  friend MDL_SKIP_T_HYPO;
-  friend MDL_END_T_HYPO;
+  friend class MDL_MHT;
+  friend class MDL_FALARM_T_HYPO;
+  friend class MDL_DUMMY_T_HYPO;
+  friend class MDL_START_T_HYPO;
+  friend class MDL_CONTINUE_T_HYPO;
+  friend class MDL_SKIP_T_HYPO;
+  friend class MDL_END_T_HYPO;
 
   protected:
 
@@ -624,18 +624,18 @@ class MDL_ROOT_T_HYPO: public MDL_T_HYPO
 
   public:
 
-    virtual void print() {cout<<"T:"<<getTrackStamp()<<"("<<(void *)this<<")"<<"(root:"<<m_logLikelihood<<")"; }
+    virtual void print() {std::cout<<"T:"<<getTrackStamp()<<"("<<(void *)this<<")"<<"(root:"<<m_logLikelihood<<")"; }
 };
 
 class MDL_DUMMY_T_HYPO: public MDL_T_HYPO
 {
-  friend MDL_MHT;
-  friend MDL_ROOT_T_HYPO;
-  friend MDL_FALARM_T_HYPO;
-  friend MDL_START_T_HYPO;
-  friend MDL_CONTINUE_T_HYPO;
-  friend MDL_SKIP_T_HYPO;
-  friend MDL_END_T_HYPO;
+  friend class MDL_MHT;
+  friend class MDL_ROOT_T_HYPO;
+  friend class MDL_FALARM_T_HYPO;
+  friend class MDL_START_T_HYPO;
+  friend class MDL_CONTINUE_T_HYPO;
+  friend class MDL_SKIP_T_HYPO;
+  friend class MDL_END_T_HYPO;
 
   protected:
 
@@ -660,18 +660,18 @@ class MDL_DUMMY_T_HYPO: public MDL_T_HYPO
 
   public:
 
-    virtual void print() {cout<<"T:"<<getTrackStamp()<<"("<<(void *)this<<")"<<"(dummy:"<<m_logLikelihood<<")"; }
+    virtual void print() {std::cout<<"T:"<<getTrackStamp()<<"("<<(void *)this<<")"<<"(dummy:"<<m_logLikelihood<<")"; }
 };
 
 class MDL_FALARM_T_HYPO: public MDL_DUMMY_T_HYPO
 {
-  friend MDL_MHT;
-  friend MDL_ROOT_T_HYPO;
-  friend MDL_DUMMY_T_HYPO;
-  friend MDL_START_T_HYPO;
-  friend MDL_CONTINUE_T_HYPO;
-  friend MDL_SKIP_T_HYPO;
-  friend MDL_END_T_HYPO;
+  friend class MDL_MHT;
+  friend class MDL_ROOT_T_HYPO;
+  friend class MDL_DUMMY_T_HYPO;
+  friend class MDL_START_T_HYPO;
+  friend class MDL_CONTINUE_T_HYPO;
+  friend class MDL_SKIP_T_HYPO;
+  friend class MDL_END_T_HYPO;
 
   protected:
 
@@ -697,18 +697,18 @@ class MDL_FALARM_T_HYPO: public MDL_DUMMY_T_HYPO
   public:
 
     virtual void print()
-      { cout << "T:["; getReport()->print(); cout << "](falarm:"<<m_logLikelihood<<")"; }
+      { std::cout << "T:["; getReport()->print(); std::cout << "](falarm:"<<m_logLikelihood<<")"; }
 };
 
 class MDL_CONTINUE_T_HYPO: public MDL_T_HYPO
 {
-  friend MDL_MHT;
-  friend MDL_ROOT_T_HYPO;
-  friend MDL_FALARM_T_HYPO;
-  friend MDL_DUMMY_T_HYPO;
-  friend MDL_START_T_HYPO;
-  friend MDL_SKIP_T_HYPO;
-  friend MDL_END_T_HYPO;
+  friend class MDL_MHT;
+  friend class MDL_ROOT_T_HYPO;
+  friend class MDL_FALARM_T_HYPO;
+  friend class MDL_DUMMY_T_HYPO;
+  friend class MDL_START_T_HYPO;
+  friend class MDL_SKIP_T_HYPO;
+  friend class MDL_END_T_HYPO;
 
   protected:
 
@@ -762,20 +762,20 @@ class MDL_CONTINUE_T_HYPO: public MDL_T_HYPO
 
     virtual MDL_STATE *getState() { return m_state; }
     virtual void print()
-      { cout << "T:"<<getTrackStamp()<<"["; getState()->print(); 
-        cout << " ," ; getReport()->print() ;
-        cout << "](continue:"<<m_logLikelihood<<")"; }
+      { std::cout << "T:"<<getTrackStamp()<<"["; getState()->print(); 
+        std::cout << " ," ; getReport()->print() ;
+        std::cout << "](continue:"<<m_logLikelihood<<")"; }
 };
 
 class MDL_START_T_HYPO: public MDL_CONTINUE_T_HYPO
 {
-  friend MDL_MHT;
-  friend MDL_ROOT_T_HYPO;
-  friend MDL_FALARM_T_HYPO;
-  friend MDL_DUMMY_T_HYPO;
-  friend MDL_CONTINUE_T_HYPO;
-  friend MDL_SKIP_T_HYPO;
-  friend MDL_END_T_HYPO;
+  friend class MDL_MHT;
+  friend class MDL_ROOT_T_HYPO;
+  friend class MDL_FALARM_T_HYPO;
+  friend class MDL_DUMMY_T_HYPO;
+  friend class MDL_CONTINUE_T_HYPO;
+  friend class MDL_SKIP_T_HYPO;
+  friend class MDL_END_T_HYPO;
 
   protected:
 
@@ -802,19 +802,19 @@ class MDL_START_T_HYPO: public MDL_CONTINUE_T_HYPO
   public:
 
     virtual void print()
-      { cout << "T:"<<getTrackStamp()<<"["; getReport()->print(); 
-        cout << "](start:"<<m_logLikelihood<<")"; }
+      { std::cout << "T:"<<getTrackStamp()<<"["; getReport()->print(); 
+        std::cout << "](start:"<<m_logLikelihood<<")"; }
 };
 
 class MDL_SKIP_T_HYPO: public MDL_CONTINUE_T_HYPO
 {
-  friend MDL_MHT;
-  friend MDL_ROOT_T_HYPO;
-  friend MDL_FALARM_T_HYPO;
-  friend MDL_DUMMY_T_HYPO;
-  friend MDL_START_T_HYPO;
-  friend MDL_CONTINUE_T_HYPO;
-  friend MDL_END_T_HYPO;
+  friend class MDL_MHT;
+  friend class MDL_ROOT_T_HYPO;
+  friend class MDL_FALARM_T_HYPO;
+  friend class MDL_DUMMY_T_HYPO;
+  friend class MDL_START_T_HYPO;
+  friend class MDL_CONTINUE_T_HYPO;
+  friend class MDL_END_T_HYPO;
 
   protected:
 
@@ -846,18 +846,18 @@ class MDL_SKIP_T_HYPO: public MDL_CONTINUE_T_HYPO
   public:
 
     virtual void print()
-      { cout << "T:"<<getTrackStamp()<<"["; getState()->print(); cout << "](skip:"<<m_logLikelihood<<")"; }
+      { std::cout << "T:"<<getTrackStamp()<<"["; getState()->print(); std::cout << "](skip:"<<m_logLikelihood<<")"; }
 };
 
 class MDL_END_T_HYPO: public MDL_DUMMY_T_HYPO
 {
-  friend MDL_MHT;
-  friend MDL_ROOT_T_HYPO;
-  friend MDL_FALARM_T_HYPO;
-  friend MDL_DUMMY_T_HYPO;
-  friend MDL_START_T_HYPO;
-  friend MDL_CONTINUE_T_HYPO;
-  friend MDL_SKIP_T_HYPO;
+  friend class MDL_MHT;
+  friend class MDL_ROOT_T_HYPO;
+  friend class MDL_FALARM_T_HYPO;
+  friend class MDL_DUMMY_T_HYPO;
+  friend class MDL_START_T_HYPO;
+  friend class MDL_CONTINUE_T_HYPO;
+  friend class MDL_SKIP_T_HYPO;
 
   protected:
 
@@ -884,7 +884,7 @@ class MDL_END_T_HYPO: public MDL_DUMMY_T_HYPO
 
   public:
 
-    virtual void print() { cout << "T: " << getTrackStamp() << "( "<<(void *)this << ")"<<"(end:"<<m_logLikelihood<<")"; }
+    virtual void print() { std::cout << "T: " << getTrackStamp() << "( "<<(void *)this << ")"<<"(end:"<<m_logLikelihood<<")"; }
 };
 
 #endif

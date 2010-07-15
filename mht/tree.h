@@ -725,8 +725,8 @@ class START_AT_LAST_LEAFdummy;
 
 class TREEnode: public DLISTnode
 {
-  friend TREEbase;
-  friend PTR_INTO_TREEbase;
+  friend class TREEbase;
+  friend class PTR_INTO_TREEbase;
 
   private:
 
@@ -921,8 +921,8 @@ class TREEnode: public DLISTnode
 
 class dummyTREEnode: public TREEnode
 {
-  friend TREEbase;
-  friend PTR_INTO_TREEbase;
+  friend class TREEbase;
+  friend class PTR_INTO_TREEbase;
 
   protected:
 
@@ -986,7 +986,7 @@ class dummyTREEnode: public TREEnode
 
 class TREEbase
 {
-  friend PTR_INTO_TREEbase;
+  friend class PTR_INTO_TREEbase;
 
   private:
 
@@ -1325,8 +1325,8 @@ class PTR_INTO_TREEbase
 template< class TYPE >
   class vTREE_NODE_OF: public TREEnode
   {
-    friend vTREE_OF< TYPE >;
-    friend PTR_INTO_vTREE_OF< TYPE >;
+    friend class vTREE_OF< TYPE >;
+    friend class PTR_INTO_vTREE_OF< TYPE >;
 
     private:
 
@@ -1451,8 +1451,8 @@ template< class TYPE >
 template< class TYPE >
   class ptrTREE_NODE_OF: public TREEnode
   {
-    friend ptrTREE_OF< TYPE >;
-    friend PTR_INTO_ptrTREE_OF< TYPE >;
+    friend class ptrTREE_OF< TYPE >;
+    friend class PTR_INTO_ptrTREE_OF< TYPE >;
 
     private:
 
