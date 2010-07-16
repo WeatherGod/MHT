@@ -42,6 +42,7 @@
 #include <math.h>
 #include <string.h>		// for memcpy(), memmove() 
 #include <iostream>
+#include <cstdio>		// for printf()
 
 #include "apqueue.h"
 /*DBG BEGIN */

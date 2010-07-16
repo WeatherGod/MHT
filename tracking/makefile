@@ -22,7 +22,7 @@ build = $(C++) $(C++FLAGS) -o $@
 touch = touch $@
 
 trackCorners: param.h motionModel.h $(INC)/assign.h \
-		trackCorners.o  motionModel.o $(INC)/libmht.a
+              trackCorners.o  motionModel.o $(INC)/libmht.a
 	$(build) trackCorners.o motionModel.o -L$(INC) -lmht -lm 
 
 motionModel.o: motionModel.c motionModel.h param.h \

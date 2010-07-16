@@ -110,6 +110,7 @@
 #include "mdlmht.h"
 #include "param.h"
 #include <math.h>
+#include <cstdio>		// for  sprintf
 
 static int g_numTracks;
 

@@ -604,7 +604,7 @@ CONSTVEL_MDL::CONSTVEL_MDL( double positionMeasureVarianceX,
       m_startP( 4, 4 )
     {
       
-      printf("\nSTARTING A NEW CONSTVEL_MDL\n");
+      std::cout << "\nSTARTING A NEW CONSTVEL_MDL\n";
 
       double pVx = positionMeasureVarianceX;
       double pVy = positionMeasureVarianceY;
@@ -626,9 +626,9 @@ CONSTVEL_MDL::CONSTVEL_MDL( double positionMeasureVarianceX,
                     0., m_stateVariance, 0., 0.,
                   0., 0., pVy, 0.,
                   0., 0., 0., m_stateVariance );
-      printf("\nstartP:\n");m_startP.print();
+      std::cout << "\nstartP:\n"; m_startP.print();
 #ifdef DEBUG1
-      printf("\nstartP:\n");m_startP.print();
+      std::cout << "\nstartP:\n"; m_startP.print();
 #endif
 
       type = 2;
