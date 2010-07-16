@@ -7,6 +7,10 @@
 #include "motionModel.h"
 
 #include <stdexcept>	// for std::runtime_error
+
+#include <unistd.h>	// for optarg, opterr, optopt
+#include <getopt.h>	// for getopt_long()
+
 /* 
  * External Variables
  */
@@ -15,26 +19,125 @@ iDLIST_OF< FALARM > *g_falarms_ptr;   // list of false alarms found
 iDLIST_OF< CORNER_TRACK > *g_cornerTracks_ptr; // list of cornerTracks found
 CORNERLIST *g_currentCornerList;
 int g_time;
-
 Parameter g_param;        
+
+void PrintSyntax()
+{
+	std::cerr << "trackCorners -o OUTFILE [-p PARAM_FILE] -i INFILE\n"
+		  << "             [--syntax | -x] [--help | -h]\n";
+}
+
+void PrintHelp()
+{
+	PrintSyntax();
+        std::cerr << "-o  --output  OUTFILE\n"
+                  << "The file that you want to write the track data to.\n\n";
+ 
+        std::cerr << "-p  --param   PARAM_FILE\n"
+                  << "The file where the tracking parameters can be found.\n"
+                  << "Defaults to './Parameters'.\n\n";
+ 
+        std::cerr << "-i  --input   INFILE\n"
+                  << "INFILE contains the filestem of the corner files, the range of frames\n"
+                  << "and the number of identified features for each frame.\n\n";
+  
+        std::cerr << "-x  --syntax\n"
+                  << "Print the syntax for running this program.\n\n";
+ 
+        std::cerr << "-h  --help\n"
+                  << "Print this help page.\n\n";
+}
+
+
 
 int main(int argc, char **argv)
 {
   void read_param(const char*);
   void writeCornerTrackFile(const char *name);
-  void readCorners(iDLIST_OF<CORNERLIST> *in);
+  void readCorners(const std::string &inputFileName, iDLIST_OF<CORNERLIST> *in);
   int numPixels;
   iDLIST_OF<CORNERLIST> *inputData;
   ptrDLIST_OF<MODEL> mdl;
 
-/*
- * Check if program called correctly
- */
+  std::string outputFileName = "";
+  std::string paramFileName = "./Parameters";
+  std::string inputFileName = "";
 
-  if ( argc < 2 )
+  int OptionIndex = 0;
+  int OptionChar = 0;
+  bool OptionError = false;
+  opterr = 0;			// don't print out error messages, let this program do that.
+
+  static struct option TheLongOptions[] = {
+    {"output", 1, NULL, 'o'},
+    {"param", 1, NULL, 'p'},
+    {"input", 1, NULL, 'i'},
+    {"syntax", 0, NULL, 'x'},
+    {"help", 0, NULL, 'h'},
+    {0, 0, 0, 0}
+  };
+
+  while ((OptionChar = getopt_long(argc, argv, "o:p:i:xh", TheLongOptions, &OptionIndex)) != -1)
   {
-    std::cerr<<"Usage:"<< argv[0]<<" OutDataFile -p paramFile < InDataFile" << std::endl;
-    exit( -1 );
+    switch (OptionChar)
+    {
+      case 'o':
+        outputFileName = optarg;
+        break;
+      case 'p':
+        paramFileName = optarg;
+        break;
+      case 'i':
+        inputFileName = optarg;
+        break;
+      case 'x':
+        PrintSyntax();
+        return(1);
+        break;
+      case 'h':
+        PrintHelp();
+        return(1);
+        break;
+      case '?':
+        std::cerr << "ERROR: Unknown arguement: -" << (char) optopt << std::endl;
+        OptionError = true;
+        break;
+      case ':':
+        std::cerr << "ERROR: Missing value for arguement: -" << (char) optopt << std::endl;
+        OptionError = true;
+        break;
+      default:
+        std::cerr << "ERROR: Programming error... Unaccounted option: -" << (char) OptionChar << std::endl;
+        OptionError = true;
+        break;
+    }
+  }
+
+  if (OptionError)
+  {
+    PrintSyntax();
+    return(-1);
+  }
+ 
+  if (outputFileName.empty())
+  {
+    std::cerr << "ERROR: Missing OUTFILE name\n";
+    PrintSyntax();
+    return(-1);
+  }
+ 
+  if (inputFileName.empty())
+  {
+    std::cerr << "ERROR: Missing INFILE name\n";
+    PrintSyntax();
+    return(-1);
+  }
+
+  if (paramFileName.empty())
+  {
+    std::cerr << "ERROR: Missing or empty PARAM_FILE name\n";
+    PrintSyntax();
+    return(-1);
   }
 
 
@@ -51,28 +154,14 @@ int main(int argc, char **argv)
  * Read the parameters
  */
 
-  const char *paramFile;
-  if (argc > 2) {
-     if (argv[2][0] =='-' && argv[2][1] == 'p')
-       paramFile = argv[3];
-     printf("%s %s\n",argv[3],paramFile);
-  } else {
-    paramFile = "Parameters";
-  }
-  read_param(paramFile);
-
-
-
+  read_param(paramFileName.c_str());
 
 /*
  * Read the corners
  */
 
   inputData = new iDLIST_OF<CORNERLIST>;
-  readCorners(inputData);
-
-
-
+  readCorners(inputFileName, inputData);
 
 /*
  * Create constant velocity model
@@ -90,7 +179,7 @@ int main(int argc, char **argv)
                       g_param.stateVariance,
                       g_param.intensityThreshold,
                       g_param.maxDistance2);
-  mdl.append( (*cvmdl));
+  mdl.append( (*cvmdl) );
 
 
 
@@ -121,6 +210,7 @@ int main(int argc, char **argv)
  * mht.scan() returns 0 when there are no more measurements to be processed
  * Otherwise it gets the next set of measurements and processes them.
  */
+  std::cout << "About to scan...\n";
 
   int didIscan=0;
   while( (didIscan=mht.scan()) != 0 )
@@ -152,7 +242,7 @@ int main(int argc, char **argv)
  * associated corners
  */
  
-  writeCornerTrackFile(argv[1]);
+  writeCornerTrackFile(outputFileName.c_str());
 
 }
 
@@ -415,7 +505,7 @@ void writeCornerTrackFile(const char *name)
  *------------------------------------------------------------------*/
 
 
-void readCorners( iDLIST_OF<CORNERLIST> *inputData)
+void readCorners(const std::string &inputFileName, iDLIST_OF<CORNERLIST> *inputData)
 {
 
   int i;
@@ -428,19 +518,26 @@ void readCorners( iDLIST_OF<CORNERLIST> *inputData)
   int startFrame=4;
   int totalFrames;
   char basename[80];
+  FILE *controlFile = fopen( inputFileName.c_str(), "r" );
+  if (controlFile <= 0)
+  {
+     throw std::runtime_error("Could not open the input data file: " + inputFileName + "\n");
+  }
 
 /*
  * Read basename for image sequence, total # of  frames, start 
  * frame number, and number of corners in each frame
  */
 
-  scanf("%s %d %d",basename,&totalFrames,&startFrame);
+  fscanf(controlFile, "%s %d %d",basename,&totalFrames,&startFrame);
   for (i=0; i < totalFrames; i++) {
-    scanf("%d",&npoints);
+    fscanf(controlFile,"%d",&npoints);
     ncorners[i] = npoints;
     printf("ncorners[%d]=%d\n",i,ncorners[i]);
     inputData->append(new CORNERLIST(ncorners[i]));
   }
+
+  fclose(controlFile);  
 
 /*
  * Open each frame and read the corner Data from them, saving
