@@ -3,6 +3,7 @@
 #include <string.h>
 #include <cmath>
 #include <iostream>	// for std::cout, std::endl, std::cerr
+#include <fstream>	// for ifstream and ofstream
 #include "param.h"       //  contains values of needed parameters 
 #include "motionModel.h"
 
@@ -52,8 +53,8 @@ void PrintHelp()
 
 int main(int argc, char **argv)
 {
-  void read_param(const char*);
-  void writeCornerTrackFile(const char *name);
+  void read_param(const std::string &paramFileName);
+  void writeCornerTrackFile(const std::string &trackFileName);
   void readCorners(const std::string &inputFileName, iDLIST_OF<CORNERLIST> *in);
   int numPixels;
   iDLIST_OF<CORNERLIST> *inputData;
@@ -252,16 +253,16 @@ int main(int argc, char **argv)
  * a comment. So skip the comments.
  *----------------------------------------------------------*/
 
-void read_param(const char* paramFile)
+void read_param(const std::string &paramFile)
 {
 
   FILE *fp;
 
-  fp = fopen( paramFile, "r" );
+  fp = fopen( paramFile.c_str(), "r" );
 //  cout << "Open Parameter File :" <<paramFile<<endl;
   if (fp <= 0)
   {
-	throw std::runtime_error("Couldn't open parameter file");
+	throw std::runtime_error("Couldn't open parameter file: " + paramFile);
   //    THROW_ERR("Couldn't open file parameter File")
   }
   else
@@ -366,7 +367,7 @@ void read_param(const char* paramFile)
  * the CORNER_TRACKs into a file.
  *----------------------------------------------------------*/
 
-void writeCornerTrackFile(const char *name)
+void writeCornerTrackFile(const std::string &name)
 {
 
   PTR_INTO_iDLIST_OF< CORNER_TRACK > cornerTrack;
@@ -374,83 +375,61 @@ void writeCornerTrackFile(const char *name)
   PTR_INTO_iDLIST_OF< FALARM > falarm;
   int id;
 
-  FILE *CornerTrackFile;
-  CornerTrackFile = fopen( name, "w" );
-
-  if (CornerTrackFile <= 0)
+  std::ofstream CornerTrackFile(name.c_str(), std::ios_base::out);
+  
+  if (!CornerTrackFile.is_open())
   {
-    throw std::runtime_error("Could not open corner track file...");
+    throw std::runtime_error("Could not open corner track file: " + name);
   }
 
-  fprintf(CornerTrackFile,
-		"#INFORMATION REGARDING THIS CORNER TRACKER\n");
-  fprintf(CornerTrackFile,
-		"#___________________________________________\n");
-  fprintf(CornerTrackFile,"#\n");
-  fprintf(CornerTrackFile,"#\n");
-
- /*
+  CornerTrackFile << "#INFORMATION REGARDING THIS CORNER TRACKER\n"
+                  << "#___________________________________________\n"
+                  << "#\n#\n"
+  /*
    * Write out the parameters that were used 
    */
-  fprintf(CornerTrackFile,"#    Parameters: \n");
-  fprintf(CornerTrackFile,"#\n");
-  fprintf(CornerTrackFile,"#         PositionVarianceX:  %f\n",
-				g_param.positionVarianceX);
-  fprintf(CornerTrackFile,"#\n");
-  fprintf(CornerTrackFile,"#         PositionVarianceY:  %f\n",
-				g_param.positionVarianceY);
-  fprintf(CornerTrackFile,"#\n");
-  fprintf(CornerTrackFile,"#         GradientVariance:  %f\n",
-				g_param.gradientVariance);
-  fprintf(CornerTrackFile,"#\n");
-  fprintf(CornerTrackFile,"#         intensityVariance:  %f\n",
-				g_param.intensityVariance);
-  fprintf(CornerTrackFile,"#\n");
-  fprintf(CornerTrackFile,"#         ProcessVariance:  %f\n",
-				g_param.processVariance);
-  fprintf(CornerTrackFile,"#\n");
-  fprintf(CornerTrackFile,"#         StateVariance:  %f\n",
-				g_param.stateVariance);
-  fprintf(CornerTrackFile,"#\n");
-  fprintf(CornerTrackFile,"#         Prob. Of Detection:  %f\n",
-				g_param.probDetect);
-  fprintf(CornerTrackFile,"#\n");
-  fprintf(CornerTrackFile,"#         Prob Of Track Ending:  %f\n",
-				g_param.probEnd );
-  fprintf(CornerTrackFile,"#\n");
-  fprintf(CornerTrackFile,"#         Mean New Tracks:  %f\n",
-				g_param.meanNew);
-  fprintf(CornerTrackFile,"#\n");
-  fprintf(CornerTrackFile,"#         Mean False Alarms:  %f\n",
-				g_param.meanFalarms);
-  fprintf(CornerTrackFile,"#\n");
-  fprintf(CornerTrackFile,"#         Max Global Hypo:  %d\n",
-				g_param.maxGHypos);
-  fprintf(CornerTrackFile,"#\n");
-  fprintf(CornerTrackFile,"#         Max Depth:  %d\n",
-				g_param.maxDepth);
-  fprintf(CornerTrackFile,"#\n");
-  fprintf(CornerTrackFile,"#         MinGHypoRatio:  %f\n",
-				g_param.minGHypoRatio);
-  fprintf(CornerTrackFile,"#\n");
-  fprintf(CornerTrackFile,"#         intensity Threshold:  %f\n",
-				g_param.intensityThreshold);
-  fprintf(CornerTrackFile,"#\n");
-  fprintf(CornerTrackFile,"#         Max Mahalinobus Dist1:  %f\n",
-				g_param.maxDistance1);
-  fprintf(CornerTrackFile,"#\n");
-  fprintf(CornerTrackFile,"#         Max Mahalinobus Dist2:  %f\n",
-				g_param.maxDistance1);
-  fprintf(CornerTrackFile,"#\n");
-  fprintf(CornerTrackFile,"#         Max Mahalinobus Dist3:  %f\n",
-				g_param.maxDistance1);
-  fprintf(CornerTrackFile,"#\n");
+                  << "#    Parameters: \n"
+                  << "#\n"
+                  << "#         PositionVarianceX:  " << g_param.positionVarianceX << "\n"
+                  << "#\n"
+                  << "#         PositionVarianceY:  " << g_param.positionVarianceY << "\n"
+                  << "#\n"
+                  << "#         GradientVariance:  " << g_param.gradientVariance << "\n"
+                  << "#\n"
+                  << "#         intensityVariance:  " << g_param.intensityVariance << "\n"
+                  << "#\n"
+                  << "#         ProcessVariance:  " << g_param.processVariance << "\n"
+                  << "#\n"
+                  << "#         StateVariance:  " << g_param.stateVariance << "\n"
+                  << "#\n"
+                  << "#         Prob. Of Detection:  " << g_param.probDetect << "\n"
+                  << "#\n"
+                  << "#         Prob Of Track Ending:  " << g_param.probEnd << "\n"
+                  << "#\n"
+                  << "#         Mean New Tracks:  " << g_param.meanNew << "\n"
+                  << "#\n"
+                  << "#         Mean False Alarms:  " << g_param.meanFalarms << "\n"
+                  << "#\n"
+                  << "#         Max Global Hypo:  " << g_param.maxGHypos << "\n"
+                  << "#\n"
+                  << "#         Max Depth:  " << g_param.maxDepth << "\n"
+                  << "#\n"
+                  << "#         MinGHypoRatio:  " << g_param.minGHypoRatio << "\n"
+                  << "#\n"
+                  << "#         intensity Threshold:  " << g_param.intensityThreshold << "\n"
+                  << "#\n"
+                  << "#         Max Mahalinobus Dist1:  " << g_param.maxDistance1 << "\n"
+                  << "#\n"
+                  << "#         Max Mahalinobus Dist2:  " << g_param.maxDistance1 << "\n"
+                  << "#\n"
+                  << "#         Max Mahalinobus Dist3:  " << g_param.maxDistance1 << "\n"
+                  << "#" << std::endl;
 
   /*
    * Write the number of CornerTracks & falsealarms
    */
-  fprintf( CornerTrackFile, "%d\n", g_cornerTracks_ptr->getLength() );
-  fprintf( CornerTrackFile, "%d\n", g_falarms_ptr->getLength() );
+  CornerTrackFile << g_cornerTracks_ptr->getLength() << "\n"
+                  << g_falarms_ptr->getLength() << std::endl;
 
   /*
    * Information about each CornerTrack
@@ -461,40 +440,39 @@ void writeCornerTrackFile(const char *name)
    *     and 'S'(skipped) if no measurement was found at that
    *      time step
    */
+  // Looping over each track
   id = 0;
   LOOP_DLIST( cornerTrack, *g_cornerTracks_ptr )
   {
-    fprintf( CornerTrackFile, "%d %d\n",
-                            id++,
-                            (*cornerTrack).list.getLength());
+    CornerTrackFile << id++ << ' ' << (*cornerTrack).list.getLength() << std::endl;
 
+    // Looping over each corner of the track
     LOOP_DLIST( cornerTrackEl, (*cornerTrack).list )
     {
-      fprintf( CornerTrackFile, "%c %f %f %f %f %f %d %d %s\n",
-                              (*cornerTrackEl).hasReport ? 'M':'S',
-                              (*cornerTrackEl).rx,
-                              (*cornerTrackEl).ry,
-                              (*cornerTrackEl).sx,
-                              (*cornerTrackEl).sy,
-                              (*cornerTrackEl).logLikelihood,
-                              (*cornerTrackEl).time,
-                              (*cornerTrackEl).frameNo,
-                              (*cornerTrackEl).model );
+      CornerTrackFile << ((*cornerTrackEl).hasReport ? 'M':'S') << ' '
+                      << (*cornerTrackEl).rx << ' '
+                      << (*cornerTrackEl).ry << ' '
+                      << (*cornerTrackEl).sx << ' '
+                      << (*cornerTrackEl).sy << ' '
+                      << (*cornerTrackEl).logLikelihood << ' '
+                      << (*cornerTrackEl).time << ' '
+                      << (*cornerTrackEl).frameNo << ' '
+                      << (*cornerTrackEl).model << std::endl;
     }
   }
 
   /*
    * Information about each false alarm
-   *     x dx y dy
+   *     x y t
    */
+  // Looping over the false alarms
   LOOP_DLIST( falarm, *g_falarms_ptr )
   {
-    fprintf( CornerTrackFile, "%f %f %d\n",
-                            (*falarm).rX,
-                            (*falarm).rY,
-                            (*falarm).frameNo);
+    CornerTrackFile << (*falarm).rX << ' '
+                    << (*falarm).rY << ' '
+                    << (*falarm).frameNo << std::endl;
   }
-  fclose( CornerTrackFile );
+  CornerTrackFile.close();
 }
 
 /*------------------------------------------------------------------*
@@ -534,6 +512,7 @@ void readCorners(const std::string &inputFileName, iDLIST_OF<CORNERLIST> *inputD
     fscanf(controlFile,"%d",&npoints);
     ncorners[i] = npoints;
     printf("ncorners[%d]=%d\n",i,ncorners[i]);
+    // std::cout << "ncorners[" << i << "]=" << ncorners[i] << std::endl;
     inputData->append(new CORNERLIST(ncorners[i]));
   }
 
