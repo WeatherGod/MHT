@@ -21,7 +21,6 @@ iDLIST_OF< FALARM > *g_falarms_ptr;   // list of false alarms found
 iDLIST_OF< CORNER_TRACK > *g_cornerTracks_ptr; // list of cornerTracks found
 CORNERLIST *g_currentCornerList;
 int g_time;
-Parameter g_param;        
 
 void PrintSyntax()
 {
@@ -54,8 +53,8 @@ void PrintHelp()
 
 int main(int argc, char **argv)
 {
-  void read_param(const std::string &paramFileName);
-  void writeCornerTrackFile(const std::string &trackFileName);
+  Parameter read_param(const std::string &paramFileName);
+  void writeCornerTrackFile(const std::string &trackFileName, const Parameter &param);
   void readCorners(const std::string &inputFileName, iDLIST_OF<CORNERLIST> *in);
   int numPixels;
   iDLIST_OF<CORNERLIST> *inputData;
@@ -156,7 +155,7 @@ int main(int argc, char **argv)
  * Read the parameters
  */
 
-  read_param(paramFileName.c_str());
+  const Parameter param = read_param(paramFileName.c_str());
 
 /*
  * Read the corners
@@ -170,17 +169,17 @@ int main(int argc, char **argv)
  */   
 
   CONSTVEL_MDL *cvmdl = new CONSTVEL_MDL
-                    ( g_param.positionVarianceX,
-                      g_param.positionVarianceY,
-                      g_param.gradientVariance,
-                      g_param.intensityVariance,
-                      g_param.processVariance,
-                      g_param.meanNew,
-                      g_param.probEnd,
-                      g_param.probDetect,
-                      g_param.stateVariance,
-                      g_param.intensityThreshold,
-                      g_param.maxDistance2);
+                    ( param.positionVarianceX,
+                      param.positionVarianceY,
+                      param.gradientVariance,
+                      param.intensityVariance,
+                      param.processVariance,
+                      param.meanNew,
+                      param.probEnd,
+                      param.probDetect,
+                      param.stateVariance,
+                      param.intensityThreshold,
+                      param.maxDistance2);
   mdl.append( (*cvmdl) );
 
 
@@ -190,10 +189,10 @@ int main(int argc, char **argv)
  * Setup mht algorithm with CornerTrack model mdl
  */
 
-  CORNER_TRACK_MHT mht( g_param.meanFalarms,
-                   g_param.maxDepth,
-                   g_param.minGHypoRatio,
-                   g_param.maxGHypos,
+  CORNER_TRACK_MHT mht( param.meanFalarms,
+                   param.maxDepth,
+                   param.minGHypoRatio,
+                   param.maxGHypos,
                    mdl );
 
 
@@ -218,10 +217,10 @@ int main(int argc, char **argv)
   while( (didIscan=mht.scan()) != 0 )
   {
       std::cout << "******************CURRENT_TIME=" << mht.getCurrentTime() << ' '
-                << "ENDTIME=" << g_param.endScan << "****************\n";
+                << "ENDTIME=" << param.endScan << "****************\n";
       g_time=mht.getCurrentTime();
       mht.printStats(2);
-      if( mht.getCurrentTime() > g_param.endScan )
+      if( mht.getCurrentTime() > param.endScan )
            break;
 
       if (didIscan) {
@@ -244,7 +243,7 @@ int main(int argc, char **argv)
  * associated corners
  */
  
-  writeCornerTrackFile(outputFileName.c_str());
+  writeCornerTrackFile(outputFileName, param);
 
 }
 
@@ -254,113 +253,115 @@ int main(int argc, char **argv)
  * a comment. So skip the comments.
  *----------------------------------------------------------*/
 
-void read_param(const std::string &paramFile)
+Parameter read_param(const std::string &paramFile)
 {
 
   FILE *fp;
 
   fp = fopen( paramFile.c_str(), "r" );
-//  cout << "Open Parameter File :" <<paramFile<<endl;
+//  std::cout << "Open Parameter File :" << paramFile << std::endl;
   if (fp <= 0)
   {
 	throw std::runtime_error("Couldn't open parameter file: " + paramFile);
-  //    THROW_ERR("Couldn't open file parameter File")
   }
-  else
-  {
-    std::cout << "Using Parameter File: " << paramFile << std::endl;
-    char buf[ 100 ];
-    char *f;
+  
+
+  std::cout << "Using Parameter File: " << paramFile << std::endl;
+  Parameter param;
+  char buf[ 100 ];
+  char *f;
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.positionVarianceX = atof( buf );
+    if( f ) param.positionVarianceX = atof( buf );
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.positionVarianceY = atof( buf );
+    if( f ) param.positionVarianceY = atof( buf );
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.gradientVariance = atof( buf );
+    if( f ) param.gradientVariance = atof( buf );
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.intensityVariance = atof( buf );
+    if( f ) param.intensityVariance = atof( buf );
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.processVariance = atof( buf );
+    if( f ) param.processVariance = atof( buf );
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.probDetect = atof( buf );
+    if( f ) param.probDetect = atof( buf );
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.probEnd = atof( buf );
+    if( f ) param.probEnd = atof( buf );
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.meanNew = atof( buf );
+    if( f ) param.meanNew = atof( buf );
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.meanFalarms = atof( buf );
+    if( f ) param.meanFalarms = atof( buf );
    
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.maxGHypos = atoi( buf );
+    if( f ) param.maxGHypos = atoi( buf );
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.maxDepth = atoi( buf );
+    if( f ) param.maxDepth = atoi( buf );
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.minGHypoRatio = atof( buf );
+    if( f ) param.minGHypoRatio = atof( buf );
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.intensityThreshold = atof( buf );
+    if( f ) param.intensityThreshold = atof( buf );
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.maxDistance1 = atof( buf );
+    if( f ) param.maxDistance1 = atof( buf );
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.maxDistance2 = atof( buf );
+    if( f ) param.maxDistance2 = atof( buf );
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.maxDistance3 = atof( buf );
+    if( f ) param.maxDistance3 = atof( buf );
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.stateVariance = atof( buf );
+    if( f ) param.stateVariance = atof( buf );
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.endScan = atoi( buf );
+    if( f ) param.endScan = atoi( buf );
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.pos2velLikelihood = atoi( buf );
+    if( f ) param.pos2velLikelihood = atoi( buf );
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.vel2curvLikelihood = atoi( buf );
+    if( f ) param.vel2curvLikelihood = atoi( buf );
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.startA = atoi( buf );
+    if( f ) param.startA = atoi( buf );
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.startB = atoi( buf );
+    if( f ) param.startB = atoi( buf );
 
     while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f ) g_param.startC = atoi( buf );
+    if( f ) param.startC = atoi( buf );
 
 
-    fclose( fp );
-  }
+  fclose( fp );
+  
 
-  std::cout << " positionVarianceX = " << g_param.positionVarianceX << std::endl;
-  std::cout << " positionVarianceY = " << g_param.positionVarianceY << std::endl;
-  std::cout << " gradientVariance = " << g_param.gradientVariance << std::endl;
-  std::cout << " intensityVariance = " << g_param.intensityVariance << std::endl;
-  std::cout << " processVariance = " << g_param.processVariance << std::endl;
-  std::cout << " probDetect = " << g_param.probDetect << std::endl;
-  std::cout << " probEnd = " << g_param.probEnd << std::endl;
-  std::cout << " meanNew = " << g_param.meanNew << std::endl;
-  std::cout << " meanFalarms = " << g_param.meanFalarms << std::endl;
-  std::cout << " maxGHypos = " << g_param.maxGHypos << std::endl;
-  std::cout << " maxDepth = " << g_param.maxDepth << std::endl;
-  std::cout << " minGHypoRatio = " << g_param.minGHypoRatio << std::endl;
-  std::cout << " intensityThreshold= " << g_param.intensityThreshold << std::endl;
-  std::cout << " maxDistance1= " << g_param.maxDistance1 << std::endl;
-  std::cout << " maxDistance2= " << g_param.maxDistance2 << std::endl;
-  std::cout << " maxDistance3= " << g_param.maxDistance3 << std::endl;
+  std::cout << " positionVarianceX = " << param.positionVarianceX << std::endl;
+  std::cout << " positionVarianceY = " << param.positionVarianceY << std::endl;
+  std::cout << " gradientVariance = " << param.gradientVariance << std::endl;
+  std::cout << " intensityVariance = " << param.intensityVariance << std::endl;
+  std::cout << " processVariance = " << param.processVariance << std::endl;
+  std::cout << " probDetect = " << param.probDetect << std::endl;
+  std::cout << " probEnd = " << param.probEnd << std::endl;
+  std::cout << " meanNew = " << param.meanNew << std::endl;
+  std::cout << " meanFalarms = " << param.meanFalarms << std::endl;
+  std::cout << " maxGHypos = " << param.maxGHypos << std::endl;
+  std::cout << " maxDepth = " << param.maxDepth << std::endl;
+  std::cout << " minGHypoRatio = " << param.minGHypoRatio << std::endl;
+  std::cout << " intensityThreshold= " << param.intensityThreshold << std::endl;
+  std::cout << " maxDistance1= " << param.maxDistance1 << std::endl;
+  std::cout << " maxDistance2= " << param.maxDistance2 << std::endl;
+  std::cout << " maxDistance3= " << param.maxDistance3 << std::endl;
+
+  return param;
 }
 
 /*----------------------------------------------------------*
@@ -368,7 +369,7 @@ void read_param(const std::string &paramFile)
  * the CORNER_TRACKs into a file.
  *----------------------------------------------------------*/
 
-void writeCornerTrackFile(const std::string &name)
+void writeCornerTrackFile(const std::string &name, const Parameter &param)
 {
 
   PTR_INTO_iDLIST_OF< CORNER_TRACK > cornerTrack;
@@ -391,39 +392,39 @@ void writeCornerTrackFile(const std::string &name)
    */
                   << "#    Parameters: \n"
                   << "#\n"
-                  << "#         PositionVarianceX:  " << g_param.positionVarianceX << "\n"
+                  << "#         PositionVarianceX:  " << param.positionVarianceX << "\n"
                   << "#\n"
-                  << "#         PositionVarianceY:  " << g_param.positionVarianceY << "\n"
+                  << "#         PositionVarianceY:  " << param.positionVarianceY << "\n"
                   << "#\n"
-                  << "#         GradientVariance:  " << g_param.gradientVariance << "\n"
+                  << "#         GradientVariance:  " << param.gradientVariance << "\n"
                   << "#\n"
-                  << "#         intensityVariance:  " << g_param.intensityVariance << "\n"
+                  << "#         intensityVariance:  " << param.intensityVariance << "\n"
                   << "#\n"
-                  << "#         ProcessVariance:  " << g_param.processVariance << "\n"
+                  << "#         ProcessVariance:  " << param.processVariance << "\n"
                   << "#\n"
-                  << "#         StateVariance:  " << g_param.stateVariance << "\n"
+                  << "#         StateVariance:  " << param.stateVariance << "\n"
                   << "#\n"
-                  << "#         Prob. Of Detection:  " << g_param.probDetect << "\n"
+                  << "#         Prob. Of Detection:  " << param.probDetect << "\n"
                   << "#\n"
-                  << "#         Prob Of Track Ending:  " << g_param.probEnd << "\n"
+                  << "#         Prob Of Track Ending:  " << param.probEnd << "\n"
                   << "#\n"
-                  << "#         Mean New Tracks:  " << g_param.meanNew << "\n"
+                  << "#         Mean New Tracks:  " << param.meanNew << "\n"
                   << "#\n"
-                  << "#         Mean False Alarms:  " << g_param.meanFalarms << "\n"
+                  << "#         Mean False Alarms:  " << param.meanFalarms << "\n"
                   << "#\n"
-                  << "#         Max Global Hypo:  " << g_param.maxGHypos << "\n"
+                  << "#         Max Global Hypo:  " << param.maxGHypos << "\n"
                   << "#\n"
-                  << "#         Max Depth:  " << g_param.maxDepth << "\n"
+                  << "#         Max Depth:  " << param.maxDepth << "\n"
                   << "#\n"
-                  << "#         MinGHypoRatio:  " << g_param.minGHypoRatio << "\n"
+                  << "#         MinGHypoRatio:  " << param.minGHypoRatio << "\n"
                   << "#\n"
-                  << "#         intensity Threshold:  " << g_param.intensityThreshold << "\n"
+                  << "#         intensity Threshold:  " << param.intensityThreshold << "\n"
                   << "#\n"
-                  << "#         Max Mahalinobus Dist1:  " << g_param.maxDistance1 << "\n"
+                  << "#         Max Mahalinobus Dist1:  " << param.maxDistance1 << "\n"
                   << "#\n"
-                  << "#         Max Mahalinobus Dist2:  " << g_param.maxDistance1 << "\n"
+                  << "#         Max Mahalinobus Dist2:  " << param.maxDistance1 << "\n"
                   << "#\n"
-                  << "#         Max Mahalinobus Dist3:  " << g_param.maxDistance1 << "\n"
+                  << "#         Max Mahalinobus Dist3:  " << param.maxDistance1 << "\n"
                   << "#" << std::endl;
 
   /*
