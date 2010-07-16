@@ -1,9 +1,10 @@
 #include <cstdlib>
-#include <cstdio>
+#include <cstdio>	// for sscanf
 #include <string.h>
 #include <cmath>
 #include <iostream>	// for std::cout, std::endl, std::cerr
 #include <fstream>	// for ifstream and ofstream
+#include <sstream>	// for stringstream
 #include "param.h"       //  contains values of needed parameters 
 #include "motionModel.h"
 
@@ -216,8 +217,8 @@ int main(int argc, char **argv)
   int didIscan=0;
   while( (didIscan=mht.scan()) != 0 )
   {
-      printf("******************CURRENT_TIME=%d ENDTIME=%d****************\n",
-                 mht.getCurrentTime(),g_param.endScan);
+      std::cout << "******************CURRENT_TIME=" << mht.getCurrentTime() << ' '
+                << "ENDTIME=" << g_param.endScan << "****************\n";
       g_time=mht.getCurrentTime();
       mht.printStats(2);
       if( mht.getCurrentTime() > g_param.endScan )
@@ -233,7 +234,7 @@ int main(int argc, char **argv)
 
     }
 //    mht.describe();
-    printf("\n CLEARING \n");
+    std::cout << "\n CLEARING \n";
     mht.clear();
 //    mht.describe();
 
@@ -486,18 +487,19 @@ void writeCornerTrackFile(const std::string &name)
 void readCorners(const std::string &inputFileName, iDLIST_OF<CORNERLIST> *inputData)
 {
 
-  int i;
   PTR_INTO_iDLIST_OF<CORNERLIST> cptr;
   PTR_INTO_iDLIST_OF<CORNER> ptr;
   int ncorners[100];
-  int strSize=4096;
-  char str[4096];
+  std::string str;
   int npoints;
+  // TODO: There is probably a very smart reason for this, but it escapes me at the moment
+  //       I suspect that it has something to do with a case where the control file is empty
+  //       maybe?
   int startFrame=4;
   int totalFrames;
-  char basename[80];
-  FILE *controlFile = fopen( inputFileName.c_str(), "r" );
-  if (controlFile <= 0)
+  std::string basename;
+  std::ifstream controlFile(inputFileName.c_str(), std::ios_base::in);
+  if (!controlFile.is_open())
   {
      throw std::runtime_error("Could not open the input data file: " + inputFileName + "\n");
   }
@@ -507,57 +509,55 @@ void readCorners(const std::string &inputFileName, iDLIST_OF<CORNERLIST> *inputD
  * frame number, and number of corners in each frame
  */
 
-  fscanf(controlFile, "%s %d %d",basename,&totalFrames,&startFrame);
-  for (i=0; i < totalFrames; i++) {
-    fscanf(controlFile,"%d",&npoints);
-    ncorners[i] = npoints;
-    printf("ncorners[%d]=%d\n",i,ncorners[i]);
-    // std::cout << "ncorners[" << i << "]=" << ncorners[i] << std::endl;
-    inputData->append(new CORNERLIST(ncorners[i]));
+  controlFile >> basename >> totalFrames >> startFrame;
+  for (int frameIndex=0; frameIndex < totalFrames; frameIndex++) {
+    controlFile >> npoints;
+    ncorners[frameIndex] = npoints;
+    std::cout << "ncorners[" << frameIndex << "]=" << ncorners[frameIndex] << std::endl;
+    inputData->append(new CORNERLIST(ncorners[frameIndex]));
   }
 
-  fclose(controlFile);  
+  controlFile.close();
 
 /*
  * Open each frame and read the corner Data from them, saving
  * the data in inputData
  */
 
-  i=startFrame;
+  int i = startFrame;
   LOOP_DLIST(cptr,*inputData) {
     int x,y;
     USHORT i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15;
-    USHORT i16,i17,i18,i19,i20,i21,i22,i23,i24,i25; 
-    FILE *inDataFile;
-    char fname[80];
-    sprintf(fname,"%s.%d",basename,i++);
-//    printf("Reading file %s\n",fname);
-    inDataFile = fopen( fname, "r" );
-
-    if (inDataFile <= 0)
+    USHORT i16,i17,i18,i19,i20,i21,i22,i23,i24,i25;
+    std::stringstream stringRep;
+    stringRep << basename << '.' << i++;
+    std::string fname = stringRep.str();
+    std::ifstream inDataFile(fname.c_str(), std::ios_base::in);
+//    std::cout << "Reading file " << fname << "\n";
+    
+    if (!inDataFile.is_open())
     {
-       throw std::runtime_error("Could not open the input data file...\n");
+       throw std::runtime_error("Could not open the input data file: " + fname);
     }
     
     int j=0;
-    while (fgets(str,strSize,inDataFile) && j <ncorners[i-startFrame-1]) 
+    while (std::getline(inDataFile, str) && j < ncorners[i-startFrame-1]) 
     {
 #ifdef OXFORD    // float data
       float fx,fy;
-      sscanf(str,"%f %f",&fx,&fy);
+      sscanf(str.c_str(),"%f %f",&fx,&fy);
       x = (int)fx;
       y = (int)fy;
 #else           // integer data
 
-//      sscanf(str,"%d %d %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd",&x,&y,&i1,&i2,&i3,&i4,&i5,&i6,&i7,&i8, &i9, &i10, &i11, &i12, &i13, &1i4, &i15,&i16, &i17, &i18, &i19, &i20, &i21, &i22, &i23, &i24, &i25);
-      sscanf(str,"%d %d %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd",&x,&y,&i1,&i2,&i3,&i4,&i5,&i6,&i7,&i8, &i9, &i10, &i11, &i12, &i13, &i14, &i15, &i16 , &i17, &i18, &i19, &i20, &i21, &i22, &i23, &i24, &i25 );
+      sscanf(str.c_str(),"%d %d %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd",&x,&y,&i1,&i2,&i3,&i4,&i5,&i6,&i7,&i8, &i9, &i10, &i11, &i12, &i13, &i14, &i15,&i16, &i17, &i18, &i19, &i20, &i21, &i22, &i23, &i24, &i25 );
 
 #endif
 
       (*cptr).list.append(new CORNER(x,y,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15,i16,i17,i18,i19,i20,i21,i22,i23,i24,i25,i-1));
       j++;
     }
-    fclose(inDataFile);
+    inDataFile.close();
   }
 
 }
