@@ -67,46 +67,39 @@ double EPSILON = 0.00000000000001;
 extern CORNERLIST *g_currentCornerList;
 extern int g_isFirstScan;
 extern int g_time;
-extern iDLIST_OF<FALARM> *g_falarms_ptr;
-extern iDLIST_OF<CORNER_TRACK> *g_cornerTracks_ptr;
 
 using std::cout;
 using std::endl;
 /*------------------------------------------------------*
  * findTrack():  look for the track with given id in the
- * global cornerTrackList and return a ptr to it.  If
+ * cornerTrackList and return a ptr to it.  If
  * not found create one
  *------------------------------------------------------*/
 
-CORNER_TRACK *findTrack( int id )
+CORNER_TRACK *CORNER_TRACK_MHT::findTrack( const int &id )
 {
 
-    PTR_INTO_iDLIST_OF< CORNER_TRACK > p;
-    CORNER_TRACK *newTrack;
-
-    LOOP_DLIST( p, *g_cornerTracks_ptr)
+    for (std::list<CORNER_TRACK>::iterator p = m_cornerTracks.begin();
+       p != m_cornerTracks.end();
+       p++)
     {
-        if( (*p).id == id )
+        if( p->id == id )
         {
-            return p.get();
+            return &(*p);
         }
     }
 
-    newTrack = new CORNER_TRACK( id, getTrackColor(id) );
-    g_cornerTracks_ptr->append( newTrack );
+    m_cornerTracks.push_back( CORNER_TRACK( id, getTrackColor(id) ) );
 
-    return newTrack;
+    return &(m_cornerTracks.back());
 }
 
 /*-------------------------------------------------------------------*
  * saveFalarm(report): saves the given report in the FALARM list
- *                    *g_falarms_ptr
  *-------------------------------------------------------------------*/
-
-
-void saveFalarm( CONSTPOS_REPORT *report )
+void CORNER_TRACK_MHT::saveFalarm( CONSTPOS_REPORT *report )
 {
-    g_falarms_ptr->append( new FALARM( report ) );
+    m_falarms.push_back( FALARM( report ) );
 }
 
 
@@ -116,18 +109,16 @@ void saveFalarm( CONSTPOS_REPORT *report )
  *                    given report & state and append it to the
  *                    list of CORNER_TRACK_ELEMENTs of that CORNER_TRACK
  *-------------------------------------------------------------------*/
-
-void verify( int trackId, double r_x, double r_y, double s_x, double s_y,
-             double logLikelihood,
-             int modelType, int frame)
+void CORNER_TRACK_MHT::verify( int trackId, double r_x, double r_y, double s_x, double s_y,
+                               double logLikelihood,
+                               int modelType, int frame)
 {
-
     CORNER_TRACK *track;
 
 //  printf("Verifying trackId=%d r_x=%lf r_y=%lf s_x=%lf s_y=%lf frame=%d\n",
 //			trackId,r_x,r_y,s_x,s_y,frame);
     track = findTrack( trackId );
-    track->list.append( new CORNER_TRACK_ELEMENT( s_x,s_y,r_x,r_y,logLikelihood,modelType,g_time,frame));
+    track->list.push_back( CORNER_TRACK_ELEMENT( s_x,s_y,r_x,r_y,logLikelihood,modelType,g_time,frame));
 }
 
 /**-------------------------------------------------------------------
@@ -136,30 +127,28 @@ void verify( int trackId, double r_x, double r_y, double s_x, double s_y,
  * them as reports
  *-------------------------------------------------------------------*/
 
-void CORNER_TRACK_MHT::measure()
+void CORNER_TRACK_MHT::measure(const std::list<CORNER> &newReports)
 {
-
-    PTR_INTO_ptrDLIST_OF< T_HYPO > tHypoPtr;
-    PTR_INTO_iDLIST_OF< CORNER > cornerPtr;
-
-    LOOP_DLIST( cornerPtr,g_currentCornerList->list)
+    for (std::list<CORNER>::const_iterator cornerPtr = newReports.begin();
+         cornerPtr != newReports.end();
+         cornerPtr++)
     {
         installReport(new CONSTPOS_REPORT(m_falarmLogLikelihood,
-                                          (*cornerPtr).x, (*cornerPtr).y,
-                                          (*cornerPtr).i1, (*cornerPtr).i2,
-                                          (*cornerPtr).i3, (*cornerPtr).i4,
-                                          (*cornerPtr).i5, (*cornerPtr).i6,
-                                          (*cornerPtr).i7, (*cornerPtr).i8,
-                                          (*cornerPtr).i9, (*cornerPtr).i10,
-                                          (*cornerPtr).i11, (*cornerPtr).i12,
-                                          (*cornerPtr).i13, (*cornerPtr).i14,
-                                          (*cornerPtr).i15, (*cornerPtr).i16,
-                                          (*cornerPtr).i17, (*cornerPtr).i18,
-                                          (*cornerPtr).i19, (*cornerPtr).i20,
-                                          (*cornerPtr).i21, (*cornerPtr).i22,
-                                          (*cornerPtr).i23, (*cornerPtr).i24,
-                                          (*cornerPtr).i25,
-                                          (*cornerPtr).frameNo)
+                                          cornerPtr->x, cornerPtr->y,
+                                          cornerPtr->i1, cornerPtr->i2,
+                                          cornerPtr->i3, cornerPtr->i4,
+                                          cornerPtr->i5, cornerPtr->i6,
+                                          cornerPtr->i7, cornerPtr->i8,
+                                          cornerPtr->i9, cornerPtr->i10,
+                                          cornerPtr->i11, cornerPtr->i12,
+                                          cornerPtr->i13, cornerPtr->i14,
+                                          cornerPtr->i15, cornerPtr->i16,
+                                          cornerPtr->i17, cornerPtr->i18,
+                                          cornerPtr->i19, cornerPtr->i20,
+                                          cornerPtr->i21, cornerPtr->i22,
+                                          cornerPtr->i23, cornerPtr->i24,
+                                          cornerPtr->i25,
+                                          cornerPtr->frameNo)
                      );
     }
 

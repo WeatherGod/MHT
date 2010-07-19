@@ -5,6 +5,7 @@
 #include <iostream>	// for std::cout, std::endl, std::cerr
 #include <fstream>	// for ifstream and ofstream
 #include <sstream>	// for stringstream
+#include <list>		// for std::list<>
 #include "param.h"       //  contains values of needed parameters 
 #include "motionModel.h"
 
@@ -17,8 +18,8 @@
  * External Variables
  */
 int g_isFirstScan=1;
-iDLIST_OF< FALARM > *g_falarms_ptr;   // list of false alarms found
-iDLIST_OF< CORNER_TRACK > *g_cornerTracks_ptr; // list of cornerTracks found
+//iDLIST_OF< FALARM > *g_falarms_ptr;   // list of false alarms found
+//iDLIST_OF< CORNER_TRACK > *g_cornerTracks_ptr; // list of cornerTracks found
 CORNERLIST *g_currentCornerList;
 int g_time;
 
@@ -54,7 +55,10 @@ void PrintHelp()
 int main(int argc, char **argv)
 {
     Parameter read_param(const std::string &paramFileName);
-    void writeCornerTrackFile(const std::string &trackFileName, const Parameter &param);
+    void writeCornerTrackFile(const std::string &trackFileName,
+                              const Parameter &param,
+                              const std::list< CORNER_TRACK > &cornerTracks,
+                              const std::list< FALARM > &falarms);
     iDLIST_OF<CORNERLIST>* readCorners(const std::string &inputFileName);
 
     iDLIST_OF<CORNERLIST> *inputData;
@@ -148,8 +152,8 @@ int main(int argc, char **argv)
      * Every corner will be assigned to to either a CornerTrack or a false alarm
      */
 
-    g_cornerTracks_ptr = new iDLIST_OF<CORNER_TRACK>;
-    g_falarms_ptr = new iDLIST_OF< FALARM >;
+    //g_cornerTracks_ptr = new iDLIST_OF<CORNER_TRACK>;
+    //g_falarms_ptr = new iDLIST_OF< FALARM >;
 
 
     /*
@@ -214,7 +218,7 @@ int main(int argc, char **argv)
     std::cout << "About to scan...\n";
 
     int didIscan=0;
-    while( (didIscan=mht.scan()) != 0 )
+    while( (didIscan=mht.scan(g_currentCornerList)) != 0 )
     {
         std::cout << "******************CURRENT_TIME=" << mht.getCurrentTime() << ' '
                   << "ENDTIME=" << param.endScan << "****************\n";
@@ -252,7 +256,10 @@ int main(int argc, char **argv)
      * associated corners
      */
 
-    writeCornerTrackFile(outputFileName, param);
+    writeCornerTrackFile(outputFileName, param,
+                         mht.GetTracks(), mht.GetFalseAlarms());
+
+    return(0);
 
 }
 
@@ -444,12 +451,10 @@ Parameter read_param(const std::string &paramFile)
  * the CORNER_TRACKs into a file.
  *----------------------------------------------------------*/
 
-void writeCornerTrackFile(const std::string &name, const Parameter &param)
+void writeCornerTrackFile(const std::string &name, const Parameter &param,
+                          const std::list< CORNER_TRACK > &cornerTracks,
+                          const std::list< FALARM > &falarms)
 {
-
-    PTR_INTO_iDLIST_OF< CORNER_TRACK > cornerTrack;
-    PTR_INTO_iDLIST_OF< CORNER_TRACK_ELEMENT > cornerTrackEl;
-    PTR_INTO_iDLIST_OF< FALARM > falarm;
     int id;
 
     std::ofstream CornerTrackFile(name.c_str(), std::ios_base::out);
@@ -505,11 +510,11 @@ void writeCornerTrackFile(const std::string &name, const Parameter &param)
     /*
      * Write the number of CornerTracks & falsealarms
      */
-    CornerTrackFile << g_cornerTracks_ptr->getLength() << "\n"
-                    << g_falarms_ptr->getLength() << std::endl;
+    CornerTrackFile << cornerTracks.size() << "\n"
+                    << falarms.size() << std::endl;
 
     /*
-     * Information about each CornerTrack
+     * Information about each CornerTrack is organized as follows:
      *     CornerTrackId  CornerTrackLength CornerTrackColor
      *     Code Measurement(x dx y dy)  EstimatedState(x dx y dy)
      *
@@ -519,22 +524,26 @@ void writeCornerTrackFile(const std::string &name, const Parameter &param)
      */
     // Looping over each track
     id = 0;
-    LOOP_DLIST( cornerTrack, *g_cornerTracks_ptr )
+    for (std::list<CORNER_TRACK>::const_iterator cornerTrack = cornerTracks.begin();
+         cornerTrack != cornerTracks.end();
+         cornerTrack++)
     {
-        CornerTrackFile << id++ << ' ' << (*cornerTrack).list.getLength() << std::endl;
+        CornerTrackFile << id++ << ' ' << cornerTrack->list.size() << std::endl;
 
         // Looping over each corner of the track
-        LOOP_DLIST( cornerTrackEl, (*cornerTrack).list )
+        for( std::list<CORNER_TRACK_ELEMENT>::const_iterator cornerTrackEl = cornerTrack->list.begin();
+             cornerTrackEl != cornerTrack->list.end();
+             cornerTrackEl++ )
         {
-            CornerTrackFile << ((*cornerTrackEl).hasReport ? 'M':'S') << ' '
-                            << (*cornerTrackEl).rx << ' '
-                            << (*cornerTrackEl).ry << ' '
-                            << (*cornerTrackEl).sx << ' '
-                            << (*cornerTrackEl).sy << ' '
-                            << (*cornerTrackEl).logLikelihood << ' '
-                            << (*cornerTrackEl).time << ' '
-                            << (*cornerTrackEl).frameNo << ' '
-                            << (*cornerTrackEl).model << std::endl;
+            CornerTrackFile << (cornerTrackEl->hasReport ? 'M':'S') << ' '
+                            << cornerTrackEl->rx << ' '
+                            << cornerTrackEl->ry << ' '
+                            << cornerTrackEl->sx << ' '
+                            << cornerTrackEl->sy << ' '
+                            << cornerTrackEl->logLikelihood << ' '
+                            << cornerTrackEl->time << ' '
+                            << cornerTrackEl->frameNo << ' '
+                            << cornerTrackEl->model << std::endl;
         }
     }
 
@@ -543,12 +552,15 @@ void writeCornerTrackFile(const std::string &name, const Parameter &param)
      *     x y t
      */
     // Looping over the false alarms
-    LOOP_DLIST( falarm, *g_falarms_ptr )
+    for (std::list<FALARM>::const_iterator falarm = falarms.begin();
+         falarm != falarms.end();
+         falarm++)
     {
-        CornerTrackFile << (*falarm).rX << ' '
-                        << (*falarm).rY << ' '
-                        << (*falarm).frameNo << std::endl;
+        CornerTrackFile << falarm->rX << ' '
+                        << falarm->rY << ' '
+                        << falarm->frameNo << std::endl;
     }
+
     CornerTrackFile.close();
 }
 
@@ -633,7 +645,7 @@ iDLIST_OF<CORNERLIST>* readCorners(const std::string &inputFileName)
 
 #endif
 
-            (*cptr).list.append(new CORNER(x,y,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15,i16,i17,i18,i19,i20,i21,i22,i23,i24,i25,i-1));
+            (*cptr).list.push_back(CORNER(x,y,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15,i16,i17,i18,i19,i20,i21,i22,i23,i24,i25,i-1));
             j++;
         }
         inDataFile.close();

@@ -457,6 +457,8 @@
 #include "links.h"
 #include "vector.h"
 //#include "mem.h"
+#include <list>
+#include "corner.h"
 
 
 #ifdef DECLARE_MHT
@@ -1024,7 +1026,7 @@ protected:
 
 protected:
 
-    virtual void measureAndValidate()
+    virtual void measureAndValidate(const std::list<CORNER> &newReports)
     {
         assert(false);
     }//THROW_ERR( "Call to MHT::measureAndValidate()" ) }
@@ -1040,7 +1042,7 @@ public:
         return m_currentTime;
     }
 
-    int scan();
+    int scan(CORNERLIST *newReport);
     void clear();
 
 private:

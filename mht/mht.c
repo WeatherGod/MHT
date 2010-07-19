@@ -45,20 +45,20 @@
 
 #include "mht.h"
 #include "timer.h"
+#include <list>
+#include "corner.h"
 
 /*-------------------------------------------------------------------*
  | MHT::scan() -- do an iteration of the mht algorithm
  *-------------------------------------------------------------------*/
 
-int MHT::scan()
+int MHT::scan(CORNERLIST *newReports)
 {
-
-
     Timer timer;
 
     G_numCallsToScan++;
 
-    measureAndValidate();
+    measureAndValidate(newReports->list);
     m_currentTime++;
 
     if( m_dbgStartA <= m_currentTime && m_currentTime < m_dbgEndA )

@@ -28,7 +28,7 @@ trackCorners: param.h motionModel.h $(INC)/assign.h \
 motionModel.o: motionModel.c motionModel.h param.h \
 	$(INC)/except.h $(INC)/mdlmht.h $(INC)/matrix.h\
 	$(INC)/safeglobal.h $(INC)/mht.h $(INC)/list.h $(INC)/tree.h \
-	$(INC)/links.h $(INC)/vector.h 
+	$(INC)/links.h $(INC)/vector.h $(INC)/corner.h
 	$(C++) -c $(C++FLAGS) motionModel.c
 
 trackCorners.o: trackCorners.c motionModel.h $(INC)/except.h 

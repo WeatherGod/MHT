@@ -109,12 +109,14 @@
 #include "matrix.h"
 #include "mdlmht.h"
 #include "param.h"
+#include "corner.h"
 #include <math.h>
 #include <cstdio>		// for  sprintf
+#include <list>			// for std::list<>
 
 static int g_numTracks;
 
-class  CONSTPOS_REPORT;
+class CONSTPOS_REPORT;
 class CORNER_TRACK_MDL;
 class CONSTPOS_STATE;
 class CONSTPOS_MDL;
@@ -123,47 +125,6 @@ class CONSTVEL_MDL;
 class CONSTCURV_STATE;
 class CONSTCURV_MDL;
 class CORNER_TRACK_MHT;
-
-/*-----------------------------------------------*
- * Data structure for storing input corner data
- *-----------------------------------------------*/
-
-struct CORNER:public DLISTnode
-{
-    double x,y;
-    USHORT i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15,i16,i17,i18,i19,i20;
-    USHORT i21,i22,i23,i24,i25;
-    int frameNo;
-    CORNER(int a, int b, USHORT I1, USHORT I2, USHORT I3, USHORT I4,
-           USHORT I5, USHORT I6, USHORT I7, USHORT I8, USHORT I9, USHORT I10,
-           USHORT I11, USHORT I12, USHORT I13, USHORT I14, USHORT I15, USHORT I16,
-           USHORT I17, USHORT I18, USHORT I19, USHORT I20, USHORT I21, USHORT I22,
-           USHORT I23, USHORT I24, USHORT I25, int f):
-        x(double(a)),y(double(b)),i1(I1),i2(I2),i3(I3),i4(I4),i5(I5),i6(I6),i7(I7),i8(I8),
-        i9(I9),i10(I10),i11(I11),i12(I12),i13(I13),i14(I14),i15(I15),i16(I16),
-        i17(I17),i18(I18),i19(I19),i20(I20),i21(I21),i22(I22),i23(I23),i24(I24),i25(I25),
-        frameNo(f)
-    {
-//    printf("Read Corner %lf %lf %hd %hd %hd %hd %hd %hd %hd %hd\n",x,y,i1,i2,i3,i4,i5,i6,i7,i8);
-    }
-
-protected:
-    MEMBERS_FOR_DLISTnode(CORNER)
-
-};
-
-struct CORNERLIST: public DLISTnode
-{
-    int ncorners;
-    iDLIST_OF<CORNER> list;
-    CORNERLIST(int npts):
-        ncorners(npts), list()
-    {
-    }
-
-protected:
-    MEMBERS_FOR_DLISTnode(CORNERLIST)
-};
 
 
 /*-------------------------------------------------------------------*
@@ -187,8 +148,8 @@ class CONSTPOS_REPORT: public MDL_REPORT
 private:
 
     double m_falarmLogLikelihood;    // log of the likelihood that
-    // this report is a false alarm
-    // (not really part of a CORNER_TRACK)
+                                     // this report is a false alarm
+                                     // (not really part of a CORNER_TRACK)
     MATRIX m_z;                      // (x, dx, y, dy)
 
 public:
@@ -213,7 +174,7 @@ public:
                      int f):
         MDL_REPORT(),
         m_falarmLogLikelihood( falarmLogLikelihood ),
-        m_z( 2,1),
+        m_z( 2, 1 ),
         m_frameNo(f)
 
     {
@@ -280,7 +241,7 @@ public:
     }
     double getY()
     {
-        return m_z( 1);
+        return m_z( 1 );
     }
     void printMeas()
     {
@@ -329,22 +290,22 @@ private:
     double m_startLogLikelihood;     // likelihood of a CORNER_TRACK starting
     double m_endLogLikelihood;       // likelihood of a CORNER_TRACK ending
     double m_continueLogLikelihood;  // likelihood of a CORNER_TRACK not
-    //   ending
+                                     //   ending
     double m_skipLogLikelihood;      // likelihood of not detecting a
-    //   CORNER_TRACK that hasn't ended
+                                     //   CORNER_TRACK that hasn't ended
     double m_detectLogLikelihood;    // likelihood of detecting a
-    //   CORNER_TRACK that hasn't ended
+                                     //   CORNER_TRACK that hasn't ended
 
     double m_maxDistance;            // maximum mahalanobis distance
-    //   allowed for validating a
-    //   report to a CORNER_TRACK
+                                     //   allowed for validating a
+                                     //   report to a CORNER_TRACK
 
     double m_processVariance;        // process noise
     double m_intensityVariance;
     double m_stateVariance;
     MATRIX m_R;                      // measurement covariance
     MATRIX m_startP;                 // covariance matrix to use at
-    //   start of a CORNER_TRACK
+                                     //   start of a CORNER_TRACK
     double m_intensityThreshold;
 
 public:
@@ -404,26 +365,26 @@ private:
     MATRIX m_x;                      // state estimate (x, dx, y, dy)
     MATRIX m_P;                      // covariance matrix
     double m_logLikelihood;          // likelihood that this state
-    //   is the true state of the
-    //   CORNER_TRACK after the state
-    //   that it was born from (in
-    //   CONSTVEL_MDL::getNewState())
+                                     //   is the true state of the
+                                     //   CORNER_TRACK after the state
+                                     //   that it was born from (in
+                                     //   CONSTVEL_MDL::getNewState())
 
     int m_numSkipped;
     int m_hasBeenSetup;              // 0 before the following variables
-    //   have been filled in, 1 after
+                                     //   have been filled in, 1 after
 
     double m_ds;                     // "time" step until the next state
-    //   (chosen so that the next state
-    //   lands in a neighboring pixel)
+                                     //   (chosen so that the next state
+                                     //   lands in a neighboring pixel)
     double m_logLikelihoodCoef;      // part of likelihood calculation
-    //   that's independent of the
-    //   inovation
+                                     //   that's independent of the
+                                     //   inovation
     MATRIX *m_Sinv;                  // inverse of the innovation
-    //   covariance
+                                     //   covariance
     MATRIX *m_W;                     // filter gain
     MATRIX *m_nextP;                 // updated state covariance
-    //   (covariance for next state)
+                                     //   (covariance for next state)
     MATRIX *m_x1;                    // state prediction
     USHORT m_prevInt[25];
 
@@ -696,12 +657,14 @@ public:
  *
  *-------------------------------------------------------------------*/
 
-struct FALARM: public DLISTnode
+class FALARM: public DLISTnode
 {
+public:
     double rX, rY;
     int frameNo;
 
     FALARM( CONSTPOS_REPORT *xreport ):
+        DLISTnode(),
         rX( xreport->getX() ),
         rY( xreport->getY() ),
         frameNo( xreport->m_frameNo )
@@ -724,8 +687,9 @@ protected:
  *-------------------------------------------------------------------*/
 
 
-struct CORNER_TRACK_ELEMENT: public DLISTnode
+class CORNER_TRACK_ELEMENT: public DLISTnode
 {
+public:
     int hasReport;
     double sx,sy;
     double rx,ry;
@@ -735,6 +699,7 @@ struct CORNER_TRACK_ELEMENT: public DLISTnode
     char   model[30];
 
     CORNER_TRACK_ELEMENT(double s_x, double s_y, double r_x, double r_y, double prob, int type,int t,int f):
+        DLISTnode(),
         sx(s_x),sy(s_y),rx(r_x),ry(r_y),logLikelihood(prob),time(t),frameNo(f)
     {
         if (r_x >0.0 && r_y > 0.0)
@@ -773,14 +738,16 @@ protected:
  *
  *-------------------------------------------------------------------*/
 
-struct CORNER_TRACK: public DLISTnode
+class CORNER_TRACK: public DLISTnode
 {
+public:
     int id;
     int color;
 
-    iDLIST_OF< CORNER_TRACK_ELEMENT > list;
+    std::list< CORNER_TRACK_ELEMENT > list;
 
     CORNER_TRACK( int idArg, int colorArg ):
+        DLISTnode(),
         id( idArg ),
         color( colorArg ),
         list()
@@ -792,9 +759,6 @@ protected:
     MEMBERS_FOR_DLISTnode( CORNER_TRACK )
 };
 
-void saveFalarm( CONSTPOS_REPORT *report );
-void verify( int trackId, double r_x,double r_y, double s_x,
-             double s_y,double likelihood, int modelType,int frame);
 
 
 /*-------------------------------------------------------------------*
@@ -809,19 +773,31 @@ public:
 
     CORNER_TRACK_MHT( double fprob,int maxDepth, double minGHypoRatio, int maxGHypos,
                       ptrDLIST_OF<MODEL> mdlist ):
-        MDL_MHT( maxDepth, minGHypoRatio, maxGHypos )
+        MDL_MHT( maxDepth, minGHypoRatio, maxGHypos ),
+        m_falarmLogLikelihood( log(fprob) ),
+        m_cornerTracks(),
+        m_falarms()
     {
-        m_falarmLogLikelihood=log(fprob);
         m_modelList.appendCopy( mdlist );
     }
     virtual void describe(int spaces=0);
+    virtual std::list< CORNER_TRACK > GetTracks() const
+    {
+        return m_cornerTracks;
+    }
+    virtual std::list< FALARM > GetFalseAlarms() const
+    {
+        return m_falarms;
+    }
 
 private:
     double m_falarmLogLikelihood;
+    std::list< CORNER_TRACK > m_cornerTracks;
+    std::list< FALARM > m_falarms;
 
 protected:
 
-    virtual void measure();
+    virtual void measure(const std::list<CORNER> &newReports);
 
     virtual void startTrack( int trackId, int,
                              MDL_STATE *state, MDL_REPORT *report )
@@ -870,9 +846,14 @@ protected:
 
     virtual void falseAlarm( int, MDL_REPORT *report )
     {
-
         saveFalarm( (CONSTPOS_REPORT*)report );
     }
+
+private:
+    CORNER_TRACK* findTrack( const int &id );
+    void saveFalarm( CONSTPOS_REPORT *report );
+    void verify( int trackID, double r_x, double r_y, double s_x,
+                 double s_y, double likelihood, int modelType, int frame);
 };
 
 int getTrackColor( int trackId );

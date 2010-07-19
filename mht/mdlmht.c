@@ -47,7 +47,7 @@
  |                                  and grow track trees
  *-------------------------------------------------------------------*/
 
-void MDL_MHT::measureAndValidate()
+void MDL_MHT::measureAndValidate(const std::list< CORNER > &newReports)
 {
 
 
@@ -58,7 +58,7 @@ void MDL_MHT::measureAndValidate()
     MDL_ROOT_T_HYPO *root;
 
     /* get reports of measurements */
-    measure();
+    measure(newReports);
 
     /* loop through all the active track hypotheses (leaves of the track
        trees), making children for each one */

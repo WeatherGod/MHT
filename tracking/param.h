@@ -2,7 +2,6 @@
 #define PARAM_H
 
 #define MAX_COLORS 17
-typedef unsigned short USHORT;
 typedef struct
 {
     double positionVarianceX;

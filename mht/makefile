@@ -38,10 +38,10 @@ assign_test: assign_test.o bassign.o libmht.a
 	$(build) assign_test.o bassign.o -L. -lmht -lm
 
 
-mdlmht.o: mdlmht.h mht.h except.h safeglobal.h list.h tree.h links.h vector.h mdlmht.c
+mdlmht.o: mdlmht.h mht.h except.h safeglobal.h list.h tree.h links.h vector.h corner.h mdlmht.c
 	$(C++) -c $(C++FLAGS) mdlmht.c
 
-mht.o: mht.h safeglobal.h list.h tree.h links.h vector.h except.h mht.c
+mht.o: mht.h safeglobal.h list.h tree.h links.h vector.h except.h corner.h mht.c
 	$(C++) -c $(C++FLAGS) mht.c
 
 mht_group.o: mht.h pqueue.h apqueue.h safeglobal.h list.h tree.h \
