@@ -9,6 +9,7 @@ typedef unsigned short USHORT;
  * Data structure for storing input corner data
  *-----------------------------------------------*/
 
+
 class CORNER:public DLISTnode
 {
 public:
@@ -21,6 +22,7 @@ public:
            USHORT I11, USHORT I12, USHORT I13, USHORT I14, USHORT I15, USHORT I16,
            USHORT I17, USHORT I18, USHORT I19, USHORT I20, USHORT I21, USHORT I22,
            USHORT I23, USHORT I24, USHORT I25, int f):
+        DLISTnode(),
         x(double(a)),y(double(b)),i1(I1),i2(I2),i3(I3),i4(I4),i5(I5),i6(I6),i7(I7),i8(I8),
         i9(I9),i10(I10),i11(I11),i12(I12),i13(I13),i14(I14),i15(I15),i16(I16),
         i17(I17),i18(I18),i19(I19),i20(I20),i21(I21),i22(I22),i23(I23),i24(I24),i25(I25),
@@ -32,6 +34,7 @@ protected:
     MEMBERS_FOR_DLISTnode(CORNER)
 
 };
+
 
 class CORNERLIST: public DLISTnode
 {

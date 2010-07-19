@@ -6,6 +6,7 @@
 #include <fstream>	// for ifstream and ofstream
 #include <sstream>	// for stringstream
 #include <list>		// for std::list<>
+#include <vector>	// for std::vector<>
 #include "param.h"       //  contains values of needed parameters 
 #include "motionModel.h"
 
@@ -20,7 +21,7 @@
 int g_isFirstScan=1;
 //iDLIST_OF< FALARM > *g_falarms_ptr;   // list of false alarms found
 //iDLIST_OF< CORNER_TRACK > *g_cornerTracks_ptr; // list of cornerTracks found
-CORNERLIST *g_currentCornerList;
+//CORNERLIST *g_currentCornerList;
 int g_time;
 
 void PrintSyntax()
@@ -59,9 +60,9 @@ int main(int argc, char **argv)
                               const Parameter &param,
                               const std::list< CORNER_TRACK > &cornerTracks,
                               const std::list< FALARM > &falarms);
-    iDLIST_OF<CORNERLIST>* readCorners(const std::string &inputFileName);
+    std::list<CORNERLIST> readCorners(const std::string &inputFileName);
 
-    iDLIST_OF<CORNERLIST> *inputData;
+    std::list<CORNERLIST> inputData;
     ptrDLIST_OF<MODEL> mdl;
 
     std::string outputFileName = "";
@@ -206,8 +207,8 @@ int main(int argc, char **argv)
      *  1st frame
      */
 
-    PTR_INTO_iDLIST_OF<CORNERLIST> cornerPtr(*inputData, START_AT_HEAD);
-    g_currentCornerList = cornerPtr.get();
+    std::list<CORNERLIST>::iterator cornerListIter = inputData.begin();
+    //g_currentCornerList = cornerPtr.get();
 
 
     /*
@@ -218,7 +219,8 @@ int main(int argc, char **argv)
     std::cout << "About to scan...\n";
 
     int didIscan=0;
-    while( (didIscan=mht.scan(g_currentCornerList)) != 0 )
+    while( cornerListIter != inputData.end()
+           && (didIscan=mht.scan(*cornerListIter)) != 0 )
     {
         std::cout << "******************CURRENT_TIME=" << mht.getCurrentTime() << ' '
                   << "ENDTIME=" << param.endScan << "****************\n";
@@ -236,17 +238,12 @@ int main(int argc, char **argv)
                 g_isFirstScan=0;
             }
 //        mht.describe();
-            ++cornerPtr;
-            if (!cornerPtr.isValid())
-            {
-                break;
-            }
-            g_currentCornerList = cornerPtr.get();
+            cornerListIter++;
         }
 
     }
 //    mht.describe();
-    std::cout << "\n CLEARING \n";
+    std::cout << "\n CLEARING \n" << std::endl;
     mht.clear();
 //    mht.describe();
 
@@ -255,7 +252,6 @@ int main(int argc, char **argv)
      * And write out dataFile containing list of CORNER_TRACKs and
      * associated corners
      */
-
     writeCornerTrackFile(outputFileName, param,
                          mht.GetTracks(), mht.GetFalseAlarms());
 
@@ -572,13 +568,11 @@ void writeCornerTrackFile(const std::string &name, const Parameter &param,
  *------------------------------------------------------------------*/
 
 
-iDLIST_OF<CORNERLIST>* readCorners(const std::string &inputFileName)
+std::list<CORNERLIST> readCorners(const std::string &inputFileName)
 {
-    iDLIST_OF<CORNERLIST> *inputData = new iDLIST_OF<CORNERLIST>;
+    std::list<CORNERLIST> inputData;
+    std::vector<int> ncorners(0);
 
-    PTR_INTO_iDLIST_OF<CORNERLIST> cptr;
-    PTR_INTO_iDLIST_OF<CORNER> ptr;
-    int ncorners[100];
     std::string str;
     int npoints;
     // TODO: There is probably a very smart reason for this, but it escapes me at the moment
@@ -602,9 +596,9 @@ iDLIST_OF<CORNERLIST>* readCorners(const std::string &inputFileName)
     for (int frameIndex=0; frameIndex < totalFrames; frameIndex++)
     {
         controlFile >> npoints;
-        ncorners[frameIndex] = npoints;
+        ncorners.push_back(npoints);
         std::cout << "ncorners[" << frameIndex << "]=" << ncorners[frameIndex] << std::endl;
-        inputData->append(new CORNERLIST(ncorners[frameIndex]));
+        inputData.push_back(CORNERLIST(npoints));
     }
 
     controlFile.close();
@@ -613,9 +607,10 @@ iDLIST_OF<CORNERLIST>* readCorners(const std::string &inputFileName)
      * Open each frame and read the corner Data from them, saving
      * the data in inputData
      */
-
     int i = startFrame;
-    LOOP_DLIST(cptr,*inputData)
+    for (std::list<CORNERLIST>::iterator aCornerList = inputData.begin();
+         aCornerList != inputData.end();
+         aCornerList++)
     {
         int x,y;
         USHORT i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15;
@@ -645,7 +640,7 @@ iDLIST_OF<CORNERLIST>* readCorners(const std::string &inputFileName)
 
 #endif
 
-            (*cptr).list.push_back(CORNER(x,y,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15,i16,i17,i18,i19,i20,i21,i22,i23,i24,i25,i-1));
+            aCornerList->list.push_back(CORNER(x,y,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15,i16,i17,i18,i19,i20,i21,i22,i23,i24,i25,i-1));
             j++;
         }
         inDataFile.close();

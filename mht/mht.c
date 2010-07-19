@@ -52,13 +52,13 @@
  | MHT::scan() -- do an iteration of the mht algorithm
  *-------------------------------------------------------------------*/
 
-int MHT::scan(CORNERLIST *newReports)
+int MHT::scan(const CORNERLIST &newReports)
 {
     Timer timer;
 
     G_numCallsToScan++;
 
-    measureAndValidate(newReports->list);
+    measureAndValidate(newReports.list);
     m_currentTime++;
 
     if( m_dbgStartA <= m_currentTime && m_currentTime < m_dbgEndA )

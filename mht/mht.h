@@ -1042,7 +1042,7 @@ public:
         return m_currentTime;
     }
 
-    int scan(CORNERLIST *newReport);
+    int scan(const CORNERLIST &newReport);
     void clear();
 
 private:

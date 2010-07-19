@@ -64,7 +64,7 @@
 
 double EPSILON = 0.00000000000001;
 
-extern CORNERLIST *g_currentCornerList;
+//extern CORNERLIST *g_currentCornerList;
 extern int g_isFirstScan;
 extern int g_time;
 
