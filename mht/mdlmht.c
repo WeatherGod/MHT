@@ -49,42 +49,42 @@
 
 void MDL_MHT::measureAndValidate()
 {
-  
 
-  PTR_INTO_ptrDLIST_OF< T_HYPO > tHypoPtr;
-  MDL_T_HYPO *tHypo;
-  PTR_INTO_iDLIST_OF< REPORT > reportPtr;
-  MDL_REPORT *report;
-  MDL_ROOT_T_HYPO *root;
 
-  /* get reports of measurements */
-  measure();
+    PTR_INTO_ptrDLIST_OF< T_HYPO > tHypoPtr;
+    MDL_T_HYPO *tHypo;
+    PTR_INTO_iDLIST_OF< REPORT > reportPtr;
+    MDL_REPORT *report;
+    MDL_ROOT_T_HYPO *root;
 
-  /* loop through all the active track hypotheses (leaves of the track
-     trees), making children for each one */
-  LOOP_DLIST( tHypoPtr, m_activeTHypoList )
-  {
-    tHypo = (MDL_T_HYPO *)tHypoPtr.get();
+    /* get reports of measurements */
+    measure();
 
-    tHypo->makeDefaultChildren();
+    /* loop through all the active track hypotheses (leaves of the track
+       trees), making children for each one */
+    LOOP_DLIST( tHypoPtr, m_activeTHypoList )
+    {
+        tHypo = (MDL_T_HYPO *)tHypoPtr.get();
 
+        tHypo->makeDefaultChildren();
+
+        LOOP_DLIST( reportPtr, m_newReportList )
+        {
+            report = (MDL_REPORT *)reportPtr.get();
+            tHypo->makeChildrenFor( report );
+        }
+    }
+
+    /* make a new track tree for each reported measurement */
     LOOP_DLIST( reportPtr, m_newReportList )
     {
-      report = (MDL_REPORT *)reportPtr.get();
-      tHypo->makeChildrenFor( report );
+        report = (MDL_REPORT *)reportPtr.get();
+
+        root = new MDL_ROOT_T_HYPO( this );
+        installTree( root, -1 );
+        root->makeDefaultChildren();
+        root->makeChildrenFor( report );
     }
-  }
-
-  /* make a new track tree for each reported measurement */
-  LOOP_DLIST( reportPtr, m_newReportList )
-  {
-    report = (MDL_REPORT *)reportPtr.get();
-
-    root = new MDL_ROOT_T_HYPO( this );
-    installTree( root, -1 );
-    root->makeDefaultChildren();
-    root->makeChildrenFor( report );
-  }
 }
 
 /*-------------------------------------------------------------------*
@@ -96,9 +96,9 @@ void MDL_MHT::measureAndValidate()
 
 void MDL_ROOT_T_HYPO::makeDefaultChildren()
 {
-  
 
-  installChild( new MDL_DUMMY_T_HYPO( m_mdlMht ) );
+
+    installChild( new MDL_DUMMY_T_HYPO( m_mdlMht ) );
 }
 
 /*-------------------------------------------------------------------*
@@ -109,33 +109,33 @@ void MDL_ROOT_T_HYPO::makeDefaultChildren()
 
 void MDL_ROOT_T_HYPO::makeChildrenFor( MDL_REPORT *report )
 {
-  
 
-  PTR_INTO_ptrDLIST_OF< MODEL > modelPtr;
-  MODEL *mdl;
-  MDL_STATE *state;
-  int numStartStates;
-  int i;
 
-  installChild( new MDL_FALARM_T_HYPO( m_mdlMht, report ) );
+    PTR_INTO_ptrDLIST_OF< MODEL > modelPtr;
+    MODEL *mdl;
+    MDL_STATE *state;
+    int numStartStates;
+    int i;
 
-  LOOP_DLIST( modelPtr, m_mdlMht->m_modelList )
-  {
-    mdl = modelPtr.get();
+    installChild( new MDL_FALARM_T_HYPO( m_mdlMht, report ) );
 
-    numStartStates = mdl->beginNewStates( 0, report );
-
-    for( i = 0; i < numStartStates; i++ )
+    LOOP_DLIST( modelPtr, m_mdlMht->m_modelList )
     {
-      state = mdl->getNewState( i, 0, report );
-      if( state != 0 )
-        installChild( new MDL_START_T_HYPO( m_mdlMht,
-                                            state,
-                                            report ) );
-    }
+        mdl = modelPtr.get();
 
-    mdl->endNewStates();
-  }
+        numStartStates = mdl->beginNewStates( 0, report );
+
+        for( i = 0; i < numStartStates; i++ )
+        {
+            state = mdl->getNewState( i, 0, report );
+            if( state != 0 )
+                installChild( new MDL_START_T_HYPO( m_mdlMht,
+                                                    state,
+                                                    report ) );
+        }
+
+        mdl->endNewStates();
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -147,9 +147,9 @@ void MDL_ROOT_T_HYPO::makeChildrenFor( MDL_REPORT *report )
 
 void MDL_DUMMY_T_HYPO::makeDefaultChildren()
 {
-  
 
-  installChild( new MDL_DUMMY_T_HYPO( m_mdlMht, m_logLikelihood ) );
+
+    installChild( new MDL_DUMMY_T_HYPO( m_mdlMht, m_logLikelihood ) );
 }
 
 /*-------------------------------------------------------------------*
@@ -162,41 +162,41 @@ void MDL_DUMMY_T_HYPO::makeDefaultChildren()
 
 void MDL_CONTINUE_T_HYPO::makeDefaultChildren()
 {
-  
 
-  MODEL *mdl = m_state->getMdl();
-  double endLogLikelihood = mdl->getEndLogLikelihood( m_state );
-  double continueLogLikelihood =
-    mdl->getContinueLogLikelihood( m_state );
-  double skipLogLikelihood =
-    mdl->getSkipLogLikelihood( m_state );
-  MDL_STATE *state;
-  int numNewStates;
-  int i;
 
-  if( endLogLikelihood != -INFINITY )
-    installChild( new MDL_END_T_HYPO( m_mdlMht,
-                                      m_logLikelihood,
-                                      skipLogLikelihood,
-                                      endLogLikelihood ) );
+    MODEL *mdl = m_state->getMdl();
+    double endLogLikelihood = mdl->getEndLogLikelihood( m_state );
+    double continueLogLikelihood =
+        mdl->getContinueLogLikelihood( m_state );
+    double skipLogLikelihood =
+        mdl->getSkipLogLikelihood( m_state );
+    MDL_STATE *state;
+    int numNewStates;
+    int i;
 
-  if( continueLogLikelihood != -INFINITY )
-  {
-    numNewStates = mdl->beginNewStates( m_state, 0 );
+    if( endLogLikelihood != -INFINITY )
+        installChild( new MDL_END_T_HYPO( m_mdlMht,
+                                          m_logLikelihood,
+                                          skipLogLikelihood,
+                                          endLogLikelihood ) );
 
-    for( i = 0; i < numNewStates; i++ )
+    if( continueLogLikelihood != -INFINITY )
     {
-      state = mdl->getNewState( i, m_state, 0 );
-      if( state != 0 )
-        installChild( new MDL_SKIP_T_HYPO( m_mdlMht,
-                                           m_logLikelihood,
-                                           continueLogLikelihood,
-                                           skipLogLikelihood,
-                                           state ) );
-    }
+        numNewStates = mdl->beginNewStates( m_state, 0 );
 
-    mdl->endNewStates();
-  }
+        for( i = 0; i < numNewStates; i++ )
+        {
+            state = mdl->getNewState( i, m_state, 0 );
+            if( state != 0 )
+                installChild( new MDL_SKIP_T_HYPO( m_mdlMht,
+                                                   m_logLikelihood,
+                                                   continueLogLikelihood,
+                                                   skipLogLikelihood,
+                                                   state ) );
+        }
+
+        mdl->endNewStates();
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -208,29 +208,29 @@ void MDL_CONTINUE_T_HYPO::makeDefaultChildren()
 
 void MDL_CONTINUE_T_HYPO::makeChildrenFor( MDL_REPORT *report )
 {
-  
 
-  MODEL *mdl = m_state->getMdl();
-  double continueLogLikelihood =
-    mdl->getContinueLogLikelihood( m_state );
-  double detectLogLikelihood =
-    mdl->getDetectLogLikelihood( m_state );
-  MDL_STATE *state;
-  int numNewStates;
-  int i;
 
-  numNewStates = mdl->beginNewStates( m_state, report );
+    MODEL *mdl = m_state->getMdl();
+    double continueLogLikelihood =
+        mdl->getContinueLogLikelihood( m_state );
+    double detectLogLikelihood =
+        mdl->getDetectLogLikelihood( m_state );
+    MDL_STATE *state;
+    int numNewStates;
+    int i;
 
-  for( i = 0; i < numNewStates; i++ )
-  {
-    state = mdl->getNewState( i, m_state, report );
-    if( state != 0 )
-      installChild( new MDL_CONTINUE_T_HYPO( m_mdlMht,
-                                             m_logLikelihood,
-                                             continueLogLikelihood,
-                                             detectLogLikelihood,
-                                             state, report ) );
-  }
+    numNewStates = mdl->beginNewStates( m_state, report );
 
-  mdl->endNewStates();
+    for( i = 0; i < numNewStates; i++ )
+    {
+        state = mdl->getNewState( i, m_state, report );
+        if( state != 0 )
+            installChild( new MDL_CONTINUE_T_HYPO( m_mdlMht,
+                                                   m_logLikelihood,
+                                                   continueLogLikelihood,
+                                                   detectLogLikelihood,
+                                                   state, report ) );
+    }
+
+    mdl->endNewStates();
 }

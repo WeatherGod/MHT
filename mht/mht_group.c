@@ -148,13 +148,13 @@ static ASSIGNMENT_PQUEUE g_apqueue;
 */
 
 #ifdef COMPILER_IS_DEBUGGED
-  static VECTOR_OF< G_HYPO * > g_gHypoArray0;
-  static VECTOR_OF< G_HYPO * > g_gHypoArray1;
+static VECTOR_OF< G_HYPO * > g_gHypoArray0;
+static VECTOR_OF< G_HYPO * > g_gHypoArray1;
 #else
-  #define GLOBAL
-  SAFE_GLOBAL( VECTOR_OF< G_HYPO * >, g_gHypoArray0 )
-  SAFE_GLOBAL( VECTOR_OF< G_HYPO * >, g_gHypoArray1 )
-  #undef GLOBAL
+#define GLOBAL
+SAFE_GLOBAL( VECTOR_OF< G_HYPO * >, g_gHypoArray0 )
+SAFE_GLOBAL( VECTOR_OF< G_HYPO * >, g_gHypoArray1 )
+#undef GLOBAL
 #endif
 #define KBEST
 #define NSCAN_BACK_PRUNING
@@ -165,34 +165,40 @@ static VECTOR_OF< char > g_gHypoPairUsed;
 /* structure indicating a pair of G_HYPOs */
 struct G_HYPO_PAIR
 {
-  int i0, i1;
+    int i0, i1;
 
-  G_HYPO_PAIR(): i0( 0 ), i1( 0 ) {}
+    G_HYPO_PAIR(): i0( 0 ), i1( 0 ) {}
 
-  G_HYPO_PAIR( int i0Arg, int i1Arg ):
-    i0( i0Arg ),
-    i1( i1Arg )
-  {
-  }
+    G_HYPO_PAIR( int i0Arg, int i1Arg ):
+        i0( i0Arg ),
+        i1( i1Arg )
+    {
+    }
 
-  G_HYPO *getGHypo0() const { return g_gHypoArray0[ i0 ]; }
-  G_HYPO *getGHypo1() const { return g_gHypoArray1[ i1 ]; }
+    G_HYPO *getGHypo0() const
+    {
+        return g_gHypoArray0[ i0 ];
+    }
+    G_HYPO *getGHypo1() const
+    {
+        return g_gHypoArray1[ i1 ];
+    }
 
-  double getLogLikelihood() const
-  {
-    return getGHypo0()->getLogLikelihood() +
-           getGHypo1()->getLogLikelihood();
-  }
+    double getLogLikelihood() const
+    {
+        return getGHypo0()->getLogLikelihood() +
+               getGHypo1()->getLogLikelihood();
+    }
 
-  int operator<( const G_HYPO_PAIR &that ) const
-  {
-    return getLogLikelihood() < that.getLogLikelihood();
-  }
+    int operator<( const G_HYPO_PAIR &that ) const
+    {
+        return getLogLikelihood() < that.getLogLikelihood();
+    }
 
-  int operator>( const G_HYPO_PAIR &that ) const
-  {
-    return getLogLikelihood() > that.getLogLikelihood();
-  }
+    int operator>( const G_HYPO_PAIR &that ) const
+    {
+        return getLogLikelihood() > that.getLogLikelihood();
+    }
 };
 
 /*-------------------------------------------------------------------*
@@ -209,69 +215,73 @@ struct G_HYPO_PAIR
 
 static int compareGHypoPtrs( const void *addr0, const void *addr1 )
 {
-  
 
-  #define gHypo0 (*(G_HYPO **)addr0)
-  #define gHypo1 (*(G_HYPO **)addr1)
 
-  if( gHypo0->getLogLikelihood() < gHypo1->getLogLikelihood() )
-    return 1;
-  if( gHypo0->getLogLikelihood() > gHypo1->getLogLikelihood() )
-    return -1;
-  return 0;
+#define gHypo0 (*(G_HYPO **)addr0)
+#define gHypo1 (*(G_HYPO **)addr1)
 
-  #undef gHypo0
-  #undef gHypo1
+    if( gHypo0->getLogLikelihood() < gHypo1->getLogLikelihood() )
+    {
+        return 1;
+    }
+    if( gHypo0->getLogLikelihood() > gHypo1->getLogLikelihood() )
+    {
+        return -1;
+    }
+    return 0;
+
+#undef gHypo0
+#undef gHypo1
 }
 
 static void setupArray0( iDLIST_OF< G_HYPO > &gHypoList, int numGHypos )
 {
-  
 
-  int compareGHypoPtrs( const void *addr0, const void *addr1 );
 
-  PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr;
-  int i;
+    int compareGHypoPtrs( const void *addr0, const void *addr1 );
 
-  g_gHypoArray0.resize( numGHypos );
+    PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr;
+    int i;
 
-  i = 0;
-  LOOP_DLIST( gHypoPtr, gHypoList )
-  {
-    (*gHypoPtr).recomputeLogLikelihood(); // make sure logLikelihood
-                                          //   is up to date
-    g_gHypoArray0[ i++ ] = gHypoPtr.get();
-  }
+    g_gHypoArray0.resize( numGHypos );
 
-  qsort( &g_gHypoArray0[ 0 ],
-         numGHypos,
-         sizeof( G_HYPO * ),
-         compareGHypoPtrs );
+    i = 0;
+    LOOP_DLIST( gHypoPtr, gHypoList )
+    {
+        (*gHypoPtr).recomputeLogLikelihood(); // make sure logLikelihood
+        //   is up to date
+        g_gHypoArray0[ i++ ] = gHypoPtr.get();
+    }
+
+    qsort( &g_gHypoArray0[ 0 ],
+           numGHypos,
+           sizeof( G_HYPO * ),
+           compareGHypoPtrs );
 }
 
 static void setupArray1( iDLIST_OF< G_HYPO > &gHypoList, int numGHypos )
 {
-  
 
-  int compareGHypoPtrs( const void *addr0, const void *addr1 );
 
-  PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr;
-  int i;
+    int compareGHypoPtrs( const void *addr0, const void *addr1 );
 
-  g_gHypoArray1.resize( numGHypos );
+    PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr;
+    int i;
 
-  i = 0;
-  LOOP_DLIST( gHypoPtr, gHypoList )
-  {
-    (*gHypoPtr).recomputeLogLikelihood(); // make sure logLikelihood
-                                          //   is up to date
-    g_gHypoArray1[ i++ ] = gHypoPtr.get();
-  }
+    g_gHypoArray1.resize( numGHypos );
 
-  qsort( &g_gHypoArray1[ 0 ],
-         numGHypos,
-         sizeof( G_HYPO * ),
-         compareGHypoPtrs );
+    i = 0;
+    LOOP_DLIST( gHypoPtr, gHypoList )
+    {
+        (*gHypoPtr).recomputeLogLikelihood(); // make sure logLikelihood
+        //   is up to date
+        g_gHypoArray1[ i++ ] = gHypoPtr.get();
+    }
+
+    qsort( &g_gHypoArray1[ 0 ],
+           numGHypos,
+           sizeof( G_HYPO * ),
+           compareGHypoPtrs );
 }
 
 /*-------------------------------------------------------------------*
@@ -284,89 +294,93 @@ void GROUP::merge( GROUP *src,
                    double logMinGHypoRatio,
                    int maxGHypos )
 {
-  
 
-  #define G_HYPO_PAIR_USED( g0, g1 ) \
+
+#define G_HYPO_PAIR_USED( g0, g1 ) \
     g_gHypoPairUsed[ ((g0) * maxGHypos) + g1 ]
 
-  static PQUEUE_OF< G_HYPO_PAIR > pqueue;
-  G_HYPO_PAIR gHypoPair( 0, 0 );
-  G_HYPO *gHypo;
-  double bestLogLikelihood;
-  int numGHypos0;
-  int numGHypos1;
-  iDLIST_OF< G_HYPO > newGHypoList;
-  PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr;
-  int i;
+    static PQUEUE_OF< G_HYPO_PAIR > pqueue;
+    G_HYPO_PAIR gHypoPair( 0, 0 );
+    G_HYPO *gHypo;
+    double bestLogLikelihood;
+    int numGHypos0;
+    int numGHypos1;
+    iDLIST_OF< G_HYPO > newGHypoList;
+    PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr;
+    int i;
 
-  numGHypos1 = src->m_gHypoList.getLength();
-  numGHypos0 = m_gHypoList.getLength();
-  //CheckMem();
-
-  if( numGHypos1 == 1 )
-  {
-
-    LOOP_DLIST( gHypoPtr, m_gHypoList )
-    {
-      (*gHypoPtr).merge( src->m_gHypoList.getHead() );
-       //CheckMem();
-    }
-    src->m_gHypoList.removeAll();
-
-    return;
-  }
-  setupArray0( m_gHypoList, numGHypos0 );
-  setupArray1( src->m_gHypoList, numGHypos1 );
-  pqueue.clear();
-  pqueue.resize( 2 * maxGHypos );
-  g_gHypoPairUsed.resize( 0, maxGHypos * maxGHypos );
-  g_gHypoPairUsed.clear();
-  bestLogLikelihood = gHypoPair.getLogLikelihood();
-  i = 0;
-  while( i < maxGHypos &&
-         gHypoPair.getLogLikelihood() - bestLogLikelihood >=
-           logMinGHypoRatio )
-  {
-    gHypo = new G_HYPO;
-    gHypo->merge( gHypoPair.getGHypo0() );
-    gHypo->merge( gHypoPair.getGHypo1() );
-    newGHypoList.append( gHypo );
+    numGHypos1 = src->m_gHypoList.getLength();
+    numGHypos0 = m_gHypoList.getLength();
     //CheckMem();
-    if( gHypoPair.i0 + 1 < numGHypos0 &&
-        ! G_HYPO_PAIR_USED( gHypoPair.i0 + 1, gHypoPair.i1 ) )
+
+    if( numGHypos1 == 1 )
     {
-      pqueue.put( G_HYPO_PAIR( gHypoPair.i0 + 1, gHypoPair.i1 ) );
-      G_HYPO_PAIR_USED( gHypoPair.i0 + 1, gHypoPair.i1 ) = 1;
+
+        LOOP_DLIST( gHypoPtr, m_gHypoList )
+        {
+            (*gHypoPtr).merge( src->m_gHypoList.getHead() );
+            //CheckMem();
+        }
+        src->m_gHypoList.removeAll();
+
+        return;
     }
-    if( gHypoPair.i1 + 1 < numGHypos1 &&
-        ! G_HYPO_PAIR_USED( gHypoPair.i0, gHypoPair.i1 + 1 ) )
+    setupArray0( m_gHypoList, numGHypos0 );
+    setupArray1( src->m_gHypoList, numGHypos1 );
+    pqueue.clear();
+    pqueue.resize( 2 * maxGHypos );
+    g_gHypoPairUsed.resize( 0, maxGHypos * maxGHypos );
+    g_gHypoPairUsed.clear();
+    bestLogLikelihood = gHypoPair.getLogLikelihood();
+    i = 0;
+    while( i < maxGHypos &&
+            gHypoPair.getLogLikelihood() - bestLogLikelihood >=
+            logMinGHypoRatio )
     {
-      pqueue.put( G_HYPO_PAIR( gHypoPair.i0, gHypoPair.i1 + 1 ) );
-      G_HYPO_PAIR_USED( gHypoPair.i0, gHypoPair.i1 + 1 ) = 1;
+        gHypo = new G_HYPO;
+        gHypo->merge( gHypoPair.getGHypo0() );
+        gHypo->merge( gHypoPair.getGHypo1() );
+        newGHypoList.append( gHypo );
+        //CheckMem();
+        if( gHypoPair.i0 + 1 < numGHypos0 &&
+                ! G_HYPO_PAIR_USED( gHypoPair.i0 + 1, gHypoPair.i1 ) )
+        {
+            pqueue.put( G_HYPO_PAIR( gHypoPair.i0 + 1, gHypoPair.i1 ) );
+            G_HYPO_PAIR_USED( gHypoPair.i0 + 1, gHypoPair.i1 ) = 1;
+        }
+        if( gHypoPair.i1 + 1 < numGHypos1 &&
+                ! G_HYPO_PAIR_USED( gHypoPair.i0, gHypoPair.i1 + 1 ) )
+        {
+            pqueue.put( G_HYPO_PAIR( gHypoPair.i0, gHypoPair.i1 + 1 ) );
+            G_HYPO_PAIR_USED( gHypoPair.i0, gHypoPair.i1 + 1 ) = 1;
+        }
+        if( ! pqueue.isEmpty() )
+        {
+            gHypoPair = pqueue.get();
+        }
+        else
+        {
+            break;
+        }
+
+        i++;
     }
-    if( ! pqueue.isEmpty() )
-      gHypoPair = pqueue.get();
-    else
-      break;
 
-    i++;
-  }
+    /*
+      LOOP_LINKS( gHypoPtr, m_gHypoList )
+      {
+        (*gHypoPtr).describe( 2 );
+      }
+    */
 
-/* 
-  LOOP_LINKS( gHypoPtr, m_gHypoList )
-  {
-    (*gHypoPtr).describe( 2 );
-  }
-*/
+    m_gHypoList.removeAll();
+    //CheckMem();
 
-  m_gHypoList.removeAll();
-  //CheckMem();
+    src->m_gHypoList.removeAll();
+    //CheckMem();
+    m_gHypoList.splice( newGHypoList );
 
-  src->m_gHypoList.removeAll();
-  //CheckMem();
-  m_gHypoList.splice( newGHypoList );
-
-  #undef G_HYPO_PAIR_USED
+#undef G_HYPO_PAIR_USED
 }
 
 /*-------------------------------------------------------------------*
@@ -419,28 +433,30 @@ void GROUP::merge( GROUP *src,
 
 void GROUP::splitIfYouMust()
 {
-  
 
-  GROUP *newGroup;
-  int groupId;
-  PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr;
 
-  if( m_gHypoList.isEmpty() || ! (*m_gHypoList).mustSplit() )
-    return;
+    GROUP *newGroup;
+    int groupId;
+    PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr;
 
-  newGroup = new GROUP();
-  groupId = (*m_gHypoList).getGroupId();
+    if( m_gHypoList.isEmpty() || ! (*m_gHypoList).mustSplit() )
+    {
+        return;
+    }
 
-  LOOP_DLIST( gHypoPtr, m_gHypoList )
-  {
-    newGroup->m_gHypoList.append( (*gHypoPtr).split( groupId ) );
-  }
+    newGroup = new GROUP();
+    groupId = (*m_gHypoList).getGroupId();
 
-  removeRepeats();
-  newGroup->removeRepeats();
+    LOOP_DLIST( gHypoPtr, m_gHypoList )
+    {
+        newGroup->m_gHypoList.append( (*gHypoPtr).split( groupId ) );
+    }
 
-  /* put the new group onto the list after this one */
-  append( newGroup );
+    removeRepeats();
+    newGroup->removeRepeats();
+
+    /* put the new group onto the list after this one */
+    append( newGroup );
 }
 
 /*-------------------------------------------------------------------*
@@ -466,23 +482,25 @@ void GROUP::splitIfYouMust()
 
 void GROUP::removeRepeats()
 {
-  
 
-  PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr0;
-  PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr1;
 
-  LOOP_DLIST( gHypoPtr0, m_gHypoList )
-  {
-    (*gHypoPtr0).setFlags();
+    PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr0;
+    PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr1;
 
-    for( gHypoPtr1 = gHypoPtr0, ++gHypoPtr1;
-         gHypoPtr1.isValid();
-         ++gHypoPtr1 )
-      if( (*gHypoPtr1).allFlagsAreSet() )
-        gHypoPtr1.remove();
+    LOOP_DLIST( gHypoPtr0, m_gHypoList )
+    {
+        (*gHypoPtr0).setFlags();
 
-    (*gHypoPtr0).resetFlags();
-  }
+        for( gHypoPtr1 = gHypoPtr0, ++gHypoPtr1;
+                gHypoPtr1.isValid();
+                ++gHypoPtr1 )
+            if( (*gHypoPtr1).allFlagsAreSet() )
+            {
+                gHypoPtr1.remove();
+            }
+
+        (*gHypoPtr0).resetFlags();
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -496,112 +514,112 @@ void GROUP::pruneAndHypothesize( int maxDepth,
                                  double logMinGHypoRatio,
                                  int maxGHypos )
 {
-  
-
-  Timer timer0;
-  Timer timer1;
-  G_numCallsToPruneAndHypothesize++;
-
-  VECTOR_OF< void * > solution;
-  int solutionSize;
-  double bestCost;
-
-  PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr;
-  G_HYPO *newGHypo;
-
-  iDLIST_OF< G_HYPO > newGHypoList;
-
-  int numNewGHypos;
-
-  /* make an assignment problem for each G_HYPO, and put it on an
-     assignment priority queue (see apqueue.H) */
-
-  g_apqueue.removeAllProblems();
-
-  LOOP_DLIST( gHypoPtr, m_gHypoList )
-  {
-    (*gHypoPtr).makeProblem();
-  }
-
-  /* if there are no possible assignments, do nothing (this GROUP is
-     empty */
-  if( g_apqueue.isEmpty() )
-  {
-    G_timeSpentInPruneAndHypothesize += timer0.elapsedTime();
-    return;
-  }
-
-  /* get the best solution to an assignment problem */
-
-  timer1.reset_clock();
-  bestCost = g_apqueue.getNextSolutionCost();
-  g_apqueue.getNextSolution( solution, &solutionSize );
 
 
-  /* make a new G_HYPO based on the solution to the assignment
-     problem */
-  
-  m_bestGHypo = new G_HYPO( solution, solutionSize );
-  
-  newGHypoList.append( m_bestGHypo );
-  numNewGHypos = 1;
+    Timer timer0;
+    Timer timer1;
+    G_numCallsToPruneAndHypothesize++;
 
-  /* make the rest of the new G_HYPOs */
-  while( numNewGHypos < maxGHypos &&
-         ! g_apqueue.isEmpty() &&
-         bestCost - g_apqueue.getNextSolutionCost() >=
-           logMinGHypoRatio )
-  {
+    VECTOR_OF< void * > solution;
+    int solutionSize;
+    double bestCost;
+
+    PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr;
+    G_HYPO *newGHypo;
+
+    iDLIST_OF< G_HYPO > newGHypoList;
+
+    int numNewGHypos;
+
+    /* make an assignment problem for each G_HYPO, and put it on an
+       assignment priority queue (see apqueue.H) */
+
+    g_apqueue.removeAllProblems();
+
+    LOOP_DLIST( gHypoPtr, m_gHypoList )
+    {
+        (*gHypoPtr).makeProblem();
+    }
+
+    /* if there are no possible assignments, do nothing (this GROUP is
+       empty */
+    if( g_apqueue.isEmpty() )
+    {
+        G_timeSpentInPruneAndHypothesize += timer0.elapsedTime();
+        return;
+    }
+
+    /* get the best solution to an assignment problem */
+
+    timer1.reset_clock();
+    bestCost = g_apqueue.getNextSolutionCost();
     g_apqueue.getNextSolution( solution, &solutionSize );
 
-    newGHypo = new G_HYPO( solution, solutionSize );
-    newGHypoList.append( newGHypo );
-    numNewGHypos++;
-  }
-  G_timeSpentInApqueue += timer1.elapsedTime();
 
-  LOOP_DLIST( gHypoPtr, newGHypoList )
-  {
-     (*gHypoPtr).setNumtHypos();
-  }
+    /* make a new G_HYPO based on the solution to the assignment
+       problem */
 
-  /* apply N-scanback pruning, and remove any G_HYPO that loses a
-     T_HYPO in the process */
-  m_bestGHypo->nScanBackPrune( maxDepth );
+    m_bestGHypo = new G_HYPO( solution, solutionSize );
 
-  LOOP_DLIST( gHypoPtr, newGHypoList )
+    newGHypoList.append( m_bestGHypo );
+    numNewGHypos = 1;
+
+    /* make the rest of the new G_HYPOs */
+    while( numNewGHypos < maxGHypos &&
+            ! g_apqueue.isEmpty() &&
+            bestCost - g_apqueue.getNextSolutionCost() >=
+            logMinGHypoRatio )
+    {
+        g_apqueue.getNextSolution( solution, &solutionSize );
+
+        newGHypo = new G_HYPO( solution, solutionSize );
+        newGHypoList.append( newGHypo );
+        numNewGHypos++;
+    }
+    G_timeSpentInApqueue += timer1.elapsedTime();
+
+    LOOP_DLIST( gHypoPtr, newGHypoList )
+    {
+        (*gHypoPtr).setNumtHypos();
+    }
+
+    /* apply N-scanback pruning, and remove any G_HYPO that loses a
+       T_HYPO in the process */
+    m_bestGHypo->nScanBackPrune( maxDepth );
+
+    LOOP_DLIST( gHypoPtr, newGHypoList )
     if( (*gHypoPtr).wasReduced() )
     {
-      g_apqueue.removeProblem( gHypoPtr );
-      gHypoPtr.remove();
+        g_apqueue.removeProblem( gHypoPtr );
+        gHypoPtr.remove();
     }
 
 
-  /* replace the old G_HYPOs with the new ones */
-  m_gHypoList.removeAll();
-  m_gHypoList.splice( newGHypoList );
+    /* replace the old G_HYPOs with the new ones */
+    m_gHypoList.removeAll();
+    m_gHypoList.splice( newGHypoList );
 
-  G_timeSpentInPruneAndHypothesize += timer0.elapsedTime();
+    G_timeSpentInPruneAndHypothesize += timer0.elapsedTime();
 }
 
 void GROUP::clear( int maxDepth)
 {
-  
 
-  PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr;
 
-  LOOP_DLIST( gHypoPtr, m_gHypoList )
-     (*gHypoPtr).setNumtHypos();
+    PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr;
 
-  /* apply N-scanback pruning, and remove any G_HYPO that loses a
-     T_HYPO in the process */
-  m_bestGHypo->nScanBackPrune( maxDepth );
+    LOOP_DLIST( gHypoPtr, m_gHypoList )
+    (*gHypoPtr).setNumtHypos();
 
-  LOOP_DLIST( gHypoPtr, m_gHypoList )
+    /* apply N-scanback pruning, and remove any G_HYPO that loses a
+       T_HYPO in the process */
+    m_bestGHypo->nScanBackPrune( maxDepth );
+
+    LOOP_DLIST( gHypoPtr, m_gHypoList )
     if( (*gHypoPtr).wasReduced() )
     {
-      g_apqueue.removeProblem( gHypoPtr );
-      gHypoPtr.remove();
+        g_apqueue.removeProblem( gHypoPtr );
+        gHypoPtr.remove();
     }
 }
 
@@ -611,23 +629,23 @@ void GROUP::clear( int maxDepth)
 
 void GROUP::check()
 {
-  
 
-  PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr;
-  int numTHypos;
-  int groupId;
 
-  numTHypos = (*m_gHypoList).getNumTHypos();
-  assert( numTHypos != 0 );
-  //  THROW_ERR( "Group with 0 trees" )
-  groupId = (*m_gHypoList).getGroupId();
-  LOOP_DLIST( gHypoPtr, m_gHypoList )
-  {
-    assert( (*gHypoPtr).getNumTHypos() == numTHypos );
-    //  THROW_ERR( "Group with different numbers of tHypos" )
-    assert( (*gHypoPtr).getGroupId() == groupId );
-    //  THROW_ERR( "More than one group id in same group" )
-  }
+    PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr;
+    int numTHypos;
+    int groupId;
+
+    numTHypos = (*m_gHypoList).getNumTHypos();
+    assert( numTHypos != 0 );
+    //  THROW_ERR( "Group with 0 trees" )
+    groupId = (*m_gHypoList).getGroupId();
+    LOOP_DLIST( gHypoPtr, m_gHypoList )
+    {
+        assert( (*gHypoPtr).getNumTHypos() == numTHypos );
+        //  THROW_ERR( "Group with different numbers of tHypos" )
+        assert( (*gHypoPtr).getGroupId() == groupId );
+        //  THROW_ERR( "More than one group id in same group" )
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -636,16 +654,19 @@ void GROUP::check()
 
 void GROUP::describe( int spaces )
 {
-  
 
-  PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr;
 
-  Indent( spaces ); std::cout << "CLUSTER "; print(); std::cout << std::endl;
+    PTR_INTO_iDLIST_OF< G_HYPO > gHypoPtr;
 
-  LOOP_LINKS( gHypoPtr, m_gHypoList )
-  {
-    (*gHypoPtr).describe( spaces + 2 );
-  }
+    Indent( spaces );
+    std::cout << "CLUSTER ";
+    print();
+    std::cout << std::endl;
+
+    LOOP_LINKS( gHypoPtr, m_gHypoList )
+    {
+        (*gHypoPtr).describe( spaces + 2 );
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -656,15 +677,17 @@ void GROUP::describe( int spaces )
  *-------------------------------------------------------------------*/
 
 G_HYPO::G_HYPO( VECTOR_OF< void * > &solution, int solutionSize ):
-  m_logLikelihood( 0 ),
-  m_numTHyposUsedInProblem( 0 ),
-  m_tHypoLinks()
+    m_logLikelihood( 0 ),
+    m_numTHyposUsedInProblem( 0 ),
+    m_tHypoLinks()
 {
-  
 
-  int i;
-  for( i = 0; i < solutionSize; i++ )
-    addTHypo( (T_HYPO *)solution[ i ] );
+
+    int i;
+    for( i = 0; i < solutionSize; i++ )
+    {
+        addTHypo( (T_HYPO *)solution[ i ] );
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -771,72 +794,80 @@ G_HYPO::G_HYPO( VECTOR_OF< void * > &solution, int solutionSize ):
 
 void G_HYPO::makeProblem()
 {
-  
 
-  PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
-  PTR_INTO_iTREE_OF< T_HYPO > childPtr;
-  VECTOR_OF< ROW_COL_COST > rcc;
-  int numRCCs;
-  int rccNum;
-  int colNum;
-  int maxRow;
 
-  /* record the number of T_HYPOs in the G_HYPO (which is the same
-     as the number of track trees), for use later in determining
-     whether the G_HYPO has become invalid as a result of pruning */
-  m_numTHyposUsedInProblem = m_tHypoLinks.getLength();
+    PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
+    PTR_INTO_iTREE_OF< T_HYPO > childPtr;
+    VECTOR_OF< ROW_COL_COST > rcc;
+    int numRCCs;
+    int rccNum;
+    int colNum;
+    int maxRow;
 
-  /* count the number of ROW_COL_COST structures that there will be
-     in the assignment problem */
-  numRCCs = 0;
-  maxRow = 0;
-  LOOP_LINKS( tHypoPtr, m_tHypoLinks )
-  {
-    #ifdef TSTBUG
-      assert( ! (*tHypoPtr).isLeaf() );
-      //  THROW_ERR( "THypo has no children for next iteration" )
-    #endif
+    /* record the number of T_HYPOs in the G_HYPO (which is the same
+       as the number of track trees), for use later in determining
+       whether the G_HYPO has become invalid as a result of pruning */
+    m_numTHyposUsedInProblem = m_tHypoLinks.getLength();
 
-    numRCCs += (*tHypoPtr).getNumChildren();
-  }
-
-  /* make room for the ROW_COL_COST structures */
-  rcc.resize( numRCCs );
-
-  /* make ROW_COL_COST structures out of the T_HYPOs */
-  rccNum = 0;
-  colNum = 0;
-  LOOP_LINKS( tHypoPtr, m_tHypoLinks )
-  {
-    LOOP_TREEchildren( childPtr, tHypoPtr.get() )
+    /* count the number of ROW_COL_COST structures that there will be
+       in the assignment problem */
+    numRCCs = 0;
+    maxRow = 0;
+    LOOP_LINKS( tHypoPtr, m_tHypoLinks )
     {
-      rcc[ rccNum++ ].set( (*childPtr).getRowNum(), colNum,
-                           -(*childPtr).getLogLikelihood(),
-                            childPtr.get() );
-      if( (*childPtr).getRowNum() > maxRow )
-        maxRow = (*childPtr).getRowNum();
+#ifdef TSTBUG
+        assert( ! (*tHypoPtr).isLeaf() );
+        //  THROW_ERR( "THypo has no children for next iteration" )
+#endif
+
+        numRCCs += (*tHypoPtr).getNumChildren();
     }
-    colNum++;
-  }
 
-  /* sort the ROW_COL_COST structures and put the problem on the
-     ASSIGNMENT_PQUEUE */
-  SortAssignmentProblem( &rcc[ 0 ], numRCCs );
-  g_apqueue.addProblem( this, &rcc[ 0 ], rccNum, maxRow + 1, colNum );
+    /* make room for the ROW_COL_COST structures */
+    rcc.resize( numRCCs );
 
-  G_numApqueueProblems++;
-  G_totalApqueueProblemSizes += numRCCs;
-  if( numRCCs > G_maxApqueueProblemSize )
-    G_maxApqueueProblemSize = numRCCs;
+    /* make ROW_COL_COST structures out of the T_HYPOs */
+    rccNum = 0;
+    colNum = 0;
+    LOOP_LINKS( tHypoPtr, m_tHypoLinks )
+    {
+        LOOP_TREEchildren( childPtr, tHypoPtr.get() )
+        {
+            rcc[ rccNum++ ].set( (*childPtr).getRowNum(), colNum,
+                                 -(*childPtr).getLogLikelihood(),
+                                 childPtr.get() );
+            if( (*childPtr).getRowNum() > maxRow )
+            {
+                maxRow = (*childPtr).getRowNum();
+            }
+        }
+        colNum++;
+    }
 
-  double problemCoverage = (double)numRCCs /
-                           ((double)(maxRow + 2) * (colNum + 1) - 1.);
+    /* sort the ROW_COL_COST structures and put the problem on the
+       ASSIGNMENT_PQUEUE */
+    SortAssignmentProblem( &rcc[ 0 ], numRCCs );
+    g_apqueue.addProblem( this, &rcc[ 0 ], rccNum, maxRow + 1, colNum );
 
-  G_totalApqueueProblemCoverage += problemCoverage;
-  if( problemCoverage < G_minApqueueProblemCoverage )
-    G_minApqueueProblemCoverage = problemCoverage;
-  if( problemCoverage > G_maxApqueueProblemCoverage )
-    G_maxApqueueProblemCoverage = problemCoverage;
+    G_numApqueueProblems++;
+    G_totalApqueueProblemSizes += numRCCs;
+    if( numRCCs > G_maxApqueueProblemSize )
+    {
+        G_maxApqueueProblemSize = numRCCs;
+    }
+
+    double problemCoverage = (double)numRCCs /
+                             ((double)(maxRow + 2) * (colNum + 1) - 1.);
+
+    G_totalApqueueProblemCoverage += problemCoverage;
+    if( problemCoverage < G_minApqueueProblemCoverage )
+    {
+        G_minApqueueProblemCoverage = problemCoverage;
+    }
+    if( problemCoverage > G_maxApqueueProblemCoverage )
+    {
+        G_maxApqueueProblemCoverage = problemCoverage;
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -856,34 +887,42 @@ void G_HYPO::makeProblem()
 
 void G_HYPO::nScanBackPrune( int maxDepth )
 {
-  
 
-  PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
-  PTR_INTO_iTREE_OF< T_HYPO > parentPtr;
-  PTR_INTO_iTREE_OF< T_HYPO > siblingPtr;
-  PTR_INTO_iTREE_OF< T_HYPO > tHypoToSave;
-  int depth;
 
-  LOOP_LINKS( tHypoPtr, m_tHypoLinks )
-  {
-    if( (*tHypoPtr).isRoot() )
-      continue;
+    PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
+    PTR_INTO_iTREE_OF< T_HYPO > parentPtr;
+    PTR_INTO_iTREE_OF< T_HYPO > siblingPtr;
+    PTR_INTO_iTREE_OF< T_HYPO > tHypoToSave;
+    int depth;
 
-    depth = 1;
-    
-    tHypoToSave = tHypoPtr.get();
+    LOOP_LINKS( tHypoPtr, m_tHypoLinks )
+    {
+        if( (*tHypoPtr).isRoot() )
+        {
+            continue;
+        }
 
-    for( parentPtr = tHypoPtr.get(), parentPtr.gotoParent();
-         ! parentPtr.isAtRoot();
-         tHypoToSave = parentPtr, parentPtr.gotoParent() )
-      depth++;
-    if( depth < maxDepth )
-      continue;
-    
-    LOOP_TREEchildren( siblingPtr, parentPtr )
-      if( siblingPtr != tHypoToSave )
-        siblingPtr.removeSubtree();
-  }
+        depth = 1;
+
+        tHypoToSave = tHypoPtr.get();
+
+        for( parentPtr = tHypoPtr.get(), parentPtr.gotoParent();
+                ! parentPtr.isAtRoot();
+                tHypoToSave = parentPtr, parentPtr.gotoParent() )
+        {
+            depth++;
+        }
+        if( depth < maxDepth )
+        {
+            continue;
+        }
+
+        LOOP_TREEchildren( siblingPtr, parentPtr )
+        if( siblingPtr != tHypoToSave )
+        {
+            siblingPtr.removeSubtree();
+        }
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -893,15 +932,15 @@ void G_HYPO::nScanBackPrune( int maxDepth )
 
 void G_HYPO::recomputeLogLikelihood()
 {
-  
 
-  PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
 
-  m_logLikelihood = 0;
-  LOOP_LINKS( tHypoPtr, m_tHypoLinks )
-  {
-    m_logLikelihood += (*tHypoPtr).getLogLikelihood();
-  }
+    PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
+
+    m_logLikelihood = 0;
+    LOOP_LINKS( tHypoPtr, m_tHypoLinks )
+    {
+        m_logLikelihood += (*tHypoPtr).getLogLikelihood();
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -913,20 +952,24 @@ void G_HYPO::recomputeLogLikelihood()
 
 int G_HYPO::mustSplit()
 {
-  
 
-  PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
-  int groupId;
 
-  if( m_tHypoLinks.isEmpty() )
-    return 0;
+    PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
+    int groupId;
 
-  groupId = (*m_tHypoLinks).getGroupId();
+    if( m_tHypoLinks.isEmpty() )
+    {
+        return 0;
+    }
 
-  LOOP_LINKS( tHypoPtr, m_tHypoLinks )
+    groupId = (*m_tHypoLinks).getGroupId();
+
+    LOOP_LINKS( tHypoPtr, m_tHypoLinks )
     if( (*tHypoPtr).getGroupId() != groupId )
-      return 1;
-  return 0;
+    {
+        return 1;
+    }
+    return 0;
 }
 
 /*-------------------------------------------------------------------*
@@ -939,25 +982,25 @@ int G_HYPO::mustSplit()
 
 G_HYPO *G_HYPO::split( int groupId )
 {
-  
 
-  G_HYPO *newGHypo = new G_HYPO();
-  PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
-  T_HYPO *tHypo;
 
-  LOOP_LINKS( tHypoPtr, m_tHypoLinks )
-  {
-    tHypo = tHypoPtr.get();
+    G_HYPO *newGHypo = new G_HYPO();
+    PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
+    T_HYPO *tHypo;
 
-    if( tHypo->getGroupId() != groupId )
+    LOOP_LINKS( tHypoPtr, m_tHypoLinks )
     {
-      tHypoPtr.remove();
-      m_logLikelihood -= tHypo->getLogLikelihood();
-      newGHypo->addTHypo( tHypo );
-    }
-  }
+        tHypo = tHypoPtr.get();
 
-  return newGHypo;
+        if( tHypo->getGroupId() != groupId )
+        {
+            tHypoPtr.remove();
+            m_logLikelihood -= tHypo->getLogLikelihood();
+            newGHypo->addTHypo( tHypo );
+        }
+    }
+
+    return newGHypo;
 }
 
 /*-------------------------------------------------------------------*
@@ -966,14 +1009,14 @@ G_HYPO *G_HYPO::split( int groupId )
 
 void G_HYPO::merge( G_HYPO *src )
 {
-  
 
-  PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
 
-  LOOP_LINKS( tHypoPtr, src->m_tHypoLinks )
-  {
-    addTHypo( tHypoPtr.get() );
-  }
+    PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
+
+    LOOP_LINKS( tHypoPtr, src->m_tHypoLinks )
+    {
+        addTHypo( tHypoPtr.get() );
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -983,14 +1026,14 @@ void G_HYPO::merge( G_HYPO *src )
 
 void G_HYPO::setFlags()
 {
-  
 
-  PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
 
-  LOOP_LINKS( tHypoPtr, m_tHypoLinks )
-  {
-    (*tHypoPtr).setFlag();
-  }
+    PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
+
+    LOOP_LINKS( tHypoPtr, m_tHypoLinks )
+    {
+        (*tHypoPtr).setFlag();
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -1000,14 +1043,14 @@ void G_HYPO::setFlags()
 
 void G_HYPO::resetFlags()
 {
-  
 
-  PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
 
-  LOOP_LINKS( tHypoPtr, m_tHypoLinks )
-  {
-    (*tHypoPtr).resetFlag();
-  }
+    PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
+
+    LOOP_LINKS( tHypoPtr, m_tHypoLinks )
+    {
+        (*tHypoPtr).resetFlag();
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -1017,17 +1060,19 @@ void G_HYPO::resetFlags()
 
 int G_HYPO::allFlagsAreSet()
 {
-  
 
-  PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
 
-  LOOP_LINKS( tHypoPtr, m_tHypoLinks )
-  {
-    if( ! (*tHypoPtr).flagIsSet() )
-      return 0;
-  }
+    PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
 
-  return 1;
+    LOOP_LINKS( tHypoPtr, m_tHypoLinks )
+    {
+        if( ! (*tHypoPtr).flagIsSet() )
+        {
+            return 0;
+        }
+    }
+
+    return 1;
 }
 
 /*-------------------------------------------------------------------*
@@ -1036,32 +1081,39 @@ int G_HYPO::allFlagsAreSet()
 
 void G_HYPO::describe( int spaces )
 {
-  
 
-  PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
-  int k;
 
-  Indent( spaces ); std::cout << "G_HYPO "; print(); std::cout << std::endl;
+    PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
+    int k;
 
-  Indent( spaces ); std::cout << "|";
-  std::cout << " numTHyposUsed = " << m_numTHyposUsedInProblem;
-  std::cout << ", logLikelihood = " << m_logLikelihood;
-  std::cout << std::endl;
+    Indent( spaces );
+    std::cout << "G_HYPO ";
+    print();
+    std::cout << std::endl;
 
-  Indent( spaces ); std::cout << "| tHypo's:";
-  k = 0;
+    Indent( spaces );
+    std::cout << "|";
+    std::cout << " numTHyposUsed = " << m_numTHyposUsedInProblem;
+    std::cout << ", logLikelihood = " << m_logLikelihood;
+    std::cout << std::endl;
 
-  LOOP_LINKS( tHypoPtr, m_tHypoLinks )
-  {
-    if( k++ >= 3 )
+    Indent( spaces );
+    std::cout << "| tHypo's:";
+    k = 0;
+
+    LOOP_LINKS( tHypoPtr, m_tHypoLinks )
     {
-      std::cout << std::endl;
-      Indent( spaces ); std::cout << "|         ";
-      k = 0;
-    }
+        if( k++ >= 3 )
+        {
+            std::cout << std::endl;
+            Indent( spaces );
+            std::cout << "|         ";
+            k = 0;
+        }
 
-    std::cout << " "; (*tHypoPtr).print();
-  }
-  std::cout << std::endl;
+        std::cout << " ";
+        (*tHypoPtr).print();
+    }
+    std::cout << std::endl;
 }
 

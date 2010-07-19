@@ -194,9 +194,9 @@
 #include "vector.h"
 
 #ifdef DECLARE_ASSIGN
-  #define GLOBAL
+#define GLOBAL
 #else
-  #define GLOBAL extern
+#define GLOBAL extern
 #endif
 
 GLOBAL long G_numAssignCalls;
@@ -210,50 +210,50 @@ static const double UNSOLVABLE = INFINITY;
 
 struct ROW_COL_COST
 {
-  int row;
-  int col;
-  double cost;
-  void *tag;
+    int row;
+    int col;
+    double cost;
+    void *tag;
 
-  ROW_COL_COST():
-    row( 0 ),
-    col( 0 ),
-    cost( 0. ),
-    tag( 0 )
-  {
-  }
+    ROW_COL_COST():
+        row( 0 ),
+        col( 0 ),
+        cost( 0. ),
+        tag( 0 )
+    {
+    }
 
-  ROW_COL_COST( int rowArg, int colArg, double costArg ):
-    row( rowArg ),
-    col( colArg ),
-    cost( costArg ),
-    tag( this )
-  {
-  }
+    ROW_COL_COST( int rowArg, int colArg, double costArg ):
+        row( rowArg ),
+        col( colArg ),
+        cost( costArg ),
+        tag( this )
+    {
+    }
 
-  ROW_COL_COST( int rowArg, int colArg, double costArg, void *tagArg ):
-    row( rowArg ),
-    col( colArg ),
-    cost( costArg ),
-    tag( tagArg )
-  {
-  }
+    ROW_COL_COST( int rowArg, int colArg, double costArg, void *tagArg ):
+        row( rowArg ),
+        col( colArg ),
+        cost( costArg ),
+        tag( tagArg )
+    {
+    }
 
-  void set( int rowArg, int colArg, double costArg )
-  {
-    row = rowArg;
-    col = colArg;
-    cost = costArg;
-    tag = this;
-  }
+    void set( int rowArg, int colArg, double costArg )
+    {
+        row = rowArg;
+        col = colArg;
+        cost = costArg;
+        tag = this;
+    }
 
-  void set( int rowArg, int colArg, double costArg, void *tagArg )
-  {
-    row = rowArg;
-    col = colArg;
-    cost = costArg;
-    tag = tagArg;
-  }
+    void set( int rowArg, int colArg, double costArg, void *tagArg )
+    {
+        row = rowArg;
+        col = colArg;
+        cost = costArg;
+        tag = tagArg;
+    }
 };
 
 /*-------------------------------------------------------------------*

@@ -66,40 +66,40 @@ typedef void (*HANDLER_FOR_NEW)();
 /* header for each group of chunks */
 struct GROUP_HEADER
 {
-  struct GROUP_HEADER *next;
-  int poolNum;
-  int numChunks;
-  size_t chunkSize;
+    struct GROUP_HEADER *next;
+    int poolNum;
+    int numChunks;
+    size_t chunkSize;
 };
 
 /* header for each chunk */
 struct CHUNK_HEADER
 {
-  union
-  {
-    void *next;
-    void **pool;
-  }
-  link;
+    union
+    {
+        void *next;
+        void **pool;
+    }
+    link;
 
-  #ifdef DEBUG
+#ifdef DEBUG
     size_t size;
     void *prevAlloced;
     void *nextAlloced;
     long magicNumber;
-  #endif
+#endif
 };
 static const long HEADER_ALLOCED = 0xCafeBabeL;
 static const long HEADER_FREE =    0xDeadBeefL;
 
 /* footer for each chunk (only if DEBUG is defined) */
 #ifdef DEBUG
-  struct CHUNK_FOOTER
-  {
+struct CHUNK_FOOTER
+{
     long magicNumber;
-  };
-  static const long FOOTER_ALLOCED = 0xAddedFeeL;
-  static const long FOOTER_FREE =    0xFadedBedL;
+};
+static const long FOOTER_ALLOCED = 0xAddedFeeL;
+static const long FOOTER_FREE =    0xFadedBedL;
 #endif
 
 /*-------------------------------------------------------------------*
@@ -116,12 +116,12 @@ static void *poolArray[ NUM_POOLS ];
 /* predefined emergency memory */
 static const int EMERGENCY_BUF_LONGS = 2048;
 static long emergencyBuf[ EMERGENCY_BUF_LONGS ] =
-              { EMERGENCY_BUF_LONGS };
+{ EMERGENCY_BUF_LONGS };
 
 /* heads of linked lists */
 static GROUP_HEADER *g_firstGroup;
 #ifdef DEBUG
-  static CHUNK_HEADER g_allocedList;
+static CHUNK_HEADER g_allocedList;
 #endif
 
 /*-------------------------------------------------------------------*
@@ -140,9 +140,9 @@ static void *chunkGroupAlloc( int poolNum );
 static void chunkCleanup();
 static inline CHUNK_HEADER &chunkHeaderFor( void *mem );
 #ifdef DEBUG
-  static inline CHUNK_FOOTER &chunkFooterFor( void *mem );
-  static inline void putOnAllocedList( void *mem );
-  static inline void takeOffAllocedList( void *mem );
+static inline CHUNK_FOOTER &chunkFooterFor( void *mem );
+static inline void putOnAllocedList( void *mem );
+static inline void takeOffAllocedList( void *mem );
 #endif
 
 /* routines for doing allocation and deallocation in emergencies */
@@ -161,26 +161,32 @@ static inline HANDLER_FOR_NEW getHandlerForNew();
 
 void *operator new( size_t size )
 {
-  //CANT_RECUR
-  
+    //CANT_RECUR
 
-  #ifdef TSTBUG
+
+#ifdef TSTBUG
     assert( size > 0 );
-  //    THROW_ERR( "Illegal size given to new() -- " << size )
-  #endif
+    //    THROW_ERR( "Illegal size given to new() -- " << size )
+#endif
 
-  void *mem;
+    void *mem;
 
-  G_numAllocations++;
+    G_numAllocations++;
 
-  if( G_errHasHappened ) 
-    mem = emergencyAlloc( size );
-  else if( size > MAX_CHUNK_SIZE )
-    mem = simpleAlloc( size );
-  else
-    mem = chunkAlloc( size );
+    if( G_errHasHappened )
+    {
+        mem = emergencyAlloc( size );
+    }
+    else if( size > MAX_CHUNK_SIZE )
+    {
+        mem = simpleAlloc( size );
+    }
+    else
+    {
+        mem = chunkAlloc( size );
+    }
 
-  return mem;
+    return mem;
 }
 
 /*-------------------------------------------------------------------*
@@ -189,20 +195,26 @@ void *operator new( size_t size )
 
 void operator delete( void *mem )
 {
-  //CANT_RECUR
-  
+    //CANT_RECUR
 
-  if( mem != 0 )
-  {
-    G_numDeallocations++;
 
-    if( isEmergencyMem( mem ) )
-      emergencyDealloc( mem );
-    else if( isSimpleMem( mem ) )
-      simpleDealloc( mem );
-    else
-      chunkDealloc( mem );
-  }
+    if( mem != 0 )
+    {
+        G_numDeallocations++;
+
+        if( isEmergencyMem( mem ) )
+        {
+            emergencyDealloc( mem );
+        }
+        else if( isSimpleMem( mem ) )
+        {
+            simpleDealloc( mem );
+        }
+        else
+        {
+            chunkDealloc( mem );
+        }
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -211,9 +223,9 @@ void operator delete( void *mem )
 
 void CollectGarbage()
 {
-  
 
-  chunkCleanup();
+
+    chunkCleanup();
 }
 
 /*-------------------------------------------------------------------*
@@ -223,48 +235,52 @@ void CollectGarbage()
 
 #ifdef DEBUG
 
-  void CheckMem()
-  {
+void CheckMem()
+{
     static char isBusy = 0;
     void *mem;
     void *nextMem;
     int i;
 
     if( isBusy )
-      return;
+    {
+        return;
+    }
     isBusy = 1;
 
     assert( poolArray[ 0 ] == 0 );
     //  THROW_ERR( "Pool for zero size chunks exists" )
 
     for( i = 1; i < NUM_POOLS; i++ )
-      for( mem = poolArray[ i ]; mem != 0; mem = nextMem )
-      {
-        nextMem = chunkHeaderFor( mem ).link.next;
+        for( mem = poolArray[ i ]; mem != 0; mem = nextMem )
+        {
+            nextMem = chunkHeaderFor( mem ).link.next;
 
-        assert( chunkHeaderFor( mem ).magicNumber == HEADER_FREE &&
+            assert( chunkHeaderFor( mem ).magicNumber == HEADER_FREE &&
             chunkFooterFor( mem ).magicNumber == FOOTER_FREE );
-        //  THROW_ERR( "Corrupted heap at " << mem )
-      }
+            //  THROW_ERR( "Corrupted heap at " << mem )
+        }
 
     for( mem = g_allocedList.nextAlloced; mem != 0; mem = nextMem )
     {
-      nextMem = chunkHeaderFor( mem ).nextAlloced;
+        nextMem = chunkHeaderFor( mem ).nextAlloced;
 
-      assert( chunkHeaderFor( mem ).magicNumber == HEADER_ALLOCED &&
-          chunkFooterFor( mem ).magicNumber == FOOTER_ALLOCED );
-      //  THROW_ERR( "Corrupted heap at " << mem )
+        assert( chunkHeaderFor( mem ).magicNumber == HEADER_ALLOCED &&
+        chunkFooterFor( mem ).magicNumber == FOOTER_ALLOCED );
+        //  THROW_ERR( "Corrupted heap at " << mem )
     }
 
     isBusy = 0;
-  }
+}
 
-  void CheckMem( void *mem )
-  {
+void CheckMem( void *mem )
+{
     static char isBusy = 0;
 
     if( isBusy )
-      return;
+    {
+        return;
+    }
     isBusy = 1;
 
     long head;
@@ -272,17 +288,17 @@ void CollectGarbage()
 
     if( mem != 0 )
     {
-      head = chunkHeaderFor( mem ).magicNumber;
-      foot = chunkFooterFor( mem ).magicNumber;
+        head = chunkHeaderFor( mem ).magicNumber;
+        foot = chunkFooterFor( mem ).magicNumber;
 
-      assert( (head == HEADER_ALLOCED || head == HEADER_FREE) &&
-          (head != HEADER_ALLOCED || foot == FOOTER_ALLOCED) &&
-          (head != HEADER_FREE || foot == FOOTER_FREE) );
-      //  THROW_ERR( "Corrupted heap at " << mem );
+        assert( (head == HEADER_ALLOCED || head == HEADER_FREE) &&
+        (head != HEADER_ALLOCED || foot == FOOTER_ALLOCED) &&
+        (head != HEADER_FREE || foot == FOOTER_FREE) );
+        //  THROW_ERR( "Corrupted heap at " << mem );
     }
 
     isBusy = 0;
-  }
+}
 
 #endif
 
@@ -293,9 +309,9 @@ void CollectGarbage()
 
 static inline int isSimpleMem( void *mem )
 {
-  
 
-  return chunkHeaderFor( mem ).link.pool == 0;
+
+    return chunkHeaderFor( mem ).link.pool == 0;
 }
 
 /*-------------------------------------------------------------------*
@@ -304,32 +320,32 @@ static inline int isSimpleMem( void *mem )
 
 static inline void *simpleAlloc( size_t originalSize )
 {
-  
-  size_t size;
-  void *mem;
 
-  #ifdef DEBUG
+    size_t size;
+    void *mem;
+
+#ifdef DEBUG
     originalSize += 4 - (originalSize % 4);
     size = sizeof( CHUNK_HEADER ) +
-           originalSize +
-           sizeof( CHUNK_FOOTER );
-  #else
+    originalSize +
+    sizeof( CHUNK_FOOTER );
+#else
     size = sizeof( CHUNK_HEADER ) + originalSize;
-  #endif
- 
-  mem = alloc( size );
-  mem = (CHUNK_HEADER *)mem + 1;
+#endif
 
-  chunkHeaderFor( mem ).link.pool = 0;
+    mem = alloc( size );
+    mem = (CHUNK_HEADER *)mem + 1;
 
-  #ifdef DEBUG
+    chunkHeaderFor( mem ).link.pool = 0;
+
+#ifdef DEBUG
     chunkHeaderFor( mem ).size = originalSize;
     chunkHeaderFor( mem ).magicNumber = HEADER_ALLOCED;
     chunkFooterFor( mem ).magicNumber = FOOTER_ALLOCED;
     putOnAllocedList( mem );
-  #endif
+#endif
 
-  return mem;
+    return mem;
 }
 
 /*-------------------------------------------------------------------*
@@ -339,27 +355,27 @@ static inline void *simpleAlloc( size_t originalSize )
 
 static inline void simpleDealloc( void *mem )
 {
-  
 
-  #ifdef DEBUG
+
+#ifdef DEBUG
     if( chunkHeaderFor( mem ).magicNumber != HEADER_ALLOCED ||
-        chunkFooterFor( mem ).magicNumber != FOOTER_ALLOCED )
+    chunkFooterFor( mem ).magicNumber != FOOTER_ALLOCED )
     {
-      assert( chunkHeaderFor( mem ).magicNumber != HEADER_FREE ||
-          chunkFooterFor( mem ).magicNumber != FOOTER_FREE );
-      //  THROW_ERR( "Memory deallocated twice -- " << mem )
+        assert( chunkHeaderFor( mem ).magicNumber != HEADER_FREE ||
+        chunkFooterFor( mem ).magicNumber != FOOTER_FREE );
+        //  THROW_ERR( "Memory deallocated twice -- " << mem )
 
-      assert(false);
-      //THROW_ERR( "Corrupted heap or deallocating bad address at "
-      //           << mem )
+        assert(false);
+        //THROW_ERR( "Corrupted heap or deallocating bad address at "
+        //           << mem )
     }
 
     chunkHeaderFor( mem ).magicNumber = HEADER_FREE;
     chunkFooterFor( mem ).magicNumber = FOOTER_FREE;
     takeOffAllocedList( mem );
-  #endif
+#endif
 
-  dealloc( (CHUNK_HEADER *)mem - 1 );
+    dealloc( (CHUNK_HEADER *)mem - 1 );
 }
 
 /*-------------------------------------------------------------------*
@@ -368,37 +384,41 @@ static inline void simpleDealloc( void *mem )
 
 static inline void *chunkAlloc( size_t size )
 {
-  
 
-  int poolNum;
-  register void *mem;
-  register void **pool;
 
-  poolNum = size >> CHUNK_SLACK_LOG2; 
-  if( (size & (CHUNK_SLACK - 1)) != 0 )
-    poolNum++;
-  pool = &poolArray[ poolNum ];
+    int poolNum;
+    register void *mem;
+    register void **pool;
 
-  if( (mem = *pool) == 0 )
-    mem = chunkGroupAlloc( poolNum );
+    poolNum = size >> CHUNK_SLACK_LOG2;
+    if( (size & (CHUNK_SLACK - 1)) != 0 )
+    {
+        poolNum++;
+    }
+    pool = &poolArray[ poolNum ];
 
-  #ifdef DEBUG
+    if( (mem = *pool) == 0 )
+    {
+        mem = chunkGroupAlloc( poolNum );
+    }
+
+#ifdef DEBUG
     assert( chunkHeaderFor( mem ).magicNumber == HEADER_FREE &&
-        chunkFooterFor( mem ).magicNumber == FOOTER_FREE );
+    chunkFooterFor( mem ).magicNumber == FOOTER_FREE );
     //  THROW_ERR( "Corrupted heap at " << mem );
-  #endif
+#endif
 
-  *pool = chunkHeaderFor( mem ).link.next;
+    *pool = chunkHeaderFor( mem ).link.next;
 
-  chunkHeaderFor( mem ).link.pool = pool;
+    chunkHeaderFor( mem ).link.pool = pool;
 
-  #ifdef DEBUG
+#ifdef DEBUG
     chunkHeaderFor( mem ).magicNumber = HEADER_ALLOCED;
     chunkFooterFor( mem ).magicNumber = FOOTER_ALLOCED;
     putOnAllocedList( mem );
-  #endif
+#endif
 
-  return mem;
+    return mem;
 }
 
 /*-------------------------------------------------------------------*
@@ -408,33 +428,33 @@ static inline void *chunkAlloc( size_t size )
 
 static inline void chunkDealloc( void *mem )
 {
-  
 
-  #ifdef DEBUG
+
+#ifdef DEBUG
     if( chunkHeaderFor( mem ).magicNumber != HEADER_ALLOCED ||
-        chunkFooterFor( mem ).magicNumber != FOOTER_ALLOCED )
+    chunkFooterFor( mem ).magicNumber != FOOTER_ALLOCED )
     {
-      assert( chunkHeaderFor( mem ).magicNumber != HEADER_FREE ||
-          chunkFooterFor( mem ).magicNumber != FOOTER_FREE );
-      //  THROW_ERR( "Memory deallocated twice" )
+        assert( chunkHeaderFor( mem ).magicNumber != HEADER_FREE ||
+        chunkFooterFor( mem ).magicNumber != FOOTER_FREE );
+        //  THROW_ERR( "Memory deallocated twice" )
 
-      assert(false);
-      //THROW_ERR( "Corrupted heap or deallocating bad address at "
-      //           << mem )
+        assert(false);
+        //THROW_ERR( "Corrupted heap or deallocating bad address at "
+        //           << mem )
     }
-  #endif
+#endif
 
-  register void **pool;
+    register void **pool;
 
-  pool = chunkHeaderFor( mem ).link.pool;
-  chunkHeaderFor( mem ).link.next = *pool;
-  *pool = mem;
+    pool = chunkHeaderFor( mem ).link.pool;
+    chunkHeaderFor( mem ).link.next = *pool;
+    *pool = mem;
 
-  #ifdef DEBUG
+#ifdef DEBUG
     chunkHeaderFor( mem ).magicNumber = HEADER_FREE;
     chunkFooterFor( mem ).magicNumber = FOOTER_FREE;
     takeOffAllocedList( mem );
-  #endif
+#endif
 }
 
 /*-------------------------------------------------------------------*
@@ -444,65 +464,65 @@ static inline void chunkDealloc( void *mem )
 
 static void *chunkGroupAlloc( int poolNum )
 {
-  
 
-  size_t originalSize;
-  size_t chunkSize;
-  size_t groupSize;
-  int numChunksInGroup;
-  GROUP_HEADER *groupHeader;
-  void *firstMem;
-  void *mem;
-  int i;
 
-  originalSize = poolNum << CHUNK_SLACK_LOG2;
+    size_t originalSize;
+    size_t chunkSize;
+    size_t groupSize;
+    int numChunksInGroup;
+    GROUP_HEADER *groupHeader;
+    void *firstMem;
+    void *mem;
+    int i;
 
-  #ifdef DEBUG
+    originalSize = poolNum << CHUNK_SLACK_LOG2;
+
+#ifdef DEBUG
     chunkSize =
-      sizeof( CHUNK_HEADER ) + originalSize + sizeof( CHUNK_FOOTER );
+    sizeof( CHUNK_HEADER ) + originalSize + sizeof( CHUNK_FOOTER );
     numChunksInGroup = (sizeof( CHUNK_HEADER ) +
-                        MAX_CHUNK_SIZE +
-                        sizeof( CHUNK_FOOTER )) /
-                       chunkSize;
-  #else
+    MAX_CHUNK_SIZE +
+    sizeof( CHUNK_FOOTER )) /
+    chunkSize;
+#else
     chunkSize = sizeof( CHUNK_HEADER ) + originalSize;
     numChunksInGroup = (sizeof( CHUNK_HEADER ) + MAX_CHUNK_SIZE) /
-                       chunkSize;
-  #endif
+    chunkSize;
+#endif
 
-  groupSize = sizeof( GROUP_HEADER ) + numChunksInGroup * chunkSize;
-  groupHeader = (GROUP_HEADER *)alloc( groupSize );
-  firstMem = (CHUNK_HEADER *)(groupHeader + 1) + 1;
+    groupSize = sizeof( GROUP_HEADER ) + numChunksInGroup * chunkSize;
+    groupHeader = (GROUP_HEADER *)alloc( groupSize );
+    firstMem = (CHUNK_HEADER *)(groupHeader + 1) + 1;
 
-  groupHeader->next = g_firstGroup;
-  groupHeader->poolNum = poolNum;
-  groupHeader->numChunks = numChunksInGroup;
-  groupHeader->chunkSize = chunkSize;
-  g_firstGroup = groupHeader;
+    groupHeader->next = g_firstGroup;
+    groupHeader->poolNum = poolNum;
+    groupHeader->numChunks = numChunksInGroup;
+    groupHeader->chunkSize = chunkSize;
+    g_firstGroup = groupHeader;
 
-  mem = firstMem;
-  for( i = 0; i < numChunksInGroup - 1; i++ )
-  {
-    chunkHeaderFor( mem ).link.next = (char *)mem + chunkSize;
+    mem = firstMem;
+    for( i = 0; i < numChunksInGroup - 1; i++ )
+    {
+        chunkHeaderFor( mem ).link.next = (char *)mem + chunkSize;
 
-    #ifdef DEBUG
-      chunkHeaderFor( mem ).size = originalSize;
-      chunkHeaderFor( mem ).magicNumber = HEADER_FREE;
-      chunkFooterFor( mem ).magicNumber = FOOTER_FREE;
-    #endif
+#ifdef DEBUG
+        chunkHeaderFor( mem ).size = originalSize;
+        chunkHeaderFor( mem ).magicNumber = HEADER_FREE;
+        chunkFooterFor( mem ).magicNumber = FOOTER_FREE;
+#endif
 
-    mem = (char *)mem + chunkSize;
-  }
+        mem = (char *)mem + chunkSize;
+    }
 
-  chunkHeaderFor( mem ).link.next = 0;
+    chunkHeaderFor( mem ).link.next = 0;
 
-  #ifdef DEBUG
+#ifdef DEBUG
     chunkHeaderFor( mem ).size = originalSize;
     chunkHeaderFor( mem ).magicNumber = HEADER_FREE;
     chunkFooterFor( mem ).magicNumber = FOOTER_FREE;
-  #endif
+#endif
 
-  return firstMem;
+    return firstMem;
 }
 
 /*-------------------------------------------------------------------*
@@ -512,97 +532,111 @@ static void *chunkGroupAlloc( int poolNum )
 
 static void chunkCleanup()
 {
-  
 
-  GROUP_HEADER *prevGroup;
-  GROUP_HEADER *group;
-  GROUP_HEADER *nextGroup;
-  void *prevMem;
-  void *mem;
-  void *nextMem;
-  void **pool;
-  int flag;
-  int i;
 
-  /* find the groups that should be free()'ed */
-  for( group = g_firstGroup; group != 0; group = nextGroup )
-  {
-    nextGroup = group->next;
+    GROUP_HEADER *prevGroup;
+    GROUP_HEADER *group;
+    GROUP_HEADER *nextGroup;
+    void *prevMem;
+    void *mem;
+    void *nextMem;
+    void **pool;
+    int flag;
+    int i;
 
-    pool = &poolArray[ group->poolNum ];
-
-    flag = 1;
-    mem = (CHUNK_HEADER *)(group + 1) + 1;
-    for( i = 0; i < group->numChunks; i++ )
+    /* find the groups that should be free()'ed */
+    for( group = g_firstGroup; group != 0; group = nextGroup )
     {
-      if( chunkHeaderFor( mem ).link.pool == pool )
-      {
-        flag = 0;
-        break;
-      }
-      mem = (char *)mem + group->chunkSize;
+        nextGroup = group->next;
+
+        pool = &poolArray[ group->poolNum ];
+
+        flag = 1;
+        mem = (CHUNK_HEADER *)(group + 1) + 1;
+        for( i = 0; i < group->numChunks; i++ )
+        {
+            if( chunkHeaderFor( mem ).link.pool == pool )
+            {
+                flag = 0;
+                break;
+            }
+            mem = (char *)mem + group->chunkSize;
+        }
+
+        mem = (CHUNK_HEADER *)(group + 1) + 1;
+        for( i = 0; i < group->numChunks; i++ )
+        {
+            if( flag == 1 || chunkHeaderFor( mem ).link.pool != pool )
+            {
+                *(char *)mem = flag;
+            }
+            mem = (char *)mem + group->chunkSize;
+        }
     }
 
-    mem = (CHUNK_HEADER *)(group + 1) + 1;
-    for( i = 0; i < group->numChunks; i++ )
+    /* remove all memory chunks that are in doomed groups from the
+       array of memory pools */
+    for( i = 1; i < NUM_POOLS; i++ )
     {
-      if( flag == 1 || chunkHeaderFor( mem ).link.pool != pool )
-        *(char *)mem = flag;
-      mem = (char *)mem + group->chunkSize;
+        pool = &poolArray[ i ];
+
+        prevMem = 0;
+        for( mem = *pool; mem != 0; mem = nextMem )
+        {
+            nextMem = chunkHeaderFor( mem ).link.next;
+
+            if( *(char *)mem == 1 )
+            {
+                if( prevMem == 0 )
+                {
+                    *pool = nextMem;
+                }
+                else
+                {
+                    chunkHeaderFor( prevMem ).link.next = nextMem;
+                }
+            }
+            else
+            {
+                prevMem = mem;
+            }
+        }
     }
-  }
 
-  /* remove all memory chunks that are in doomed groups from the
-     array of memory pools */
-  for( i = 1; i < NUM_POOLS; i++ )
-  {
-    pool = &poolArray[ i ];
-
-    prevMem = 0;
-    for( mem = *pool; mem != 0; mem = nextMem )
+    /* free() doomed groups */
+    prevGroup = 0;
+    for( group = g_firstGroup; group != 0; group = nextGroup )
     {
-      nextMem = chunkHeaderFor( mem ).link.next;
+        nextGroup = group->next;
 
-      if( *(char *)mem == 1 )
-      {
-        if( prevMem == 0 )
-          *pool = nextMem;
-        else
-          chunkHeaderFor( prevMem ).link.next = nextMem;
-      }
-      else
-        prevMem = mem;
-    }
-  }
+        pool = &poolArray[ group->poolNum ];
 
-  /* free() doomed groups */
-  prevGroup = 0;
-  for( group = g_firstGroup; group != 0; group = nextGroup )
-  {
-    nextGroup = group->next;
-
-    pool = &poolArray[ group->poolNum ];
-
-    mem = (CHUNK_HEADER *)(group + 1) + 1;
-    if( chunkHeaderFor( mem ).link.pool != pool &&
+        mem = (CHUNK_HEADER *)(group + 1) + 1;
+        if( chunkHeaderFor( mem ).link.pool != pool &&
         *(char *)mem == 1 )
-    {
-      if( prevGroup == 0 )
-        g_firstGroup = nextGroup;
-      else
-        prevGroup->next = nextGroup;
+        {
+            if( prevGroup == 0 )
+            {
+                g_firstGroup = nextGroup;
+            }
+            else
+            {
+                prevGroup->next = nextGroup;
+            }
 
-      #ifdef DEBUG
-        size_t groupSize = sizeof( GROUP_HEADER ) +
-                           group->numChunks * group->chunkSize;
-        memset( group, 0, groupSize );
-      #endif
+#ifdef DEBUG
+            size_t groupSize = sizeof( GROUP_HEADER ) +
+            group->numChunks * group->chunkSize;
+            memset( group, 0, groupSize );
+#endif
 
-      dealloc( group );
+            dealloc( group );
+        }
+        else
+        {
+            prevGroup = group;
+        }
     }
-    else
-      prevGroup = group;
-  }
 }
 
 /*-------------------------------------------------------------------*
@@ -611,9 +645,9 @@ static void chunkCleanup()
 
 static inline CHUNK_HEADER &chunkHeaderFor( void *mem )
 {
-  
 
-  return ((CHUNK_HEADER *)mem)[ -1 ];
+
+    return ((CHUNK_HEADER *)mem)[ -1 ];
 }
 
 /*-------------------------------------------------------------------*
@@ -623,11 +657,11 @@ static inline CHUNK_HEADER &chunkHeaderFor( void *mem )
 
 #ifdef DEBUG
 
-  static inline CHUNK_FOOTER &chunkFooterFor( void *mem )
-  {
+static inline CHUNK_FOOTER &chunkFooterFor( void *mem )
+{
     return
-      *((CHUNK_FOOTER *)((char *)mem + chunkHeaderFor( mem ).size));
-  }
+    *((CHUNK_FOOTER *)((char *)mem + chunkHeaderFor( mem ).size));
+}
 
 #endif
 
@@ -639,18 +673,22 @@ static inline CHUNK_HEADER &chunkHeaderFor( void *mem )
 
 #ifdef DEBUG
 
-  static inline void putOnAllocedList( void *mem )
-  {
+static inline void putOnAllocedList( void *mem )
+{
     CHUNK_HEADER *header = &chunkHeaderFor( mem );
 
     header->prevAlloced = &g_allocedList + 1;
     header->nextAlloced = g_allocedList.nextAlloced;
 
     if( header->prevAlloced != 0 )
-      chunkHeaderFor( header->prevAlloced ).nextAlloced = mem;
+    {
+        chunkHeaderFor( header->prevAlloced ).nextAlloced = mem;
+    }
     if( header->nextAlloced != 0 )
-      chunkHeaderFor( header->nextAlloced ).prevAlloced = mem;
-  }
+    {
+        chunkHeaderFor( header->nextAlloced ).prevAlloced = mem;
+    }
+}
 
 #endif
 
@@ -661,17 +699,17 @@ static inline CHUNK_HEADER &chunkHeaderFor( void *mem )
 
 #ifdef DEBUG
 
-  static inline void takeOffAllocedList( void *mem )
-  {
+static inline void takeOffAllocedList( void *mem )
+{
     CHUNK_HEADER *header = &chunkHeaderFor( mem );
 
     if( header->prevAlloced != 0 )
-      chunkHeaderFor( header->prevAlloced ).nextAlloced =
+        chunkHeaderFor( header->prevAlloced ).nextAlloced =
         header->nextAlloced;
     if( header->nextAlloced != 0 )
-      chunkHeaderFor( header->nextAlloced ).prevAlloced =
+        chunkHeaderFor( header->nextAlloced ).prevAlloced =
         header->prevAlloced;
-  }
+}
 
 #endif
 
@@ -682,10 +720,10 @@ static inline CHUNK_HEADER &chunkHeaderFor( void *mem )
 
 static inline int isEmergencyMem( void *mem )
 {
-  
 
-  return (mem >= (void *)emergencyBuf &&
-          mem < (void *)(emergencyBuf + EMERGENCY_BUF_LONGS));
+
+    return (mem >= (void *)emergencyBuf &&
+    mem < (void *)(emergencyBuf + EMERGENCY_BUF_LONGS));
 }
 
 /*-------------------------------------------------------------------*
@@ -694,51 +732,57 @@ static inline int isEmergencyMem( void *mem )
 
 static void *emergencyAlloc( size_t size )
 {
-  
 
-  long i, j;
 
-  size = (size_t)(.5 + (double)size / sizeof( *emergencyBuf ));
-  size++;
+    long i, j;
 
-  for( i = 0; i < EMERGENCY_BUF_LONGS; i += labs( emergencyBuf[ i ] ) )
-    if( emergencyBuf[ i ] == 0 )
-      break;
-  if( i > EMERGENCY_BUF_LONGS || emergencyBuf[ i ] == 0 )
-  {
-    fprintf( stderr, "\nEmergency buffer is corrupted\n" );
-    //DumpCore();
-    assert(false);
-  }
+    size = (size_t)(.5 + (double)size / sizeof( *emergencyBuf ));
+    size++;
 
-  for( i = 0; i < EMERGENCY_BUF_LONGS; i += labs( emergencyBuf[ i ] ) )
-    if( emergencyBuf[ i ] > 0 )
+    for( i = 0; i < EMERGENCY_BUF_LONGS; i += labs( emergencyBuf[ i ] ) )
+        if( emergencyBuf[ i ] == 0 )
+        {
+            break;
+        }
+    if( i > EMERGENCY_BUF_LONGS || emergencyBuf[ i ] == 0 )
     {
-      j = i + emergencyBuf[ i ];
-      while( j < EMERGENCY_BUF_LONGS && emergencyBuf[ j ] > 0 )
-      {
-        emergencyBuf[ i ] += emergencyBuf[ j ];
-        j += emergencyBuf[ j ];
-      }
-
-      if( emergencyBuf[ i ] >= size )
-        break;
+        fprintf( stderr, "\nEmergency buffer is corrupted\n" );
+        //DumpCore();
+        assert(false);
     }
 
-  if( i == EMERGENCY_BUF_LONGS )
-  {
-    fprintf( stderr, "\nOut of emergency buffer space "
-                     "(looking for %d bytes)\n",
-                     size * 2 );
-    //DumpCore();
-    assert(false);
-  }
+    for( i = 0; i < EMERGENCY_BUF_LONGS; i += labs( emergencyBuf[ i ] ) )
+        if( emergencyBuf[ i ] > 0 )
+        {
+            j = i + emergencyBuf[ i ];
+            while( j < EMERGENCY_BUF_LONGS && emergencyBuf[ j ] > 0 )
+            {
+                emergencyBuf[ i ] += emergencyBuf[ j ];
+                j += emergencyBuf[ j ];
+            }
 
-  if( size < emergencyBuf[ i ] )
-    emergencyBuf[ i + size ] = emergencyBuf[ i ] - size;
-  emergencyBuf[ i ] = -size;
+            if( emergencyBuf[ i ] >= size )
+            {
+                break;
+            }
+        }
 
-  return (void *)&emergencyBuf[ i + 1 ];
+    if( i == EMERGENCY_BUF_LONGS )
+    {
+        fprintf( stderr, "\nOut of emergency buffer space "
+        "(looking for %d bytes)\n",
+        size * 2 );
+        //DumpCore();
+        assert(false);
+    }
+
+    if( size < emergencyBuf[ i ] )
+    {
+        emergencyBuf[ i + size ] = emergencyBuf[ i ] - size;
+    }
+    emergencyBuf[ i ] = -size;
+
+    return (void *)&emergencyBuf[ i + 1 ];
 }
 
 /*-------------------------------------------------------------------*
@@ -748,10 +792,12 @@ static void *emergencyAlloc( size_t size )
 
 static inline void emergencyDealloc( void *mem )
 {
-  
 
-  if( ((long *)mem)[ -1 ] < 0 )
-    ((long *)mem)[ -1 ] *= -1;
+
+    if( ((long *)mem)[ -1 ] < 0 )
+    {
+        ((long *)mem)[ -1 ] *= -1;
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -760,38 +806,40 @@ static inline void emergencyDealloc( void *mem )
 
 static void *alloc( size_t originalSize )
 {
-  
 
-  void *mem;
-  size_t size;
-  HANDLER_FOR_NEW handlerForNew;
 
-  size = originalSize + sizeof( size_t );
-  mem = malloc( size );
+    void *mem;
+    size_t size;
+    HANDLER_FOR_NEW handlerForNew;
 
-  if( mem == 0 )
-  {
-    chunkCleanup();
+    size = originalSize + sizeof( size_t );
     mem = malloc( size );
 
-    while( mem == 0 && (handlerForNew = getHandlerForNew()) != 0 )
+    if( mem == 0 )
     {
-      (*handlerForNew)();
-      chunkCleanup();
-      mem = malloc( size );
+        chunkCleanup();
+        mem = malloc( size );
+
+        while( mem == 0 && (handlerForNew = getHandlerForNew()) != 0 )
+        {
+            (*handlerForNew)();
+            chunkCleanup();
+            mem = malloc( size );
+        }
+
+        assert( mem != 0 );
+        //  THROW_ERR( "Can't allocate " << size << " bytes of memory" )
     }
 
-    assert( mem != 0 );
-    //  THROW_ERR( "Can't allocate " << size << " bytes of memory" )
-  }
+    G_allocatedMemory += size;
+    if( G_allocatedMemory > G_peakAllocatedMemory )
+    {
+        G_peakAllocatedMemory = G_allocatedMemory;
+    }
 
-  G_allocatedMemory += size;
-  if( G_allocatedMemory > G_peakAllocatedMemory )
-    G_peakAllocatedMemory = G_allocatedMemory;
+    *((size_t *)mem) = size;
 
-  *((size_t *)mem) = size;
-
-  return (size_t *)mem + 1;
+    return (size_t *)mem + 1;
 }
 
 /*-------------------------------------------------------------------*
@@ -800,23 +848,23 @@ static void *alloc( size_t originalSize )
 
 static inline void dealloc( void *mem )
 {
-  
 
-  size_t size;
 
-  mem = (size_t *)mem - 1;
+    size_t size;
 
-  size = *((size_t *)mem);
+    mem = (size_t *)mem - 1;
 
-  #ifdef TSTBUG
+    size = *((size_t *)mem);
+
+#ifdef TSTBUG
     assert( size >= sizeof( size_t ) );
     //  THROW_ERR( "Corrupted heap at " << mem )
     *((size_t *)mem) = 0;
-  #endif
+#endif
 
-  free( mem );
+    free( mem );
 
-  G_allocatedMemory -= size;
+    G_allocatedMemory -= size;
 }
 
 /*-------------------------------------------------------------------*
@@ -826,12 +874,12 @@ static inline void dealloc( void *mem )
 
 static inline HANDLER_FOR_NEW getHandlerForNew()
 {
-  
 
-  HANDLER_FOR_NEW handlerForNew;
 
-  handlerForNew = std::set_new_handler( 0 );
-  std::set_new_handler( handlerForNew );
+    HANDLER_FOR_NEW handlerForNew;
 
-  return handlerForNew;
+    handlerForNew = std::set_new_handler( 0 );
+    std::set_new_handler( handlerForNew );
+
+    return handlerForNew;
 }

@@ -57,10 +57,12 @@
 
 void Indent( int numSpaces )
 {
-  int i;
+    int i;
 
-  for( i = 0; i < numSpaces; i++ )
-    std::cout << " ";
+    for( i = 0; i < numSpaces; i++ )
+    {
+        std::cout << " ";
+    }
 }
 
 /*-------------------------------------------------------------------*

@@ -86,102 +86,102 @@
 #include <string.h>		// for memset()
 
 template< class TYPE >
-  class VECTOR_OF
-  {
-    private:
+class VECTOR_OF
+{
+private:
 
-      int m_size;
-      int m_lowIndex;
-      int m_highIndex;
-      TYPE *m_buf;
-      TYPE *m_data;
+    int m_size;
+    int m_lowIndex;
+    int m_highIndex;
+    TYPE *m_buf;
+    TYPE *m_data;
 
-    public:
+public:
 
-      VECTOR_OF():
+    VECTOR_OF():
         m_size( 0 ),
         m_lowIndex( 0 ),
         m_highIndex( 0 ),
         m_buf( 0 ),
         m_data( 0 )
-      {
-      }
+    {
+    }
 
-      VECTOR_OF( int highIndex ):
+    VECTOR_OF( int highIndex ):
         m_size( highIndex + 1 ),
         m_lowIndex( 0 ),
         m_highIndex( highIndex ),
         m_buf( new TYPE[ m_size ] ),
         m_data( m_buf )
-      {
-      }
+    {
+    }
 
-      VECTOR_OF( int lowIndex, int highIndex ):
+    VECTOR_OF( int lowIndex, int highIndex ):
         m_size( highIndex - lowIndex + 1 ),
         m_lowIndex( lowIndex ),
         m_highIndex( highIndex ),
         m_buf( new TYPE[ m_size ] ),
         m_data( m_buf - lowIndex )
-      {
-      }
+    {
+    }
 
-      ~VECTOR_OF()
-      {
+    ~VECTOR_OF()
+    {
         delete [] m_buf;
-      }
+    }
 
-      TYPE &operator[]( int index )
-      {
-        #ifdef TSTBUG
-          // NOTE: the assertion booleans have been negated from their original if statements.
-          assert( m_buf != 0 );
-          //  THROW_ERR("Trying to index into unallocated vector")
-          assert( m_lowIndex <= index && index <= m_highIndex );
-          //  THROW_ERR("Index out of bounds in vector" << index )
-        #endif
+    TYPE &operator[]( int index )
+    {
+#ifdef TSTBUG
+        // NOTE: the assertion booleans have been negated from their original if statements.
+        assert( m_buf != 0 );
+        //  THROW_ERR("Trying to index into unallocated vector")
+        assert( m_lowIndex <= index && index <= m_highIndex );
+        //  THROW_ERR("Index out of bounds in vector" << index )
+#endif
 
         return m_data[ index ];
-      }
+    }
 
-      void resize( int highIndex )
-      {
+    void resize( int highIndex )
+    {
         int newSize = highIndex + 1;
 
         if( newSize > m_size )
         {
-          delete [] m_buf;
-          m_buf = new TYPE[ newSize ];
-          m_size = newSize;
+            delete [] m_buf;
+            m_buf = new TYPE[ newSize ];
+            m_size = newSize;
         }
 
         m_lowIndex = 0;
         m_highIndex = highIndex;
         m_data = m_buf;
-      }
+    }
 
-      void resize( int lowIndex, int highIndex )
-      {
+    void resize( int lowIndex, int highIndex )
+    {
         int newSize = highIndex - lowIndex + 1;
 
         if( newSize > m_size )
         {
-          delete [] m_buf;
-          m_buf = new TYPE[ newSize ];
-          m_size = newSize;
+            delete [] m_buf;
+            m_buf = new TYPE[ newSize ];
+            m_size = newSize;
         }
 
         m_lowIndex = lowIndex;
         m_highIndex = highIndex;
         m_data = m_buf - lowIndex;
-      }
+    }
 
-      void clear()
-      {
+    void clear()
+    {
         if( m_buf != 0 )
-          memset( m_buf, 0,
-                  (m_highIndex - m_lowIndex + 1) * sizeof( TYPE ) );
-      }
-  };
+            memset( m_buf, 0,
+                    (m_highIndex - m_lowIndex + 1) * sizeof( TYPE ) );
+    }
+};
 
 #endif
 

@@ -383,12 +383,12 @@ template< class TYPE > class PTR_INTO_LINKS_TO;
 
 class LINK_NODE: public DLISTnode
 {
-  friend class LINKSbase;
-  friend class PTR_INTO_LINKSbase;
-  friend void XMakeLinkBase( void *obj0, LINKSbase &links0,
-                             void *obj1, LINKSbase &links1 );
+    friend class LINKSbase;
+    friend class PTR_INTO_LINKSbase;
+    friend void XMakeLinkBase( void *obj0, LINKSbase &links0,
+                               void *obj1, LINKSbase &links1 );
 
-  private:
+private:
 
     void *m_thatObj;
     LINK_NODE *m_partner;
@@ -396,15 +396,15 @@ class LINK_NODE: public DLISTnode
     LINK_NODE(): DLISTnode(), m_thatObj( 0 ), m_partner( 0 ) {}
     LINK_NODE( const LINK_NODE & )
     {
-      assert(false);
-      //THROW_ERR( "Trying to copy a LINK_NODE (don't know how)" )
+        assert(false);
+        //THROW_ERR( "Trying to copy a LINK_NODE (don't know how)" )
     }
 
-  protected:
+protected:
 
     MEMBERS_FOR_DLISTnode( LINK_NODE )
 
-  public:
+public:
 
     ~LINK_NODE();
 };
@@ -415,31 +415,55 @@ class LINK_NODE: public DLISTnode
 
 class LINKSbase
 {
-  friend class PTR_INTO_LINKSbase;
-  friend void XMakeLinkBase( void *obj0, LINKSbase &links0,
-                             void *obj1, LINKSbase &links1 );
+    friend class PTR_INTO_LINKSbase;
+    friend void XMakeLinkBase( void *obj0, LINKSbase &links0,
+                               void *obj1, LINKSbase &links1 );
 
-  private:
+private:
 
     iDLIST_OF< LINK_NODE > m_list;
 
-  protected:
+protected:
 
     LINKSbase(): m_list() {}
     virtual ~LINKSbase() {}
 
-    void *baseGetHead() const { return m_list.getHead()->m_thatObj; }
-    void *baseGetTail() const { return m_list.getTail()->m_thatObj; }
+    void *baseGetHead() const
+    {
+        return m_list.getHead()->m_thatObj;
+    }
+    void *baseGetTail() const
+    {
+        return m_list.getTail()->m_thatObj;
+    }
 
-  public:
+public:
 
-    int isEmpty() const { return m_list.isEmpty(); }
-    int hasOneMember() const { return m_list.hasOneMember(); }
-    int getLength() const { return m_list.getLength(); }
+    int isEmpty() const
+    {
+        return m_list.isEmpty();
+    }
+    int hasOneMember() const
+    {
+        return m_list.hasOneMember();
+    }
+    int getLength() const
+    {
+        return m_list.getLength();
+    }
 
-    void removeHead() { m_list.removeHead(); }
-    void removeTail() { m_list.removeTail(); }
-    void removeAll() { m_list.removeAll(); }
+    void removeHead()
+    {
+        m_list.removeHead();
+    }
+    void removeTail()
+    {
+        m_list.removeTail();
+    }
+    void removeAll()
+    {
+        m_list.removeAll();
+    }
 };
 
 /*-------------------------------------------------------------------*
@@ -449,43 +473,74 @@ class LINKSbase
 
 class PTR_INTO_LINKSbase
 {
-  private:
+private:
 
     PTR_INTO_iDLIST_OF< LINK_NODE > m_ptr;
 
-  protected:
+protected:
 
     PTR_INTO_LINKSbase(): m_ptr() {}
     PTR_INTO_LINKSbase( LINKSbase &links ): m_ptr( links.m_list ) {}
     PTR_INTO_LINKSbase( LINKSbase &links, START_AT_HEADversion ):
-      m_ptr( links.m_list, START_AT_HEAD )
+        m_ptr( links.m_list, START_AT_HEAD )
     {
     }
     PTR_INTO_LINKSbase( LINKSbase &links, START_AT_TAILversion ):
-      m_ptr( links.m_list, START_AT_TAIL )
+        m_ptr( links.m_list, START_AT_TAIL )
     {
     }
 
     virtual ~PTR_INTO_LINKSbase() {}
 
-    void baseSet( LINKSbase &links ) { m_ptr.set( links.m_list ); }
+    void baseSet( LINKSbase &links )
+    {
+        m_ptr.set( links.m_list );
+    }
     void baseSet( LINKSbase &links, START_AT_HEADversion )
-      { m_ptr.set( links.m_list, START_AT_HEAD ); }
+    {
+        m_ptr.set( links.m_list, START_AT_HEAD );
+    }
     void baseSet( LINKSbase &links, START_AT_TAILversion )
-      { m_ptr.set( links.m_list, START_AT_TAIL ); }
+    {
+        m_ptr.set( links.m_list, START_AT_TAIL );
+    }
 
-    void *baseGet() const { return (*m_ptr).m_thatObj; }
+    void *baseGet() const
+    {
+        return (*m_ptr).m_thatObj;
+    }
 
-  public:
+public:
 
-    int isInitialized() const { return m_ptr.isInitialized(); }
-    int isValid() const { return m_ptr.isValid(); }
-    int isAtHead() const { return m_ptr.isAtHead(); }
-    int isAtTail() const { return m_ptr.isAtTail(); }
+    int isInitialized() const
+    {
+        return m_ptr.isInitialized();
+    }
+    int isValid() const
+    {
+        return m_ptr.isValid();
+    }
+    int isAtHead() const
+    {
+        return m_ptr.isAtHead();
+    }
+    int isAtTail() const
+    {
+        return m_ptr.isAtTail();
+    }
 
-    void gotoPrev() { m_ptr.gotoPrev(); }
-    void gotoNext() { m_ptr.gotoNext(); }
-    void remove() { m_ptr.remove(); }
+    void gotoPrev()
+    {
+        m_ptr.gotoPrev();
+    }
+    void gotoNext()
+    {
+        m_ptr.gotoNext();
+    }
+    void remove()
+    {
+        m_ptr.remove();
+    }
 };
 
 /*-------------------------------------------------------------------*
@@ -493,66 +548,97 @@ class PTR_INTO_LINKSbase
  *-------------------------------------------------------------------*/
 
 template< class TYPE >
-  class LINKS_TO: public LINKSbase
-  {
-    public:
+class LINKS_TO: public LINKSbase
+{
+public:
 
-      LINKS_TO(): LINKSbase() {}
+    LINKS_TO(): LINKSbase() {}
 
-      TYPE *getHead() { return (TYPE *)baseGetHead(); }
-      TYPE *getTail() { return (TYPE *)baseGetTail(); }
-      TYPE &operator*() { return *getHead(); }
-  };
+    TYPE *getHead()
+    {
+        return (TYPE *)baseGetHead();
+    }
+    TYPE *getTail()
+    {
+        return (TYPE *)baseGetTail();
+    }
+    TYPE &operator*()
+    {
+        return *getHead();
+    }
+};
 
 /*-------------------------------------------------------------------*
  | PTR_INTO_LINKS_TO<> -- template for iterator over list of links
  *-------------------------------------------------------------------*/
 
 template< class TYPE >
-  class PTR_INTO_LINKS_TO: public PTR_INTO_LINKSbase
-  {
-    public:
+class PTR_INTO_LINKS_TO: public PTR_INTO_LINKSbase
+{
+public:
 
-      PTR_INTO_LINKS_TO(): PTR_INTO_LINKSbase() {}
-      PTR_INTO_LINKS_TO( LINKS_TO< TYPE > &links ):
+    PTR_INTO_LINKS_TO(): PTR_INTO_LINKSbase() {}
+    PTR_INTO_LINKS_TO( LINKS_TO< TYPE > &links ):
         PTR_INTO_LINKSbase( links )
-      {
-      }
-      PTR_INTO_LINKS_TO( LINKS_TO< TYPE > &links,
-                         START_AT_HEADversion ):
+    {
+    }
+    PTR_INTO_LINKS_TO( LINKS_TO< TYPE > &links,
+                       START_AT_HEADversion ):
         PTR_INTO_LINKSbase( links, START_AT_HEAD )
-      {
-      }
-      PTR_INTO_LINKS_TO( LINKS_TO< TYPE > &links,
-                         START_AT_TAILversion ):
+    {
+    }
+    PTR_INTO_LINKS_TO( LINKS_TO< TYPE > &links,
+                       START_AT_TAILversion ):
         PTR_INTO_LINKSbase( links, START_AT_TAIL )
-      {
-      }
+    {
+    }
 
-      void set( LINKS_TO< TYPE > &links ) { baseSet( links ); }
-      void set( LINKS_TO< TYPE > &links, START_AT_HEADversion )
-        { baseSet( links, START_AT_HEAD ); }
-      void set( LINKS_TO< TYPE > &links, START_AT_TAILversion )
-        { baseSet( links, START_AT_TAIL ); }
+    void set( LINKS_TO< TYPE > &links )
+    {
+        baseSet( links );
+    }
+    void set( LINKS_TO< TYPE > &links, START_AT_HEADversion )
+    {
+        baseSet( links, START_AT_HEAD );
+    }
+    void set( LINKS_TO< TYPE > &links, START_AT_TAILversion )
+    {
+        baseSet( links, START_AT_TAIL );
+    }
 
-      PTR_INTO_LINKS_TO< TYPE > &operator=( LINKS_TO< TYPE > &links )
-        { set( links ); return *this; }
-      PTR_INTO_LINKS_TO< TYPE >
-        &operator=( const PTR_INTO_LINKS_TO< TYPE > &ptr )
-      {
-        *(PTR_INTO_LINKSbase *)this =
-          *(const PTR_INTO_LINKSbase *)&ptr;
+    PTR_INTO_LINKS_TO< TYPE > &operator=( LINKS_TO< TYPE > &links )
+    {
+        set( links );
         return *this;
-      }
+    }
+    PTR_INTO_LINKS_TO< TYPE >
+    &operator=( const PTR_INTO_LINKS_TO< TYPE > &ptr )
+    {
+        *(PTR_INTO_LINKSbase *)this =
+            *(const PTR_INTO_LINKSbase *)&ptr;
+        return *this;
+    }
 
-      TYPE *get() { return (TYPE *)baseGet(); }
-      TYPE &operator*() { return *get(); }
+    TYPE *get()
+    {
+        return (TYPE *)baseGet();
+    }
+    TYPE &operator*()
+    {
+        return *get();
+    }
 
-      PTR_INTO_LINKS_TO< TYPE > &operator--()
-        { gotoPrev(); return *this; }
-      PTR_INTO_LINKS_TO< TYPE > &operator++()
-        { gotoNext(); return *this; }
-  };
+    PTR_INTO_LINKS_TO< TYPE > &operator--()
+    {
+        gotoPrev();
+        return *this;
+    }
+    PTR_INTO_LINKS_TO< TYPE > &operator++()
+    {
+        gotoNext();
+        return *this;
+    }
+};
 
 /*-------------------------------------------------------------------*
  | Routines used in MAKE_LINK() macro
@@ -572,11 +658,11 @@ void XMakeLinkBase( void *obj0, LINKSbase &links0,
                     void *obj1, LINKSbase &links1 );
 
 template< class TYPE0, class TYPE1 >
-  inline void MakeLink( TYPE0 *obj0, LINKS_TO< TYPE1 > &links0,
-                        TYPE1 *obj1, LINKS_TO< TYPE0 > &links1 )
-  {
+inline void MakeLink( TYPE0 *obj0, LINKS_TO< TYPE1 > &links0,
+                      TYPE1 *obj1, LINKS_TO< TYPE0 > &links1 )
+{
     XMakeLinkBase( obj0, links0, obj1, links1 );
-  }
+}
 
 /*-------------------------------------------------------------------*
  | Macros
@@ -587,9 +673,9 @@ template< class TYPE0, class TYPE1 >
 
 #define LOOP_LINKS( ptr, links )                                      \
   for( ptr.set( links, START_AT_HEAD ); ptr.isValid(); ++ptr )        \
-
+ 
 #define LOOP_LINKSrev( ptr, links )                                   \
   for( ptr.set( links, START_AT_TAIL ); ptr.isValid(); --ptr )        \
-
+ 
 #endif
 

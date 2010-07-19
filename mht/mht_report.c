@@ -60,29 +60,31 @@
 void REPORT::setAllGroupIds( int groupId )
 {
 
-  PTR_INTO_iDLIST_OF< REPORT > reportPtr;
-  PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
-  T_TREE *tree;
-  int treeGroupId;
+    PTR_INTO_iDLIST_OF< REPORT > reportPtr;
+    PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
+    T_TREE *tree;
+    int treeGroupId;
 
-  m_groupId = groupId;
+    m_groupId = groupId;
 
-  LOOP_LINKS( tHypoPtr, m_tHypoLinks )
-  {
-    tree = (*tHypoPtr).getTree();
-    treeGroupId = tree->getGroupId();
-
-    if( treeGroupId != groupId )
+    LOOP_LINKS( tHypoPtr, m_tHypoLinks )
     {
-      tree->setGroupId( groupId );
-      if( treeGroupId != -1 )
-      {
-        for( (reportPtr = this),--reportPtr; reportPtr.isValid(); --reportPtr )
-          if( (*reportPtr).m_groupId == treeGroupId )
-            (*reportPtr).setAllGroupIds( groupId );
-      }
+        tree = (*tHypoPtr).getTree();
+        treeGroupId = tree->getGroupId();
+
+        if( treeGroupId != groupId )
+        {
+            tree->setGroupId( groupId );
+            if( treeGroupId != -1 )
+            {
+                for( (reportPtr = this),--reportPtr; reportPtr.isValid(); --reportPtr )
+                    if( (*reportPtr).m_groupId == treeGroupId )
+                    {
+                        (*reportPtr).setAllGroupIds( groupId );
+                    }
+            }
+        }
     }
-  }
 }
 
 /*-------------------------------------------------------------------*
@@ -92,16 +94,16 @@ void REPORT::setAllGroupIds( int groupId )
 void REPORT::checkGroupIds()
 {
 
-  PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
-  T_TREE *tree;
+    PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
+    T_TREE *tree;
 
-  LOOP_LINKS( tHypoPtr, m_tHypoLinks )
-  {
-    tree = (*tHypoPtr).getTree();
+    LOOP_LINKS( tHypoPtr, m_tHypoLinks )
+    {
+        tree = (*tHypoPtr).getTree();
 
-    assert( tree->getGroupId() == m_groupId );
-    //  THROW_ERR( "Bad group id for report" )
-  }
+        assert( tree->getGroupId() == m_groupId );
+        //  THROW_ERR( "Bad group id for report" )
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -111,25 +113,31 @@ void REPORT::checkGroupIds()
 void REPORT::describe( int spaces )
 {
 
-  PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
-  int k;
+    PTR_INTO_LINKS_TO< T_HYPO > tHypoPtr;
+    int k;
 
-  Indent( spaces ); std::cout << "REPORT "; print(); std::cout << std::endl;
+    Indent( spaces );
+    std::cout << "REPORT ";
+    print();
+    std::cout << std::endl;
 
-  Indent( spaces ); std::cout << "| tHypo's:";
-  k = 0;
+    Indent( spaces );
+    std::cout << "| tHypo's:";
+    k = 0;
 
-  LOOP_LINKS( tHypoPtr, m_tHypoLinks )
-  {
-    if( k++ >= 3 )
+    LOOP_LINKS( tHypoPtr, m_tHypoLinks )
     {
-      std::cout << std::endl;
-      Indent( spaces ); std::cout << "|         ";
-      k = 0;
-    }
+        if( k++ >= 3 )
+        {
+            std::cout << std::endl;
+            Indent( spaces );
+            std::cout << "|         ";
+            k = 0;
+        }
 
-    std::cout << " "; (*tHypoPtr).print();
-  }
-  std::cout << std::endl;
+        std::cout << " ";
+        (*tHypoPtr).print();
+    }
+    std::cout << std::endl;
 }
 

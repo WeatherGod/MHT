@@ -49,7 +49,7 @@
 
 void SNormRand( long seed )
 {
-  srand48( seed );
+    srand48( seed );
 }
 
 /*-------------------------------------------------------------------*
@@ -65,32 +65,32 @@ void SNormRand( long seed )
 
 double NormRand()
 {
-  static double extraDeviate;
-  static char weHaveExtraDeviate;
-  double fac, r, v1, v2;
+    static double extraDeviate;
+    static char weHaveExtraDeviate;
+    double fac, r, v1, v2;
 
-  if( ! weHaveExtraDeviate )
-  {
-    do
+    if( ! weHaveExtraDeviate )
     {
-      v1 = 2. * drand48() - 1.;
-      v2 = 2. * drand48() - 1.;
-      r = v1 * v1 + v2 * v2;
+        do
+        {
+            v1 = 2. * drand48() - 1.;
+            v2 = 2. * drand48() - 1.;
+            r = v1 * v1 + v2 * v2;
+        }
+        while( r >= 1. || r == 0. );
+
+        fac = sqrt( -2. * log( r ) / r );
+
+        extraDeviate = v1 * fac;
+        weHaveExtraDeviate = 1;
+
+        return v2 * fac;
     }
-    while( r >= 1. || r == 0. );
+    else
+    {
+        weHaveExtraDeviate = 0;
 
-    fac = sqrt( -2. * log( r ) / r );
-
-    extraDeviate = v1 * fac;
-    weHaveExtraDeviate = 1;
-
-    return v2 * fac;
-  }
-  else
-  {
-    weHaveExtraDeviate = 0;
-
-    return extraDeviate;
-  }
+        return extraDeviate;
+    }
 }
 

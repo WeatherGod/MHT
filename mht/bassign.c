@@ -47,7 +47,7 @@ static const int MAX_INTEGER = 0x7FFFFFFF;
 static const double SOLVED = 0.;
 
 typedef
-  VECTOR_OF< VECTOR_OF< ROW_COL_COST > >
+VECTOR_OF< VECTOR_OF< ROW_COL_COST > >
 RCC_ARRAY_2D;
 
 static void setupProblem( ROW_COL_COST *rcc, int numRCCs, int, int );
@@ -83,195 +83,239 @@ double BFindBestAssignment( ROW_COL_COST *rcc, int numRCCs,
                             int numRows, int numCols,
                             VECTOR_OF< void * > &tag, int *numTags )
 {
-  
 
-  if( numRCCs == 0 )
-  {
-    *numTags = 0;
-    return 0.;
-  }
 
-  setupProblem( rcc, numRCCs, numRows, numCols );
+    if( numRCCs == 0 )
+    {
+        *numTags = 0;
+        return 0.;
+    }
 
-  if( solveProblem() == UNSOLVABLE )
-    return UNSOLVABLE;
-  else
-    return storeSolution( tag, numTags );
+    setupProblem( rcc, numRCCs, numRows, numCols );
+
+    if( solveProblem() == UNSOLVABLE )
+    {
+        return UNSOLVABLE;
+    }
+    else
+    {
+        return storeSolution( tag, numTags );
+    }
 }
 
 static void setupProblem( ROW_COL_COST *rcc, int numRCCs,
                           int numRows, int numCols )
 {
-  
 
-  int row, col;
-  int i;
 
-  g_minRow = MAX_INTEGER;
-  g_maxRow = -MAX_INTEGER;
-  g_minCol = MAX_INTEGER;
-  g_maxCol = -MAX_INTEGER;
-  g_numRCCsForRow.resize( numRows );
-  g_numRCCsForCol.resize( numCols );
+    int row, col;
+    int i;
 
-  g_numRCCsForRow.clear();
-  g_numRCCsForCol.clear();
-  for( i = 0; i < numRCCs; i++ )
-  {
-    row = rcc[ i ].row;
-    col = rcc[ i ].col;
+    g_minRow = MAX_INTEGER;
+    g_maxRow = -MAX_INTEGER;
+    g_minCol = MAX_INTEGER;
+    g_maxCol = -MAX_INTEGER;
+    g_numRCCsForRow.resize( numRows );
+    g_numRCCsForCol.resize( numCols );
 
-    if( row >= 0 )
-      g_numRCCsForRow[ row ]++;
-    if( col >= 0 )
-      g_numRCCsForCol[ col ]++;
-  }
+    g_numRCCsForRow.clear();
+    g_numRCCsForCol.clear();
+    for( i = 0; i < numRCCs; i++ )
+    {
+        row = rcc[ i ].row;
+        col = rcc[ i ].col;
 
-  g_rccForRow.resize( numRows );
-  for( i = 0; i < numRows; i++ )
-    g_rccForRow[ i ].resize( g_numRCCsForRow[ i ] );
-  g_rccForCol.resize( numCols );
-  for( i = 0; i < numCols; i++ )
-    g_rccForCol[ i ].resize( g_numRCCsForCol[ i ] );
+        if( row >= 0 )
+        {
+            g_numRCCsForRow[ row ]++;
+        }
+        if( col >= 0 )
+        {
+            g_numRCCsForCol[ col ]++;
+        }
+    }
 
-  g_numRCCsForRow.clear();
-  g_numRCCsForCol.clear();
-  for( i = 0; i < numRCCs; i++ )
-  {
-    row = rcc[ i ].row;
-    col = rcc[ i ].col;
+    g_rccForRow.resize( numRows );
+    for( i = 0; i < numRows; i++ )
+    {
+        g_rccForRow[ i ].resize( g_numRCCsForRow[ i ] );
+    }
+    g_rccForCol.resize( numCols );
+    for( i = 0; i < numCols; i++ )
+    {
+        g_rccForCol[ i ].resize( g_numRCCsForCol[ i ] );
+    }
 
-    if( row >= 0 )
-      g_rccForRow[ row ][ g_numRCCsForRow[ row ]++ ] = rcc[ i ];
-    if( col >= 0 )
-      g_rccForCol[ col ][ g_numRCCsForCol[ col ]++ ] = rcc[ i ];
+    g_numRCCsForRow.clear();
+    g_numRCCsForCol.clear();
+    for( i = 0; i < numRCCs; i++ )
+    {
+        row = rcc[ i ].row;
+        col = rcc[ i ].col;
 
-    if( row < g_minRow )
-      g_minRow = row;
-    if( row > g_maxRow )
-      g_maxRow = row;
+        if( row >= 0 )
+        {
+            g_rccForRow[ row ][ g_numRCCsForRow[ row ]++ ] = rcc[ i ];
+        }
+        if( col >= 0 )
+        {
+            g_rccForCol[ col ][ g_numRCCsForCol[ col ]++ ] = rcc[ i ];
+        }
 
-    if( col < g_minCol )
-      g_minCol = col;
-    if( col > g_maxCol )
-      g_maxCol = col;
-  }
+        if( row < g_minRow )
+        {
+            g_minRow = row;
+        }
+        if( row > g_maxRow )
+        {
+            g_maxRow = row;
+        }
 
-  g_numRows = g_maxRow - g_minRow + 1;
-  g_numCols = g_maxCol - g_minCol + 1;
+        if( col < g_minCol )
+        {
+            g_minCol = col;
+        }
+        if( col > g_maxCol )
+        {
+            g_maxCol = col;
+        }
+    }
+
+    g_numRows = g_maxRow - g_minRow + 1;
+    g_numCols = g_maxCol - g_minCol + 1;
 }
 
 static double solveProblem()
 {
-  
 
-  int i;
 
-  g_mateForRow.resize( g_minRow, g_maxRow );
-  g_mateForCol.resize( g_minCol, g_maxCol );
-  g_solution.resize( g_numRows + g_numCols - 1 );
-  g_solutionSize = 0;
-  g_bestSolution.resize( g_numRows + g_numCols - 1 );
-  g_bestSolutionSize = 0;
-  g_bestSolutionCost = INFINITY;
+    int i;
 
-  for( i = g_minRow; i <= g_maxRow; i++ )
-    g_mateForRow[ i ] = NO_SUCH_THING;
+    g_mateForRow.resize( g_minRow, g_maxRow );
+    g_mateForCol.resize( g_minCol, g_maxCol );
+    g_solution.resize( g_numRows + g_numCols - 1 );
+    g_solutionSize = 0;
+    g_bestSolution.resize( g_numRows + g_numCols - 1 );
+    g_bestSolutionSize = 0;
+    g_bestSolutionCost = INFINITY;
 
-  for( i = g_minCol; i <= g_maxCol; i++ )
-    g_mateForCol[ i ] = NO_SUCH_THING;
+    for( i = g_minRow; i <= g_maxRow; i++ )
+    {
+        g_mateForRow[ i ] = NO_SUCH_THING;
+    }
 
-  search( 0, 0. );
+    for( i = g_minCol; i <= g_maxCol; i++ )
+    {
+        g_mateForCol[ i ] = NO_SUCH_THING;
+    }
 
-  if( g_bestSolutionCost == INFINITY )
-    return UNSOLVABLE;
-  else
-    return SOLVED;
+    search( 0, 0. );
+
+    if( g_bestSolutionCost == INFINITY )
+    {
+        return UNSOLVABLE;
+    }
+    else
+    {
+        return SOLVED;
+    }
 }
 
 static void search( int level, double costSoFar )
 {
-  
 
-  int row, col;
-  int i;
 
-  if( level <= g_maxRow )
-  {
+    int row, col;
+    int i;
 
-    row = level;
+    if( level <= g_maxRow )
+    {
 
-    if( row < g_minRow ||
-        g_mateForRow[ row ] != NO_SUCH_THING ||
-        g_numRCCsForRow[ row ] == 0 )
-      search( level + 1, costSoFar );
-    else
-      for( i = 0; i < g_numRCCsForRow[ row ]; i++ )
-      {
-        col = g_rccForRow[ row ][ i ].col;
-        if( g_mateForCol[ col ] == NO_SUCH_THING )
+        row = level;
+
+        if( row < g_minRow ||
+                g_mateForRow[ row ] != NO_SUCH_THING ||
+                g_numRCCsForRow[ row ] == 0 )
         {
-          g_mateForRow[ row ] = col;
-          if( col >= 0 )
-            g_mateForCol[ col ] = row;
-          g_solution[ g_solutionSize++ ] = g_rccForRow[ row ][ i ].tag;
-
-          search( level + 1, costSoFar + g_rccForRow[ row ][ i ].cost );
-
-          g_solutionSize--;
-          g_mateForCol[ col ] = NO_SUCH_THING;
-          g_mateForRow[ row ] = NO_SUCH_THING;
+            search( level + 1, costSoFar );
         }
-      }
-  }
-  else if( level <= g_maxRow + 1 + g_maxCol )
-  {
+        else
+            for( i = 0; i < g_numRCCsForRow[ row ]; i++ )
+            {
+                col = g_rccForRow[ row ][ i ].col;
+                if( g_mateForCol[ col ] == NO_SUCH_THING )
+                {
+                    g_mateForRow[ row ] = col;
+                    if( col >= 0 )
+                    {
+                        g_mateForCol[ col ] = row;
+                    }
+                    g_solution[ g_solutionSize++ ] = g_rccForRow[ row ][ i ].tag;
 
-    col = level - g_maxRow - 1;
+                    search( level + 1, costSoFar + g_rccForRow[ row ][ i ].cost );
 
-    if( col < g_minCol ||
-        g_mateForCol[ col ] != NO_SUCH_THING ||
-        g_numRCCsForCol[ col ] == 0 )
-      search( level + 1, costSoFar );
-    else
-      for( i = 0; i < g_numRCCsForCol[ col ]; i++ )
-      {
-        row = g_rccForCol[ col ][ i ].row;
-        if( g_mateForRow[ row ] == NO_SUCH_THING )
+                    g_solutionSize--;
+                    g_mateForCol[ col ] = NO_SUCH_THING;
+                    g_mateForRow[ row ] = NO_SUCH_THING;
+                }
+            }
+    }
+    else if( level <= g_maxRow + 1 + g_maxCol )
+    {
+
+        col = level - g_maxRow - 1;
+
+        if( col < g_minCol ||
+                g_mateForCol[ col ] != NO_SUCH_THING ||
+                g_numRCCsForCol[ col ] == 0 )
         {
-          g_mateForCol[ col ] = row;
-          if( row >= 0 )
-            g_mateForRow[ row ] = col;
-          g_solution[ g_solutionSize++ ] = g_rccForCol[ col ][ i ].tag;
-
-          search( level + 1, costSoFar + g_rccForCol[ col ][ i ].cost );
-
-          g_solutionSize--;
-          g_mateForRow[ row ] = NO_SUCH_THING;
-          g_mateForCol[ col ] = NO_SUCH_THING;
+            search( level + 1, costSoFar );
         }
-      }
-  }
-  else if( costSoFar < g_bestSolutionCost )
-  {
-    for( i = 0; i < g_solutionSize; i++ )
-      g_bestSolution[ i ] = g_solution[ i ];
-    g_bestSolutionSize = g_solutionSize;
-    g_bestSolutionCost = costSoFar;
-  }
+        else
+            for( i = 0; i < g_numRCCsForCol[ col ]; i++ )
+            {
+                row = g_rccForCol[ col ][ i ].row;
+                if( g_mateForRow[ row ] == NO_SUCH_THING )
+                {
+                    g_mateForCol[ col ] = row;
+                    if( row >= 0 )
+                    {
+                        g_mateForRow[ row ] = col;
+                    }
+                    g_solution[ g_solutionSize++ ] = g_rccForCol[ col ][ i ].tag;
+
+                    search( level + 1, costSoFar + g_rccForCol[ col ][ i ].cost );
+
+                    g_solutionSize--;
+                    g_mateForRow[ row ] = NO_SUCH_THING;
+                    g_mateForCol[ col ] = NO_SUCH_THING;
+                }
+            }
+    }
+    else if( costSoFar < g_bestSolutionCost )
+    {
+        for( i = 0; i < g_solutionSize; i++ )
+        {
+            g_bestSolution[ i ] = g_solution[ i ];
+        }
+        g_bestSolutionSize = g_solutionSize;
+        g_bestSolutionCost = costSoFar;
+    }
 }
 
 static double storeSolution( VECTOR_OF< void * > &tag, int *numTags )
 {
-  
 
-  int i;
 
-  tag.resize( g_bestSolutionSize - 1 );
-  for( i = 0; i < g_bestSolutionSize; i++ )
-    tag[ i ] = g_bestSolution[ i ];
-  *numTags = g_bestSolutionSize;
+    int i;
 
-  return g_bestSolutionCost;
+    tag.resize( g_bestSolutionSize - 1 );
+    for( i = 0; i < g_bestSolutionSize; i++ )
+    {
+        tag[ i ] = g_bestSolution[ i ];
+    }
+    *numTags = g_bestSolutionSize;
+
+    return g_bestSolutionCost;
 }
 

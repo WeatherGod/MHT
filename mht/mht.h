@@ -460,11 +460,11 @@
 
 
 #ifdef DECLARE_MHT
-  #define GLOBAL
-  #define INITVAL( v ) = (v)
+#define GLOBAL
+#define INITVAL( v ) = (v)
 #else
-  #define GLOBAL extern
-  #define INITVAL( v )
+#define GLOBAL extern
+#define INITVAL( v )
 #endif
 
 static const double DOUBLE_NOT_READY = -INFINITY;
@@ -498,52 +498,68 @@ class MHT;
 
 class REPORT: public DLISTnode
 {
-  friend class T_HYPO;
-  friend class G_HYPO;
-  friend class MHT;
+    friend class T_HYPO;
+    friend class G_HYPO;
+    friend class MHT;
 
-  protected: MEMBERS_FOR_DLISTnode( REPORT )
+protected:
+    MEMBERS_FOR_DLISTnode( REPORT )
 
-  private:
+private:
 
     int m_rowNum;                    // row number used to represent
-                                     //   this REPORT in assignment
-                                     //   problems
+    //   this REPORT in assignment
+    //   problems
     int m_groupId;                   // unique id of GROUP that contains
-                                     //   trees which use this REPORT
-                                     //   (once the GROUPs have been
-                                     //   merged and split properly,
-                                     //   only one GROUP will contain
-                                     //   trees referring to any given
-                                     //   REPORT)
+    //   trees which use this REPORT
+    //   (once the GROUPs have been
+    //   merged and split properly,
+    //   only one GROUP will contain
+    //   trees referring to any given
+    //   REPORT)
     LINKS_TO< T_HYPO > m_tHypoLinks; // links to T_HYPOs that use this
-                                     //   REPORT
+    //   REPORT
 
-  public:
+public:
 
     REPORT():
-      DLISTnode(),
-      m_rowNum( 0 ),
-      m_groupId( 0 ),
-      m_tHypoLinks()
+        DLISTnode(),
+        m_rowNum( 0 ),
+        m_groupId( 0 ),
+        m_tHypoLinks()
     {
     }
 
     virtual ~REPORT() {}
 
-    void setGroupId( int groupId ) { m_groupId = groupId; }
+    void setGroupId( int groupId )
+    {
+        m_groupId = groupId;
+    }
     void setAllGroupIds( int groupId );
     void checkGroupIds();
-    int isInUse() { return ! m_tHypoLinks.isEmpty(); }
+    int isInUse()
+    {
+        return ! m_tHypoLinks.isEmpty();
+    }
 
-  private:
+private:
 
-    void setRowNum( int rowNum ) { m_rowNum = rowNum; }
-    int getRowNum() { return m_rowNum; }
+    void setRowNum( int rowNum )
+    {
+        m_rowNum = rowNum;
+    }
+    int getRowNum()
+    {
+        return m_rowNum;
+    }
 
-  public:
+public:
 
-    virtual void print() { std::cout << "R:" << (void *)this; }
+    virtual void print()
+    {
+        std::cout << "R:" << (void *)this;
+    }
     virtual void describe( int spaces = 0 );
 };
 
@@ -553,115 +569,158 @@ class REPORT: public DLISTnode
 
 class T_HYPO: public TREEnode
 {
-  friend class REPORT;
-  friend class G_HYPO;
-  friend class T_TREE;
-  friend class MHT;
+    friend class REPORT;
+    friend class G_HYPO;
+    friend class T_TREE;
+    friend class MHT;
 
-  protected: MEMBERS_FOR_TREEnode( T_HYPO )
+protected:
+    MEMBERS_FOR_TREEnode( T_HYPO )
 
-  private:
+private:
 
     T_TREE *m_tree;                  // tree that this T_HYPO is on
     int m_timeStamp;                 // number of calls to MHT::scan()
-                                     //   before this T_HYPO was made
+    //   before this T_HYPO was made
     LINKS_TO< REPORT > m_reportLink; // link to one REPORT
     LINKS_TO< G_HYPO > m_gHypoLinks; // links to the G_HYPOs that
-                                     //   postulate this T_HYPO
+    //   postulate this T_HYPO
     char m_flag;                     // used in splitting GROUPs
 
-  protected:
+protected:
 
     char m_endsTrack;
     char m_mustVerify;
     double m_logLikelihood;
 
-  protected:
+protected:
 
     T_HYPO():
-      TREEnode(),
-      m_tree( 0 ),
-      m_timeStamp( 0 ),
-      m_reportLink(),
-      m_gHypoLinks(),
-      m_flag( 0 ),
-      m_logLikelihood( DOUBLE_NOT_READY ),
-      m_endsTrack( 0 ),
-      m_mustVerify( 0 )
+        TREEnode(),
+        m_tree( 0 ),
+        m_timeStamp( 0 ),
+        m_reportLink(),
+        m_gHypoLinks(),
+        m_flag( 0 ),
+        m_logLikelihood( DOUBLE_NOT_READY ),
+        m_endsTrack( 0 ),
+        m_mustVerify( 0 )
     {
     }
 
     T_HYPO( REPORT *report ):
-      TREEnode(),
-      m_tree( 0 ),
-      m_timeStamp( 0 ),
-      m_reportLink(),
-      m_gHypoLinks(),
-      m_flag( 0 ),
-      m_logLikelihood( DOUBLE_NOT_READY ),
-      m_endsTrack( 0 ),
-      m_mustVerify( 0 )
+        TREEnode(),
+        m_tree( 0 ),
+        m_timeStamp( 0 ),
+        m_reportLink(),
+        m_gHypoLinks(),
+        m_flag( 0 ),
+        m_logLikelihood( DOUBLE_NOT_READY ),
+        m_endsTrack( 0 ),
+        m_mustVerify( 0 )
     {
-      MAKE_LINK( this, m_reportLink,
-                 report, m_tHypoLinks );
+        MAKE_LINK( this, m_reportLink,
+                   report, m_tHypoLinks );
     }
 
     virtual ~T_HYPO() {}
 
-  public:
+public:
 
     void installChild( T_HYPO *child )
     {
-      PTR_INTO_iTREE_OF< T_HYPO > p = this;
+        PTR_INTO_iTREE_OF< T_HYPO > p = this;
 
-      p.insertFirstChild( child );
-      child->setStamps( m_tree, m_timeStamp + 1 );
+        p.insertFirstChild( child );
+        child->setStamps( m_tree, m_timeStamp + 1 );
     }
 
-    int endsTrack() { return m_endsTrack; }
-    int mustVerify() { return m_mustVerify; }
-    int hasReport() { return m_reportLink.hasOneMember(); }
+    int endsTrack()
+    {
+        return m_endsTrack;
+    }
+    int mustVerify()
+    {
+        return m_mustVerify;
+    }
+    int hasReport()
+    {
+        return m_reportLink.hasOneMember();
+    }
 
     double getLogLikelihood()
     {
-      #ifdef TSTBUG
+#ifdef TSTBUG
         assert( m_logLikelihood != DOUBLE_NOT_READY );
-      //    THROW_ERR( "THypo wasn't given a logLikelihood" );
-      #endif
+        //    THROW_ERR( "THypo wasn't given a logLikelihood" );
+#endif
 
-      return m_logLikelihood;
+        return m_logLikelihood;
     }
 
-    T_TREE *getTree() { return m_tree; }
+    T_TREE *getTree()
+    {
+        return m_tree;
+    }
 
     inline int getTrackStamp();
     inline int getGroupId();
 
-    int getTimeStamp() { return m_timeStamp; }
-    REPORT *getReport() { return m_reportLink.getHead(); }
+    int getTimeStamp()
+    {
+        return m_timeStamp;
+    }
+    REPORT *getReport()
+    {
+        return m_reportLink.getHead();
+    }
 
     virtual void verify()
-      { assert(false);}//THROW_ERR( "Call to T_HYPO::verify()" ) }
+    {
+        assert(false);
+    }//THROW_ERR( "Call to T_HYPO::verify()" ) }
 
-  private:
+private:
 
-    int isInUse() { return ! isLeaf() || ! m_gHypoLinks.isEmpty(); }
+    int isInUse()
+    {
+        return ! isLeaf() || ! m_gHypoLinks.isEmpty();
+    }
 
     int getRowNum()
-      { return hasReport() ? getReport()->getRowNum() : -1; }
+    {
+        return hasReport() ? getReport()->getRowNum() : -1;
+    }
     int getNumChildren()
-      { return TREEnode::getNumChildren(); }
+    {
+        return TREEnode::getNumChildren();
+    }
 
     void setStamps( T_TREE *tree, int timeStamp )
-      { m_tree = tree; m_timeStamp = timeStamp; }
+    {
+        m_tree = tree;
+        m_timeStamp = timeStamp;
+    }
 
-    void setFlag() { m_flag = 1; }
-    void resetFlag() { m_flag = 0; }
-    int flagIsSet() { return m_flag; }
+    void setFlag()
+    {
+        m_flag = 1;
+    }
+    void resetFlag()
+    {
+        m_flag = 0;
+    }
+    int flagIsSet()
+    {
+        return m_flag;
+    }
 
-  public:
+public:
 
-    virtual void print() { std::cout << "T:" << (void *)this; }
+    virtual void print()
+    {
+        std::cout << "T:" << (void *)this;
+    }
     virtual void describe( int spaces = 0, int depth = 0 );
     virtual void describeTree( int spaces = 0, int depth = 0 );
 };
@@ -672,67 +731,85 @@ class T_HYPO: public TREEnode
 
 class G_HYPO: public DLISTnode
 {
-  friend class REPORT;
-  friend class T_HYPO;
-  friend class GROUP;
-  friend class MHT;
+    friend class REPORT;
+    friend class T_HYPO;
+    friend class GROUP;
+    friend class MHT;
 
-  protected: MEMBERS_FOR_DLISTnode( G_HYPO )
+protected:
+    MEMBERS_FOR_DLISTnode( G_HYPO )
 
-  private:
+private:
 
     double m_logLikelihood;          // log of likelihood
     int m_numTHyposUsedInProblem;    // this is the length of the
-                                     //   m_tHypoLinks list at the time
-                                     //   that an assignment problem is
-                                     //   made for this G_HYPO.  If
-                                     //   N-scanback pruning removes any
-                                     //   T_HYPO that this G_HYPO
-                                     //   postulates, it will also be
-                                     //   automatically removed from
-                                     //   m_tHypoLinks (see links.H).
-                                     //   So we can tell that N-scanback
-                                     //   pruning made the G_HYPO
-                                     //   invalid by checking to see if
-                                     //   m_numTHyposUsedInProblem is
-                                     //   more than the length of
-                                     //   m_tHypoLinks
+    //   m_tHypoLinks list at the time
+    //   that an assignment problem is
+    //   made for this G_HYPO.  If
+    //   N-scanback pruning removes any
+    //   T_HYPO that this G_HYPO
+    //   postulates, it will also be
+    //   automatically removed from
+    //   m_tHypoLinks (see links.H).
+    //   So we can tell that N-scanback
+    //   pruning made the G_HYPO
+    //   invalid by checking to see if
+    //   m_numTHyposUsedInProblem is
+    //   more than the length of
+    //   m_tHypoLinks
     LINKS_TO< T_HYPO > m_tHypoLinks; // links to T_HYPOs postulated
 
-  public:
+public:
 
     G_HYPO():
-      DLISTnode(),
-      m_logLikelihood( 0. ),
-      m_numTHyposUsedInProblem( 0 ),
-      m_tHypoLinks()
+        DLISTnode(),
+        m_logLikelihood( 0. ),
+        m_numTHyposUsedInProblem( 0 ),
+        m_tHypoLinks()
     {
     }
 
     G_HYPO( VECTOR_OF< void * > &solution, int solutionSize );
 
-    int isInUse() { return ! m_tHypoLinks.isEmpty(); }
+    int isInUse()
+    {
+        return ! m_tHypoLinks.isEmpty();
+    }
 
-    double getLogLikelihood() const { return m_logLikelihood; }
+    double getLogLikelihood() const
+    {
+        return m_logLikelihood;
+    }
     int wasReduced()
-      { return m_numTHyposUsedInProblem > m_tHypoLinks.getLength(); }
+    {
+        return m_numTHyposUsedInProblem > m_tHypoLinks.getLength();
+    }
 
     void setNumtHypos()
     {
         m_numTHyposUsedInProblem = m_tHypoLinks.getLength();
-     }
+    }
 
     void addTHypo( T_HYPO *tHypo )
     {
-      m_logLikelihood += tHypo->getLogLikelihood();
+        m_logLikelihood += tHypo->getLogLikelihood();
 
-      MAKE_LINK( this, m_tHypoLinks,
-                 tHypo, m_gHypoLinks );
+        MAKE_LINK( this, m_tHypoLinks,
+                   tHypo, m_gHypoLinks );
     }
 
-    int getGroupId() { return (*m_tHypoLinks).getGroupId(); }
-    int getNumTHypos() { return m_tHypoLinks.getLength(); }
-    double getLogLikelihood() { return m_logLikelihood; }
+    int getGroupId()
+    {
+        return (*m_tHypoLinks).getGroupId();
+    }
+    int getNumTHypos()
+    {
+        return m_tHypoLinks.getLength();
+    }
+    double getLogLikelihood()
+    {
+        return m_logLikelihood;
+    }
 
     void makeProblem();
     void nScanBackPrune( int maxDepth );
@@ -746,9 +823,12 @@ class G_HYPO: public DLISTnode
     void resetFlags();
     int allFlagsAreSet();
 
-  public:
+public:
 
-    virtual void print() { std::cout << "G:" << (void *)this; }
+    virtual void print()
+    {
+        std::cout << "G:" << (void *)this;
+    }
     virtual void describe( int spaces = 0 );
 };
 
@@ -758,34 +838,47 @@ class G_HYPO: public DLISTnode
 
 class T_TREE: public DLISTnode
 {
-  friend class MHT;
+    friend class MHT;
 
-  protected: MEMBERS_FOR_DLISTnode( T_TREE )
+protected:
+    MEMBERS_FOR_DLISTnode( T_TREE )
 
-  private:
+private:
 
     iTREE_OF< T_HYPO > m_tree;
     int m_id;
     int m_groupId;
 
-  private:
+private:
 
     T_TREE( T_HYPO *root, int id, int time ):
-      DLISTnode(),
-      m_tree(),
-      m_id( id ),
-      m_groupId( 0 )
+        DLISTnode(),
+        m_tree(),
+        m_id( id ),
+        m_groupId( 0 )
     {
-      m_tree.insertRoot( root );
-      root->setStamps( this, time );
+        m_tree.insertRoot( root );
+        root->setStamps( this, time );
     }
 
-  public:
+public:
 
-    iTREE_OF< T_HYPO > *getTree() { return &m_tree; }
-    int getId() { return m_id; }
-    int getGroupId() { return m_groupId; }
-    void setGroupId( int groupId ) { m_groupId = groupId; }
+    iTREE_OF< T_HYPO > *getTree()
+    {
+        return &m_tree;
+    }
+    int getId()
+    {
+        return m_id;
+    }
+    int getGroupId()
+    {
+        return m_groupId;
+    }
+    void setGroupId( int groupId )
+    {
+        m_groupId = groupId;
+    }
 };
 
 /*-------------------------------------------------------------------*
@@ -794,9 +887,10 @@ class T_TREE: public DLISTnode
 
 class GROUP: public DLISTnode
 {
-  protected: MEMBERS_FOR_DLISTnode( GROUP )
+protected:
+    MEMBERS_FOR_DLISTnode( GROUP )
 
-  private:
+private:
 
     iDLIST_OF< G_HYPO > m_gHypoList;
     G_HYPO *m_bestGHypo;
@@ -808,20 +902,22 @@ class GROUP: public DLISTnode
        member of one of the G_HYPOs, and call the getTree() function
        for each T_HYPO on it. */
 
-  public:
+public:
 
     GROUP(): DLISTnode(), m_gHypoList() {}
 
     GROUP( T_TREE *tree ):
-      DLISTnode(),
-      m_gHypoList()
+        DLISTnode(),
+        m_gHypoList()
     {
-      m_gHypoList.append( new G_HYPO() );
-      (*m_gHypoList).addTHypo( tree->getTree()->getRoot() );
+        m_gHypoList.append( new G_HYPO() );
+        (*m_gHypoList).addTHypo( tree->getTree()->getRoot() );
     }
 
     int isInUse()
-      { return ! m_gHypoList.isEmpty() && (*m_gHypoList).isInUse(); }
+    {
+        return ! m_gHypoList.isEmpty() && (*m_gHypoList).isInUse();
+    }
 
     void merge( GROUP *src,
                 double logMinGHypoRatio,
@@ -833,11 +929,20 @@ class GROUP: public DLISTnode
                               double logMinGHypoRatio,
                               int maxGHypos );
 
-    int getGroupId() { return (*m_gHypoList).getGroupId(); }
-    int getNumGHypos() { return m_gHypoList.getLength(); }
+    int getGroupId()
+    {
+        return (*m_gHypoList).getGroupId();
+    }
+    int getNumGHypos()
+    {
+        return m_gHypoList.getLength();
+    }
 
     void check();
-    virtual void print() { std::cout << "C:" << (void *)this; }
+    virtual void print()
+    {
+        std::cout << "C:" << (void *)this;
+    }
     virtual void describe( int spaces = 0 );
 };
 
@@ -847,7 +952,7 @@ class GROUP: public DLISTnode
 
 class MHT
 {
-  private:
+private:
 
     int m_dbgEndA;
     int m_dbgStartB;
@@ -855,7 +960,7 @@ class MHT
     int m_dbgStartC;
     int m_dbgEndC;
 
-  protected:
+protected:
 
     int m_lastTrackIdUsed;
     int m_currentTime;
@@ -873,60 +978,72 @@ class MHT
     iDLIST_OF< REPORT > m_newReportList;
     ptrDLIST_OF< T_HYPO > m_activeTHypoList;
 
-  protected:
+protected:
 
     MHT( int maxDepth, double minGHypoRatio, int maxGHypos ):
-      m_lastTrackIdUsed( 0 ),
-      m_currentTime( 0 ),
-      m_maxDepth( maxDepth ),
-      m_logMinGHypoRatio( log( minGHypoRatio ) ),
-      m_maxGHypos( maxGHypos ),
-      m_tTreeList(),
-      m_nextNewTTree( m_tTreeList ),
-      m_groupList(),
-      m_oldReportList(),
-      m_newReportList(),
-      m_activeTHypoList(),
-      m_dbgStartA( 0x7FFFFFFF ),
-      m_dbgEndA( 0x7FFFFFFF ),
-      m_dbgStartB( 0x7FFFFFFF ),
-      m_dbgEndB( 0x7FFFFFFF ),
-      m_dbgStartC( 0x7FFFFFFF ),
-      m_dbgEndC( 0x7FFFFFFF )
+        m_lastTrackIdUsed( 0 ),
+        m_currentTime( 0 ),
+        m_maxDepth( maxDepth ),
+        m_logMinGHypoRatio( log( minGHypoRatio ) ),
+        m_maxGHypos( maxGHypos ),
+        m_tTreeList(),
+        m_nextNewTTree( m_tTreeList ),
+        m_groupList(),
+        m_oldReportList(),
+        m_newReportList(),
+        m_activeTHypoList(),
+        m_dbgStartA( 0x7FFFFFFF ),
+        m_dbgEndA( 0x7FFFFFFF ),
+        m_dbgStartB( 0x7FFFFFFF ),
+        m_dbgEndB( 0x7FFFFFFF ),
+        m_dbgStartC( 0x7FFFFFFF ),
+        m_dbgEndC( 0x7FFFFFFF )
     {
     }
 
     virtual ~MHT() {}
 
     void installReport( REPORT *report )
-      { m_newReportList.append( report ); }
+    {
+        m_newReportList.append( report );
+    }
 
     void installTree( T_HYPO *rootNode, int timeOffset = 0 )
     {
-      T_TREE *tree = new T_TREE( rootNode,
-                                 m_lastTrackIdUsed++,
-                                 m_currentTime + timeOffset );
+        T_TREE *tree = new T_TREE( rootNode,
+                                   m_lastTrackIdUsed++,
+                                   m_currentTime + timeOffset );
 
-      m_activeTHypoList.append( *rootNode );
-      m_tTreeList.append( tree );
-      if( ! m_nextNewTTree.isValid() )
-        m_nextNewTTree.set( m_tTreeList, START_AT_TAIL );
+        m_activeTHypoList.append( *rootNode );
+        m_tTreeList.append( tree );
+        if( ! m_nextNewTTree.isValid() )
+        {
+            m_nextNewTTree.set( m_tTreeList, START_AT_TAIL );
+        }
     }
 
-  protected:
+protected:
 
     virtual void measureAndValidate()
-      { assert(false);}//THROW_ERR( "Call to MHT::measureAndValidate()" ) }
+    {
+        assert(false);
+    }//THROW_ERR( "Call to MHT::measureAndValidate()" ) }
 
-  public:
+public:
 
-    int isInUse() { return ! m_tTreeList.isEmpty(); }
-    int getCurrentTime() { return m_currentTime; }
+    int isInUse()
+    {
+        return ! m_tTreeList.isEmpty();
+    }
+    int getCurrentTime()
+    {
+        return m_currentTime;
+    }
 
     int scan();
     void clear();
 
-  private:
+private:
 
     void importNewReports();
 
@@ -951,19 +1068,31 @@ class MHT
     void doDbgB();
     void doDbgC();
 
-  public:
+public:
 
-    virtual void print() { std::cout << "M:" << (void *)this; }
+    virtual void print()
+    {
+        std::cout << "M:" << (void *)this;
+    }
     virtual void describe( int spaces = 0 );
 
     virtual void printStats( int spaces = 0 );
 
     void setDbgA( int start = 0x7FFFFFFF, int end = 0x7FFFFFFF )
-      { m_dbgStartA = start; m_dbgEndA = end; }
+    {
+        m_dbgStartA = start;
+        m_dbgEndA = end;
+    }
     void setDbgB( int start = 0x7FFFFFFF, int end = 0x7FFFFFFF )
-      { m_dbgStartB = start; m_dbgEndB = end; }
+    {
+        m_dbgStartB = start;
+        m_dbgEndB = end;
+    }
     void setDbgC( int start = 0x7FFFFFFF, int end = 0x7FFFFFFF )
-      { m_dbgStartC = start; m_dbgEndC = end; }
+    {
+        m_dbgStartC = start;
+        m_dbgEndC = end;
+    }
 };
 
 /*-------------------------------------------------------------------*
@@ -974,24 +1103,24 @@ class MHT
 
 inline int T_HYPO::getTrackStamp()
 {
-  #ifdef TSTBUG
+#ifdef TSTBUG
     assert( m_tree != 0 );
     //  THROW_ERR( "Trying to get track stamp from "
     //             "uninitialized tHypo" )
-  #endif
+#endif
 
-  return m_tree->getId();
+    return m_tree->getId();
 }
 
 inline int T_HYPO::getGroupId()
 {
-  #ifdef TSTBUG
+#ifdef TSTBUG
     assert( m_tree != 0 );
     //  THROW_ERR( "Trying to get group id from "
     //             "uninitialized tHypo" )
-  #endif
+#endif
 
-  return m_tree->getGroupId();
+    return m_tree->getGroupId();
 }
 
 #endif

@@ -50,12 +50,12 @@
 
 TREEnode *TREEnode::XgetFirstLeaf() const
 {
-  TREEnode const*node;
+    TREEnode const*node;
 
-  for( node = this; ! node->isLeaf(); node = node->XgetFirstChild() )
-    ;
+    for( node = this; ! node->isLeaf(); node = node->XgetFirstChild() )
+        ;
 
-  return (TREEnode *)node;
+    return (TREEnode *)node;
 }
 
 /*-------------------------------------------------------------------*
@@ -65,12 +65,12 @@ TREEnode *TREEnode::XgetFirstLeaf() const
 
 TREEnode *TREEnode::XgetLastLeaf() const
 {
-  TREEnode const*node;
+    TREEnode const*node;
 
-  for( node = this; ! node->isLeaf(); node = node->XgetLastChild() )
-    ;
+    for( node = this; ! node->isLeaf(); node = node->XgetLastChild() )
+        ;
 
-  return (TREEnode *)node;
+    return (TREEnode *)node;
 }
 
 /*-------------------------------------------------------------------*
@@ -80,16 +80,16 @@ TREEnode *TREEnode::XgetLastLeaf() const
 
 TREEnode *TREEnode::XgetRoot() const
 {
-  
 
-  TREEnode const*node;
 
-  checkOnTree();
+    TREEnode const*node;
 
-  for( node = this; ! node->isRoot(); node = node->XgetParent() )
-    ;
+    checkOnTree();
 
-  return (TREEnode *)node;
+    for( node = this; ! node->isRoot(); node = node->XgetParent() )
+        ;
+
+    return (TREEnode *)node;
 }
 
 /*-------------------------------------------------------------------*
@@ -101,20 +101,22 @@ TREEnode *TREEnode::XgetRoot() const
 
 TREEnode *TREEnode::XgetPreOrderNext() const
 {
-  
 
-  TREEnode const*node;
 
-  if( ! isLeaf() )
-    node = XgetFirstChild();
-  else
-  {
-    for( node = this; node->isLastSibling(); node = node->XgetParent() )
-      ;
-    node = node->XgetNextSibling();
-  }
+    TREEnode const*node;
 
-  return (TREEnode *)node;
+    if( ! isLeaf() )
+    {
+        node = XgetFirstChild();
+    }
+    else
+    {
+        for( node = this; node->isLastSibling(); node = node->XgetParent() )
+            ;
+        node = node->XgetNextSibling();
+    }
+
+    return (TREEnode *)node;
 }
 
 /*-------------------------------------------------------------------*
@@ -126,16 +128,20 @@ TREEnode *TREEnode::XgetPreOrderNext() const
 
 TREEnode *TREEnode::XgetPostOrderNext() const
 {
-  
 
-  TREEnode const*node;
 
-  if( isLastSibling() )
-    node = XgetParent();
-  else
-    node = XgetNextSibling()->XgetFirstLeaf();
+    TREEnode const*node;
 
-  return (TREEnode *)node;
+    if( isLastSibling() )
+    {
+        node = XgetParent();
+    }
+    else
+    {
+        node = XgetNextSibling()->XgetFirstLeaf();
+    }
+
+    return (TREEnode *)node;
 }
 
 /*-------------------------------------------------------------------*
@@ -145,15 +151,15 @@ TREEnode *TREEnode::XgetPostOrderNext() const
 
 void TREEnode::XinsertParent( TREEnode *node )
 {
-  
 
-  node->m_parent = m_parent;
-  Xprepend( node );
-  DLISTnode::unlink();
-  m_parent = node;
-  node->m_childList.prepend( this );
 
-  check();
+    node->m_parent = m_parent;
+    Xprepend( node );
+    DLISTnode::unlink();
+    m_parent = node;
+    node->m_childList.prepend( this );
+
+    check();
 }
 
 /*-------------------------------------------------------------------*
@@ -163,19 +169,21 @@ void TREEnode::XinsertParent( TREEnode *node )
 
 int TREEnode::getDepth() const
 {
-  
 
-  TREEnode const*node;
-  int depth;
 
-  checkIsNode();
-  checkOnTree();
+    TREEnode const*node;
+    int depth;
 
-  depth = 0;
-  for( node = this; ! node->isRoot(); node = node->XgetParent() )
-    depth++;
+    checkIsNode();
+    checkOnTree();
 
-  return depth;
+    depth = 0;
+    for( node = this; ! node->isRoot(); node = node->XgetParent() )
+    {
+        depth++;
+    }
+
+    return depth;
 }
 
 /*-------------------------------------------------------------------*
@@ -185,25 +193,25 @@ int TREEnode::getDepth() const
 
 #ifdef DEBUG
 
-  void TREEnode::check() const
-  {
+void TREEnode::check() const
+{
     TREEnode const*node;
 
     if( isNode() && m_parent == this )
     {
-      DLISTnode::check();
-      checkNotOnList();
+        DLISTnode::check();
+        checkNotOnList();
 
-      assert( m_childList.isEmpty() );
-      //  THROW_ERR( "Tree node has children but isn't on tree" )
+        assert( m_childList.isEmpty() );
+        //  THROW_ERR( "Tree node has children but isn't on tree" )
 
-      return;
+        return;
     }
 
     for( node = this; node->isNode(); node = node->m_parent )
     {
-      assert( node->m_parent != node );
-      //  THROW_ERR( "Tree node has children but isn't on tree" )
+        assert( node->m_parent != node );
+        //  THROW_ERR( "Tree node has children but isn't on tree" )
     }
 
     node->DLISTnode::check();
@@ -216,12 +224,12 @@ int TREEnode::getDepth() const
 
     if( node->m_childList.hasOneMember() )
     {
-      node->m_childList.check();
-      assert( (*node->m_childList).m_parent == node );
-      //  THROW_ERR( "Corrupted tree root -- doesn't point to parent" )
-      (*node->m_childList).XrcrsvCheck();
+        node->m_childList.check();
+        assert( (*node->m_childList).m_parent == node );
+        //  THROW_ERR( "Corrupted tree root -- doesn't point to parent" )
+        (*node->m_childList).XrcrsvCheck();
     }
-  }
+}
 
 #endif
 
@@ -232,17 +240,17 @@ int TREEnode::getDepth() const
 
 void TREEnode::XrcrsvCheck() const
 {
-  
 
-  PTR_INTO_iDLIST_OF< TREEnode > child;
 
-  m_childList.check();
-  LOOP_DLIST( child, *(iDLIST_OF< TREEnode > *)&m_childList )
-  {
-    assert( (*child).m_parent == this );
-    //  THROW_ERR( "Corrupted tree node -- doesn't point to parent" )
-    (*child).XrcrsvCheck();
-  }
+    PTR_INTO_iDLIST_OF< TREEnode > child;
+
+    m_childList.check();
+    LOOP_DLIST( child, *(iDLIST_OF< TREEnode > *)&m_childList )
+    {
+        assert( (*child).m_parent == this );
+        //  THROW_ERR( "Corrupted tree node -- doesn't point to parent" )
+        (*child).XrcrsvCheck();
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -252,24 +260,26 @@ void TREEnode::XrcrsvCheck() const
 
 void TREEnode::XrcrsvCopy( const TREEnode *node )
 {
-  
 
-  TREEnode *newNode;
+
+    TREEnode *newNode;
 
 #ifdef COMPILER_HAS_BEEN_DEBUGGED
-  while( node->isNode() )
+    while( node->isNode() )
 #else
-  for( ; node->isNode() ; )
+    for( ; node->isNode() ; )
 #endif
-  {
-    newNode = (TREEnode *)node->XmakeCopy();
-    XinsertLastChild( newNode );
+    {
+        newNode = (TREEnode *)node->XmakeCopy();
+        XinsertLastChild( newNode );
 
-    if( ! node->isLeaf() )
-      newNode->XrcrsvCopy( node->XgetFirstChild() );
+        if( ! node->isLeaf() )
+        {
+            newNode->XrcrsvCopy( node->XgetFirstChild() );
+        }
 
-    node = node->XgetNextSibling();
-  }
+        node = node->XgetNextSibling();
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -279,19 +289,21 @@ void TREEnode::XrcrsvCopy( const TREEnode *node )
 
 int TREEbase::getHeight() const
 {
-  
 
-  int height;
-  TREEnode const*node;
 
-  height = 0;
+    int height;
+    TREEnode const*node;
 
-  for( node = XgetRoot();
-       ! node->isLeaf();
-       node = node->XgetFirstChild() )
-    height++;
+    height = 0;
 
-  return height;
+    for( node = XgetRoot();
+            ! node->isLeaf();
+            node = node->XgetFirstChild() )
+    {
+        height++;
+    }
+
+    return height;
 }
 
 /*-------------------------------------------------------------------*
@@ -300,23 +312,23 @@ int TREEbase::getHeight() const
 
 void TREEbase::removeRoot()
 {
-  
 
-  TREEnode *oldRoot;
 
-  checkNotEmpty();
+    TREEnode *oldRoot;
 
-  oldRoot = XgetRoot();
-  // I think this check is invalid.
-  // The splice will work, no matter how many children exists.
-  // I can't see a reason why there has to be one and only one child.
-  //oldRoot->checkHasOneChild();
+    checkNotEmpty();
 
-  m_vnode.m_childList.splice( oldRoot->m_childList );
-  delete oldRoot;
+    oldRoot = XgetRoot();
+    // I think this check is invalid.
+    // The splice will work, no matter how many children exists.
+    // I can't see a reason why there has to be one and only one child.
+    //oldRoot->checkHasOneChild();
 
-  XgetRoot()->m_parent = &m_vnode;
+    m_vnode.m_childList.splice( oldRoot->m_childList );
+    delete oldRoot;
 
-  check();
+    XgetRoot()->m_parent = &m_vnode;
+
+    check();
 }
 

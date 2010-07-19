@@ -95,96 +95,102 @@
 #include <assert.h>
 
 template< class TYPE >
-  class PQUEUE_OF
-  {
-    private:
+class PQUEUE_OF
+{
+private:
 
-      TYPE *m_data;
-      int m_size;
-      int m_numObjects;
+    TYPE *m_data;
+    int m_size;
+    int m_numObjects;
 
-    public:
+public:
 
-      PQUEUE_OF():
+    PQUEUE_OF():
         m_data( 0 ),
         m_size( 0 ),
         m_numObjects( 0 )
-      {
-      }
+    {
+    }
 
-      PQUEUE_OF( int size ):
+    PQUEUE_OF( int size ):
         m_data( new TYPE[ size + 1 ] ),
         m_size( size + 1 ),
         m_numObjects( 0 )
-      {
-      }
+    {
+    }
 
-      ~PQUEUE_OF() { delete [] m_data; }
+    ~PQUEUE_OF()
+    {
+        delete [] m_data;
+    }
 
-      void resize( int size )
-      {
-        #ifdef TSTBUG
-          assert( isEmpty() );
-          //  THROW_ERR( "Priority queue is not empty" )
-        #endif
+    void resize( int size )
+    {
+#ifdef TSTBUG
+        assert( isEmpty() );
+        //  THROW_ERR( "Priority queue is not empty" )
+#endif
 
         size++;
         if( size > m_size )
         {
-          delete [] m_data;
-          m_data = new TYPE[ size ];
-          m_size = size;
+            delete [] m_data;
+            m_data = new TYPE[ size ];
+            m_size = size;
         }
-      }
+    }
 
-      int isEmpty() const
-      {
+    int isEmpty() const
+    {
         return m_numObjects == 0;
-      }
+    }
 
-      void clear() { m_numObjects = 0; }
+    void clear()
+    {
+        m_numObjects = 0;
+    }
 
-      void put( const TYPE &info );
+    void put( const TYPE &info );
 
-      TYPE get()
-      {
+    TYPE get()
+    {
         TYPE info;
 
-        #ifdef TSTBUG
-          assert( m_data != 0 );
-          //  THROW_ERR( "Trying to get() "
-          //             "from unallocated priority queue" )
-          assert( ! isEmpty() );
-          //  THROW_ERR( "Priority queue underflow" );
-        #endif
+#ifdef TSTBUG
+        assert( m_data != 0 );
+        //  THROW_ERR( "Trying to get() "
+        //             "from unallocated priority queue" )
+        assert( ! isEmpty() );
+        //  THROW_ERR( "Priority queue underflow" );
+#endif
 
         info = m_data[ 1 ];
         m_data[ 1 ] = m_data[ m_numObjects--];
         heapify( 1 );
 
         return info;
-      }
+    }
 
-      TYPE peek()
-      {
-        #ifdef TSTBUG
-          assert( m_data != 0 );
-          //  THROW_ERR( "Trying to peek() "
-          //             "into unallocated priority queue" )
-          assert( ! isEmpty() );
-          //  THROW_ERR( "Priority queue underflow" );
-        #endif
+    TYPE peek()
+    {
+#ifdef TSTBUG
+        assert( m_data != 0 );
+        //  THROW_ERR( "Trying to peek() "
+        //             "into unallocated priority queue" )
+        assert( ! isEmpty() );
+        //  THROW_ERR( "Priority queue underflow" );
+#endif
 
         return m_data[ 1 ];
-      }
+    }
 
-    private:
+private:
 
-      void heapify( int i );
-  };
+    void heapify( int i );
+};
 
 #if TMPLT_HANDLING == 0
-  #include "pqueue.code"
+#include "pqueue.code"
 #endif
 
 #endif

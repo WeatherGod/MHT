@@ -245,15 +245,15 @@
 #include "safeglobal.h"
 
 #ifdef DECLARE_EXCEPT
-  #define GLOBAL
+#define GLOBAL
 #else
-  #define GLOBAL extern
+#define GLOBAL extern
 #endif
 
 /*
 using std::cout;
 using std::endl;
-using std::strstream; 
+using std::strstream;
 using std::ostrstream;
 */
 /*-------------------------------------------------------------------*
@@ -261,7 +261,7 @@ using std::ostrstream;
  *-------------------------------------------------------------------*/
 
 #if defined( DEBUG ) && ! defined( TSTBUG )
-  #define TSTBUG
+#define TSTBUG
 #endif
 
 /*-------------------------------------------------------------------*
@@ -408,7 +408,7 @@ class SCOPE_TRACER
 
 #else
 
-  #define BGN  
+  #define BGN
   #define ACTION( description )
   #define TRACE
 

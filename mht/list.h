@@ -619,117 +619,157 @@ class START_AT_TAILdummy;
 
 class DLISTnode
 {
-  friend class DLISTbase;
-  friend class PTR_INTO_DLISTbase;
+    friend class DLISTbase;
+    friend class PTR_INTO_DLISTbase;
 
-  private:
+private:
 
     DLISTnode *m_prev;
     DLISTnode *m_next;
 
-  protected:
+protected:
 
     DLISTnode(): m_prev( this ), m_next( this ) {}
     DLISTnode( const DLISTnode & ): m_prev( this ), m_next( this ) {}
 
-    virtual ~DLISTnode() { unlink(); }
+    virtual ~DLISTnode()
+    {
+        unlink();
+    }
 
-    DLISTnode *XgetPrev() const { return m_prev; }
-    DLISTnode *XgetNext() const { return m_next; }
+    DLISTnode *XgetPrev() const
+    {
+        return m_prev;
+    }
+    DLISTnode *XgetNext() const
+    {
+        return m_next;
+    }
     DLISTnode *XgetHead() const;
     DLISTnode *XgetTail() const;
 
     void Xprepend( DLISTnode *node )
     {
-      node->checkIsNode();
-      node->checkNotOnList();
+        node->checkIsNode();
+        node->checkNotOnList();
 
-      node->m_prev = m_prev;
-      node->m_next = this;
-      node->m_prev->m_next = node->m_next->m_prev = node;
+        node->m_prev = m_prev;
+        node->m_next = this;
+        node->m_prev->m_next = node->m_next->m_prev = node;
 
-      check();
+        check();
     }
 
     void Xappend( DLISTnode *node )
     {
-      node->checkNotOnList();
+        node->checkNotOnList();
 
-      node->m_prev = this;
-      node->m_next = m_next;
-      node->m_prev->m_next = node->m_next->m_prev = node;
+        node->m_prev = this;
+        node->m_next = m_next;
+        node->m_prev->m_next = node->m_next->m_prev = node;
 
-      check();
+        check();
     }
 
     void unlink()
     {
-      m_prev->m_next = m_next;
-      m_next->m_prev = m_prev;
+        m_prev->m_next = m_next;
+        m_next->m_prev = m_prev;
 
-      m_prev->check();
-      m_next->check();
+        m_prev->check();
+        m_next->check();
 
-      m_prev = m_next = this;
+        m_prev = m_next = this;
     }
 
     virtual DLISTnode *XmakeCopy() const = 0;
 
-  public:
+public:
 
-    virtual int isNode() const { return 1; }
-    int isOnList() const { return m_next != this; }
-    int isHead() const { return isOnList() && ! m_prev->isNode(); }
-    int isTail() const { return isOnList() && ! m_next->isNode(); }
-
-    void Xreset() { m_prev = m_next = this; }
-    void XcopyLinks( const DLISTnode &src )
+    virtual int isNode() const
     {
-      m_prev = src.m_prev;
-      m_next = src.m_next;
+        return 1;
+    }
+    int isOnList() const
+    {
+        return m_next != this;
+    }
+    int isHead() const
+    {
+        return isOnList() && ! m_prev->isNode();
+    }
+    int isTail() const
+    {
+        return isOnList() && ! m_next->isNode();
     }
 
-    #ifdef DEBUG
-      void check() const;
-    #elif defined( TSTBUG )
-      void check() const
-      {
+    void Xreset()
+    {
+        m_prev = m_next = this;
+    }
+    void XcopyLinks( const DLISTnode &src )
+    {
+        m_prev = src.m_prev;
+        m_next = src.m_next;
+    }
+
+#ifdef DEBUG
+    void check() const;
+#elif defined( TSTBUG )
+    void check() const
+    {
         assert( m_prev->m_next == this && m_next->m_prev == this );
         //  THROW_ERR( "Corrupted DLIST" );
-      }
-    #else
-      void check() const {}
-    #endif
+    }
+#else
+    void check() const {}
+#endif
 
-    #ifdef TSTBUG
-      // NOTE: The boolean statements for the assertions have been negated from their original in their if-statements
-      void checkOnList() const
-        { assert( isOnList() );}// THROW_ERR( "Node must be on dlist" ); }
-      void checkNotOnList() const
-        { assert( ! isOnList() );}// THROW_ERR( "Node mustn't be on dlist" ); }
-      void checkIsNode() const
-        { assert( isNode() );}// THROW_ERR( "Must be a real node" ); }
-      void checkIsNotNode() const
-        { assert( ! isNode() );}// THROW_ERR( "Mustn't be a node" ); }
-      void checkIsHead() const
-        { assert( isHead() );}// THROW_ERR( "Previous must be node" ); }
-      void checkIsNotHead() const
-        { assert( ! isHead() );}// THROW_ERR( "Previous mustn't be node" ); }
-      void checkIsTail() const
-        { assert( isTail() );}// THROW_ERR( "Next must be node" ); }
-      void checkIsNotTail() const
-        { assert( ! isTail() );}// THROW_ERR( "Next mustn't be node" ); }
+#ifdef TSTBUG
+    // NOTE: The boolean statements for the assertions have been negated from their original in their if-statements
+    void checkOnList() const
+    {
+        assert( isOnList() );
+    }// THROW_ERR( "Node must be on dlist" ); }
+    void checkNotOnList() const
+    {
+        assert( ! isOnList() );
+    }// THROW_ERR( "Node mustn't be on dlist" ); }
+    void checkIsNode() const
+    {
+        assert( isNode() );
+    }// THROW_ERR( "Must be a real node" ); }
+    void checkIsNotNode() const
+    {
+        assert( ! isNode() );
+    }// THROW_ERR( "Mustn't be a node" ); }
+    void checkIsHead() const
+    {
+        assert( isHead() );
+    }// THROW_ERR( "Previous must be node" ); }
+    void checkIsNotHead() const
+    {
+        assert( ! isHead() );
+    }// THROW_ERR( "Previous mustn't be node" ); }
+    void checkIsTail() const
+    {
+        assert( isTail() );
+    }// THROW_ERR( "Next must be node" ); }
+    void checkIsNotTail() const
+    {
+        assert( ! isTail() );
+    }// THROW_ERR( "Next mustn't be node" ); }
 
-    #else
-      void checkOnList() const {}
-      void checkNotOnList() const {}
-      void checkIsNode() const {}
-      void checkIsNotNode() const {}
-      void checkIsHead() const {}
-      void checkIsNotHead() const {}
-      void checkIsTail() const {}
-      void checkIsNotTail() const {}
-    #endif
+#else
+    void checkOnList() const {}
+    void checkNotOnList() const {}
+    void checkIsNode() const {}
+    void checkIsNotNode() const {}
+    void checkIsHead() const {}
+    void checkIsNotHead() const {}
+    void checkIsTail() const {}
+    void checkIsNotTail() const {}
+#endif
 };
 
 /*-------------------------------------------------------------------*
@@ -755,17 +795,22 @@ class DLISTnode
 
 class dummyDLISTnode: public DLISTnode
 {
-  friend class DLISTbase;
-  friend class PTR_INTO_DLISTbase;
+    friend class DLISTbase;
+    friend class PTR_INTO_DLISTbase;
 
-  protected:
+protected:
 
     virtual DLISTnode *XmakeCopy() const
-      {return new dummyDLISTnode( *this ); }
+    {
+        return new dummyDLISTnode( *this );
+    }
 
-  public:
+public:
 
-    virtual int isNode() const { return 0; }
+    virtual int isNode() const
+    {
+        return 0;
+    }
 };
 
 /*-------------------------------------------------------------------*
@@ -795,81 +840,123 @@ class dummyDLISTnode: public DLISTnode
     {return (TYPE *)XmakeCopy(); }                               \
   virtual DLISTnode *XmakeCopy() const                                \
     {return new TYPE( *this ); }                                 \
-
+ 
 /*-------------------------------------------------------------------*
  | DLISTbase -- base class for all doubly-linked lists
  *-------------------------------------------------------------------*/
 
 class DLISTbase
 {
-  friend class PTR_INTO_DLISTbase;
+    friend class PTR_INTO_DLISTbase;
 
-  private:
+private:
 
     dummyDLISTnode m_vnode;          // see comments for
-                                     //   dummyDLISTnode, above
+    //   dummyDLISTnode, above
 
-  protected:
+protected:
 
     DLISTbase(): m_vnode() {}
     DLISTbase( const DLISTbase &dlist ): m_vnode()
-      {XappendCopy( dlist ); }
+    {
+        XappendCopy( dlist );
+    }
 
-    virtual ~DLISTbase() { removeAll(); }
+    virtual ~DLISTbase()
+    {
+        removeAll();
+    }
 
-  public:
+public:
 
-    DLISTnode *XgetHead() const { return m_vnode.XgetNext(); }
-    DLISTnode *XgetTail() const { return m_vnode.XgetPrev(); }
-    void Xprepend( DLISTnode *node ) { m_vnode.Xappend( node ); }
-    void Xappend( DLISTnode *node ) { m_vnode.Xprepend( node ); }
+    DLISTnode *XgetHead() const
+    {
+        return m_vnode.XgetNext();
+    }
+    DLISTnode *XgetTail() const
+    {
+        return m_vnode.XgetPrev();
+    }
+    void Xprepend( DLISTnode *node )
+    {
+        m_vnode.Xappend( node );
+    }
+    void Xappend( DLISTnode *node )
+    {
+        m_vnode.Xprepend( node );
+    }
     void XprependCopy( const DLISTbase &dlist );
     void XappendCopy( const DLISTbase &dlist );
     void Xsplice( DLISTbase &dlist );
 
-  public:
+public:
 
-    int isEmpty() const { return ! XgetHead()->isNode(); }
+    int isEmpty() const
+    {
+        return ! XgetHead()->isNode();
+    }
     int hasOneMember() const
-      { return ! isEmpty() && XgetHead() == XgetTail(); }
+    {
+        return ! isEmpty() && XgetHead() == XgetTail();
+    }
 
     int getLength() const;
 
-    void removeHead() { checkNotEmpty(); delete XgetHead(); }
-    void removeTail() { checkNotEmpty(); delete XgetTail(); }
+    void removeHead()
+    {
+        checkNotEmpty();
+        delete XgetHead();
+    }
+    void removeTail()
+    {
+        checkNotEmpty();
+        delete XgetTail();
+    }
     void removeAll();
 
-    void Xreset() { m_vnode.Xreset(); }
+    void Xreset()
+    {
+        m_vnode.Xreset();
+    }
     void XcopyLinks( const DLISTbase &src )
-      { m_vnode.XcopyLinks( src.m_vnode ); }
+    {
+        m_vnode.XcopyLinks( src.m_vnode );
+    }
 
-    void check() const { m_vnode.check(); }
+    void check() const
+    {
+        m_vnode.check();
+    }
 
-    #ifdef TSTBUG
-      // NOTE: Booleans for assertions have been negated from their originals for the if-statements
-      void checkEmpty() const
-        { assert( isEmpty() );}// THROW_ERR( "Dlist must be empty" ); }
-      void checkNotEmpty() const
-        { assert( ! isEmpty() );}// THROW_ERR( "Dlist mustn't be empty" ); }
+#ifdef TSTBUG
+    // NOTE: Booleans for assertions have been negated from their originals for the if-statements
+    void checkEmpty() const
+    {
+        assert( isEmpty() );
+    }// THROW_ERR( "Dlist must be empty" ); }
+    void checkNotEmpty() const
+    {
+        assert( ! isEmpty() );
+    }// THROW_ERR( "Dlist mustn't be empty" ); }
 
-      void checkHasOneMember() const
-      {
+    void checkHasOneMember() const
+    {
         assert( hasOneMember() );
-          //THROW_ERR( "Dlist must have one and only one member" );
-      }
+        //THROW_ERR( "Dlist must have one and only one member" );
+    }
 
-      void checkNotHasOneMember() const
-      {
+    void checkNotHasOneMember() const
+    {
         assert( ! hasOneMember() );
         //  THROW_ERR( "Dlist mustn't have one and only one member" );
-      }
+    }
 
-    #else
-      void checkEmpty() const {}
-      void checkNotEmpty() const {}
-      void checkHasOneMember() const {}
-      void checkNotHasOneMember() const {}
-    #endif
+#else
+    void checkEmpty() const {}
+    void checkNotEmpty() const {}
+    void checkHasOneMember() const {}
+    void checkNotHasOneMember() const {}
+#endif
 };
 
 /*-------------------------------------------------------------------*
@@ -894,174 +981,232 @@ class DLISTbase
     {Xsplice( dlist ); }                                         \
   DLISTtmplt< TYPE > &operator=( const DLISTtmplt< TYPE > &dlist )    \
     {removeAll(); XappendCopy( dlist ); return *this; }          \
-
+ 
 /*-------------------------------------------------------------------*
  | PTR_INTO_DLISTbase -- base class for all PTR_INTO_xDLIST's
  *-------------------------------------------------------------------*/
 
 class PTR_INTO_DLISTbase
 {
-  private:
+private:
 
     dummyDLISTnode m_dummy;          // see comments for
-                                     //   dummyDLISTnode, above
+    //   dummyDLISTnode, above
     DLISTnode *m_ptr;
 
-  protected:
+protected:
 
     PTR_INTO_DLISTbase(): m_dummy(), m_ptr( &m_dummy ) {}
 
     PTR_INTO_DLISTbase( DLISTnode *ptr ):
-      m_dummy(),
-      m_ptr( ptr )
+        m_dummy(),
+        m_ptr( ptr )
     {
     }
 
     PTR_INTO_DLISTbase( DLISTbase &dlist ):
-      m_dummy(),
-      m_ptr( dlist.XgetHead() )
+        m_dummy(),
+        m_ptr( dlist.XgetHead() )
     {
     }
 
     PTR_INTO_DLISTbase( DLISTbase &dlist, START_AT_HEADversion ):
-      m_dummy(),
-      m_ptr( dlist.XgetHead() )
+        m_dummy(),
+        m_ptr( dlist.XgetHead() )
     {
     }
 
     PTR_INTO_DLISTbase( DLISTbase &dlist, START_AT_TAILversion ):
-      m_dummy(),
-      m_ptr( dlist.XgetTail() )
+        m_dummy(),
+        m_ptr( dlist.XgetTail() )
     {
     }
 
     PTR_INTO_DLISTbase( const PTR_INTO_DLISTbase &ptr ):
-      m_dummy(),
-      m_ptr( ptr.m_ptr )
+        m_dummy(),
+        m_ptr( ptr.m_ptr )
     {
-      ptr.checkNotRemoved();
+        ptr.checkNotRemoved();
     }
 
-    virtual ~PTR_INTO_DLISTbase() { m_dummy.Xreset(); }
+    virtual ~PTR_INTO_DLISTbase()
+    {
+        m_dummy.Xreset();
+    }
 
-  public:
+public:
 
-    void Xset( DLISTnode *ptr ) { m_ptr = ptr; }
-    void Xset( DLISTbase &dlist ) { m_ptr = dlist.XgetHead(); }
+    void Xset( DLISTnode *ptr )
+    {
+        m_ptr = ptr;
+    }
+    void Xset( DLISTbase &dlist )
+    {
+        m_ptr = dlist.XgetHead();
+    }
     void Xset( DLISTbase &dlist, START_AT_HEADversion )
-      { m_ptr = dlist.XgetHead(); }
+    {
+        m_ptr = dlist.XgetHead();
+    }
     void Xset( DLISTbase &dlist, START_AT_TAILversion )
-      { m_ptr = dlist.XgetTail(); }
-    void Xset( const PTR_INTO_DLISTbase &ptr ) { m_ptr = ptr.m_ptr; }
+    {
+        m_ptr = dlist.XgetTail();
+    }
+    void Xset( const PTR_INTO_DLISTbase &ptr )
+    {
+        m_ptr = ptr.m_ptr;
+    }
 
-    void Xprepend( DLISTnode *node ) { m_ptr->Xprepend( node ); }
-    void Xappend( DLISTnode *node ) { m_ptr->Xappend( node ); }
+    void Xprepend( DLISTnode *node )
+    {
+        m_ptr->Xprepend( node );
+    }
+    void Xappend( DLISTnode *node )
+    {
+        m_ptr->Xappend( node );
+    }
 
-    DLISTnode *Xget() const { return m_ptr; }
+    DLISTnode *Xget() const
+    {
+        return m_ptr;
+    }
 
-  public:
+public:
 
-    int isInitialized() const { return m_ptr->isOnList(); }
-    int isValid() const { return m_ptr->isNode(); }
-    int isRemoved() const { return m_ptr == &m_dummy; }
-    int isAtHead() const { return m_ptr->isHead(); }
-    int isAtTail() const { return m_ptr->isTail(); }
+    int isInitialized() const
+    {
+        return m_ptr->isOnList();
+    }
+    int isValid() const
+    {
+        return m_ptr->isNode();
+    }
+    int isRemoved() const
+    {
+        return m_ptr == &m_dummy;
+    }
+    int isAtHead() const
+    {
+        return m_ptr->isHead();
+    }
+    int isAtTail() const
+    {
+        return m_ptr->isTail();
+    }
 
     int isEqualTo( const DLISTnode *ptr ) const
-      { return m_ptr == ptr; }
+    {
+        return m_ptr == ptr;
+    }
     int isEqualTo( const PTR_INTO_DLISTbase &ptr ) const
-      { return m_ptr == ptr.m_ptr; }
+    {
+        return m_ptr == ptr.m_ptr;
+    }
 
-    void gotoPrev() {m_ptr = m_ptr->XgetPrev(); }
-    void gotoNext() {m_ptr = m_ptr->XgetNext(); }
-    void gotoHead() {m_ptr = m_ptr->XgetHead(); }
-    void gotoTail() {m_ptr = m_ptr->XgetTail(); }
+    void gotoPrev()
+    {
+        m_ptr = m_ptr->XgetPrev();
+    }
+    void gotoNext()
+    {
+        m_ptr = m_ptr->XgetNext();
+    }
+    void gotoHead()
+    {
+        m_ptr = m_ptr->XgetHead();
+    }
+    void gotoTail()
+    {
+        m_ptr = m_ptr->XgetTail();
+    }
 
     void remove()
     {
 
-      checkValid();
+        checkValid();
 
-      m_dummy.XcopyLinks( *m_ptr );
-      delete m_ptr;
-      m_ptr = &m_dummy;
+        m_dummy.XcopyLinks( *m_ptr );
+        delete m_ptr;
+        m_ptr = &m_dummy;
     }
 
-    #ifdef TSTBUG
-      // NOTE: Assertion booleans have been negated from their original if-statements.
-      void checkInitialized() const
-      {
+#ifdef TSTBUG
+    // NOTE: Assertion booleans have been negated from their original if-statements.
+    void checkInitialized() const
+    {
         assert( isInitialized() );
         //  THROW_ERR( "Pointer into dlist must be initialized" );
-      }
+    }
 
-      void checkNotInitialized() const
-      {
+    void checkNotInitialized() const
+    {
         assert( ! isInitialized() );
         //  THROW_ERR( "Pointer into dlist mustn't be initialized" );
-      }
+    }
 
-      void checkValid() const
-      {
+    void checkValid() const
+    {
         assert( isValid() );
         //  THROW_ERR( "Pointer into dlist must be valid" );
-      }
+    }
 
-      void checkNotValid() const
-      {
+    void checkNotValid() const
+    {
         assert( ! isValid() );
         //  THROW_ERR( "Pointer into dlist must not be valid" );
-      }
+    }
 
-      void checkRemoved() const
-      {
+    void checkRemoved() const
+    {
         assert( isRemoved() );
         //  THROW_ERR( "Pointer into dlist must point to removed node" );
-      }
+    }
 
-      void checkNotRemoved() const
-      {
+    void checkNotRemoved() const
+    {
         assert( ! isRemoved() );
         //  THROW_ERR( "Pointer into dlist "
         //             "mustn't point to removed node" );
-      }
+    }
 
-      void checkAtHead() const
-      {
+    void checkAtHead() const
+    {
         assert( isAtHead() );
         //  THROW_ERR( "Pointer into dlist must be at head" );
-      }
+    }
 
-      void checkNotAtHead() const
-      { // Odd... this was originally identical to checkAtHead()...
+    void checkNotAtHead() const
+    {
+        // Odd... this was originally identical to checkAtHead()...
         assert( ! isAtHead() );
         //  THROW_ERR( "Pointer into dlist mustn't be at head" );
-      }
+    }
 
-      void checkAtTail() const
-      {
+    void checkAtTail() const
+    {
         assert( isAtTail() );
         //  THROW_ERR( "Pointer into dlist must be at tail" );
-      }
+    }
 
-      void checkNotAtTail() const
-      { // Odd... this was originally identical to checkNotAtTail()
+    void checkNotAtTail() const
+    {
+        // Odd... this was originally identical to checkNotAtTail()
         assert( ! isAtTail() );
         //  THROW_ERR( "Pointer into dlist mustn't be at tail" );
-      }
+    }
 
-  #else
-      void checkInitialized() const {}
-      void checkNotInitialized() const {}
-      void checkValid() const {}
-      void checkNotValid() const {}
-      void checkRemoved() const {}
-      void checkNotRemoved() const {}
-      void checkAtHead() const {}
-      void checkNotAtHead() const {}
-      void checkAtTail() const {}
-      void checkNotAtTail() const {}
-  #endif
+#else
+    void checkInitialized() const {}
+    void checkNotInitialized() const {}
+    void checkValid() const {}
+    void checkNotValid() const {}
+    void checkRemoved() const {}
+    void checkNotRemoved() const {}
+    void checkAtHead() const {}
+    void checkNotAtHead() const {}
+    void checkAtTail() const {}
+    void checkNotAtTail() const {}
+#endif
 };
 
 /*-------------------------------------------------------------------*
@@ -1105,236 +1250,280 @@ class PTR_INTO_DLISTbase
     {return isEqualTo( ptr ); }                                  \
   int operator!=( const PTRtmplt< TYPE > ptr ) const                  \
     {return ! isEqualTo( ptr ); }                                \
-
+ 
 /*-------------------------------------------------------------------*
  | Templates for store-by-value doubly-linked lists
  *-------------------------------------------------------------------*/
 
 template< class TYPE >
-  class vDLIST_NODE_OF: public DLISTnode
-  {
+class vDLIST_NODE_OF: public DLISTnode
+{
     friend class vDLIST_OF< TYPE >;
     friend class PTR_INTO_vDLIST_OF< TYPE >;
 
-    private:
+private:
 
-      TYPE m_info;
+    TYPE m_info;
 
-    private:
+private:
 
-      vDLIST_NODE_OF( const TYPE &info ):
+    vDLIST_NODE_OF( const TYPE &info ):
         DLISTnode(),
         m_info( info )
-      {
-      }
+    {
+    }
 
-    protected:
+protected:
 
-      MEMBERS_FOR_DLISTnode( vDLIST_NODE_OF< TYPE > )
-  };
+    MEMBERS_FOR_DLISTnode( vDLIST_NODE_OF< TYPE > )
+};
 
 template< class TYPE >
-  class vDLIST_OF: public DLISTbase
-  {
-    public:
+class vDLIST_OF: public DLISTbase
+{
+public:
 
-      MEMBERS_FOR_DLISTbase( vDLIST_OF, TYPE )
+    MEMBERS_FOR_DLISTbase( vDLIST_OF, TYPE )
 
-      TYPE *getHead() const
-      {
+    TYPE *getHead() const
+    {
         checkNotEmpty();
         return &((vDLIST_NODE_OF< TYPE > *)XgetHead())->m_info;
-      }
+    }
 
-      TYPE *getTail() const
-      {
+    TYPE *getTail() const
+    {
         checkNotEmpty();
         return &((vDLIST_NODE_OF< TYPE > *)XgetTail())->m_info;
-      }
+    }
 
-      void prepend( const TYPE &node )
-        {Xprepend( new vDLIST_NODE_OF< TYPE >( node ) ); }
-      void append( const TYPE &node )
-        {Xappend( new vDLIST_NODE_OF< TYPE >( node ) ); }
-      TYPE &operator*() const
-        {return *getHead(); }
-  };
+    void prepend( const TYPE &node )
+    {
+        Xprepend( new vDLIST_NODE_OF< TYPE >( node ) );
+    }
+    void append( const TYPE &node )
+    {
+        Xappend( new vDLIST_NODE_OF< TYPE >( node ) );
+    }
+    TYPE &operator*() const
+    {
+        return *getHead();
+    }
+};
 
 template< class TYPE >
-  class PTR_INTO_vDLIST_OF: public PTR_INTO_DLISTbase
-  {
-    public:
+class PTR_INTO_vDLIST_OF: public PTR_INTO_DLISTbase
+{
+public:
 
-      MEMBERS_FOR_PTR_INTO_DLISTbase( PTR_INTO_vDLIST_OF,
-                                      vDLIST_OF,
-                                      TYPE )
+    MEMBERS_FOR_PTR_INTO_DLISTbase( PTR_INTO_vDLIST_OF,
+                                    vDLIST_OF,
+                                    TYPE )
 
-      TYPE *get() const
-      {
+    TYPE *get() const
+    {
         checkValid();
         return &((vDLIST_NODE_OF< TYPE > *)Xget())->m_info;
-      }
+    }
 
-      void prepend( const TYPE &node )
-      {
+    void prepend( const TYPE &node )
+    {
         checkNotRemoved();
         Xprepend( new vDLIST_NODE_OF< TYPE >( node ) );
-      }
+    }
 
-      void append( const TYPE &node )
-      {
+    void append( const TYPE &node )
+    {
         checkNotRemoved();
         Xappend( new vDLIST_NODE_OF< TYPE >( node ) );
-      }
+    }
 
-      TYPE &operator*() const
-      {
+    TYPE &operator*() const
+    {
         return *get();
-      }
-  };
+    }
+};
 
 /*-------------------------------------------------------------------*
  | Templates for store-by-address doubly-linked lists
  *-------------------------------------------------------------------*/
 
 template< class TYPE >
-  class ptrDLIST_NODE_OF: public DLISTnode
-  {
+class ptrDLIST_NODE_OF: public DLISTnode
+{
     friend class ptrDLIST_OF< TYPE >;
     friend class PTR_INTO_ptrDLIST_OF< TYPE >;
 
-    private:
+private:
 
-      TYPE *m_info;
+    TYPE *m_info;
 
-    private:
+private:
 
-      ptrDLIST_NODE_OF( TYPE &info ):
+    ptrDLIST_NODE_OF( TYPE &info ):
         DLISTnode(),
         m_info( &info )
-      {
-      }
+    {
+    }
 
-    protected:
+protected:
 
-      MEMBERS_FOR_DLISTnode( ptrDLIST_NODE_OF< TYPE > )
-  };
+    MEMBERS_FOR_DLISTnode( ptrDLIST_NODE_OF< TYPE > )
+};
 
 template< class TYPE >
-  class ptrDLIST_OF: public DLISTbase
-  {
-    public:
+class ptrDLIST_OF: public DLISTbase
+{
+public:
 
-      MEMBERS_FOR_DLISTbase( ptrDLIST_OF, TYPE )
+    MEMBERS_FOR_DLISTbase( ptrDLIST_OF, TYPE )
 
-      TYPE *getHead() const
-      {
+    TYPE *getHead() const
+    {
         checkNotEmpty();
         return ((ptrDLIST_NODE_OF< TYPE > *)XgetHead())->m_info;
-      }
+    }
 
-      TYPE *getTail() const
-      {
+    TYPE *getTail() const
+    {
         checkNotEmpty();
         return ((ptrDLIST_NODE_OF< TYPE > *)XgetTail())->m_info;
-      }
+    }
 
-      void prepend( TYPE &node )
-        {Xprepend( new ptrDLIST_NODE_OF< TYPE >( node ) ); }
-      void append( TYPE &node )
-        {Xappend( new ptrDLIST_NODE_OF< TYPE >( node ) ); }
-      TYPE &operator*() const
-        {return *getHead(); }
-  };
+    void prepend( TYPE &node )
+    {
+        Xprepend( new ptrDLIST_NODE_OF< TYPE >( node ) );
+    }
+    void append( TYPE &node )
+    {
+        Xappend( new ptrDLIST_NODE_OF< TYPE >( node ) );
+    }
+    TYPE &operator*() const
+    {
+        return *getHead();
+    }
+};
 
 template< class TYPE >
-  class PTR_INTO_ptrDLIST_OF: public PTR_INTO_DLISTbase
-  {
-    public:
+class PTR_INTO_ptrDLIST_OF: public PTR_INTO_DLISTbase
+{
+public:
 
-      MEMBERS_FOR_PTR_INTO_DLISTbase( PTR_INTO_ptrDLIST_OF,
-                                      ptrDLIST_OF,
-                                      TYPE )
+    MEMBERS_FOR_PTR_INTO_DLISTbase( PTR_INTO_ptrDLIST_OF,
+                                    ptrDLIST_OF,
+                                    TYPE )
 
-      TYPE *get() const
-      {
+    TYPE *get() const
+    {
         checkValid();
         return ((ptrDLIST_NODE_OF< TYPE > *)Xget())->m_info;
-      }
+    }
 
-      void prepend( TYPE &node )
-      {
+    void prepend( TYPE &node )
+    {
         checkNotRemoved();
         Xprepend( new ptrDLIST_NODE_OF< TYPE >( node ) );
-      }
+    }
 
-      void append( TYPE &node )
-      {
+    void append( TYPE &node )
+    {
         checkNotRemoved();
         Xappend( new ptrDLIST_NODE_OF< TYPE >( node ) );
-      }
+    }
 
-      TYPE &operator*() const
-      {
+    TYPE &operator*() const
+    {
         return *get();
-      }
-  };
+    }
+};
 
 /*-------------------------------------------------------------------*
  | Templates for intrusive doubly-linked lists
  *-------------------------------------------------------------------*/
 
 template< class TYPE >
-  class iDLIST_OF: public DLISTbase
-  {
-    public:
+class iDLIST_OF: public DLISTbase
+{
+public:
 
-      MEMBERS_FOR_DLISTbase( iDLIST_OF, TYPE )
+    MEMBERS_FOR_DLISTbase( iDLIST_OF, TYPE )
 
-      TYPE *getHead() const
-        {checkNotEmpty(); return (TYPE *)XgetHead(); }
-      TYPE *getTail() const
-        {checkNotEmpty(); return (TYPE *)XgetTail(); }
-      void prepend( TYPE *node )
-        {Xprepend( node ); }
-      void append( TYPE *node )
-        {Xappend( node ); }
-      TYPE &operator*() const
-        {return *getHead(); }
-  };
+    TYPE *getHead() const
+    {
+        checkNotEmpty();
+        return (TYPE *)XgetHead();
+    }
+    TYPE *getTail() const
+    {
+        checkNotEmpty();
+        return (TYPE *)XgetTail();
+    }
+    void prepend( TYPE *node )
+    {
+        Xprepend( node );
+    }
+    void append( TYPE *node )
+    {
+        Xappend( node );
+    }
+    TYPE &operator*() const
+    {
+        return *getHead();
+    }
+};
 
 template< class TYPE >
-  class PTR_INTO_iDLIST_OF: public PTR_INTO_DLISTbase
-  {
-    public:
+class PTR_INTO_iDLIST_OF: public PTR_INTO_DLISTbase
+{
+public:
 
-      MEMBERS_FOR_PTR_INTO_DLISTbase( PTR_INTO_iDLIST_OF,
-                                      iDLIST_OF,
-                                      TYPE )
+    MEMBERS_FOR_PTR_INTO_DLISTbase( PTR_INTO_iDLIST_OF,
+                                    iDLIST_OF,
+                                    TYPE )
 
-      PTR_INTO_iDLIST_OF( TYPE *node ):
+    PTR_INTO_iDLIST_OF( TYPE *node ):
         PTR_INTO_DLISTbase( node )
-      {
+    {
         node->checkOnList();
-      }
+    }
 
-      operator TYPE*() { return get(); }
+    operator TYPE*()
+    {
+        return get();
+    }
 
-      TYPE *get() const
-        {checkValid(); return (TYPE *)Xget(); }
-      void set( TYPE *ptr )
-        {Xset( ptr ); }
-      void prepend( TYPE *node )
-        {checkNotRemoved(); Xprepend( node ); }
-      void append( TYPE *node )
-        {checkNotRemoved(); Xappend( node ); }
-      TYPE &operator*() const
-        {return *get(); }
-      int operator==( const TYPE *ptr ) const
-        {return isEqualTo( ptr ); }
-      int operator!=( const TYPE *ptr ) const
-        {return ! isEqualTo( ptr ); }
-  };
+    TYPE *get() const
+    {
+        checkValid();
+        return (TYPE *)Xget();
+    }
+    void set( TYPE *ptr )
+    {
+        Xset( ptr );
+    }
+    void prepend( TYPE *node )
+    {
+        checkNotRemoved();
+        Xprepend( node );
+    }
+    void append( TYPE *node )
+    {
+        checkNotRemoved();
+        Xappend( node );
+    }
+    TYPE &operator*() const
+    {
+        return *get();
+    }
+    int operator==( const TYPE *ptr ) const
+    {
+        return isEqualTo( ptr );
+    }
+    int operator!=( const TYPE *ptr ) const
+    {
+        return ! isEqualTo( ptr );
+    }
+};
 
 /*-------------------------------------------------------------------*
  | Looping macros
@@ -1342,9 +1531,9 @@ template< class TYPE >
 
 #define LOOP_DLIST( ptr, dlist )                                      \
   for( ptr.set( dlist, START_AT_HEAD ); ptr.isValid(); ++ptr )        \
-
+ 
 #define LOOP_DLISTrev( ptr, dlist )                                   \
   for( ptr.set( dlist, START_AT_TAIL ); ptr.isValid(); --ptr )        \
-
+ 
 #endif
 

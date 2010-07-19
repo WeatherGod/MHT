@@ -88,87 +88,96 @@
 #include <assert.h>
 
 template< class TYPE >
-  class STACK_OF
-  {
-    private:
+class STACK_OF
+{
+private:
 
-      TYPE *m_data;
-      int m_size;
-      int m_top;
+    TYPE *m_data;
+    int m_size;
+    int m_top;
 
-    public:
+public:
 
-      STACK_OF():
+    STACK_OF():
         m_data( 0 ),
         m_size( 0 ),
         m_top( 0 )
-      {
-      }
+    {
+    }
 
-      STACK_OF( int size ):
+    STACK_OF( int size ):
         m_data( new TYPE[ size + 2 ] ),
         m_size( size ),
         m_top( 0 )
-      {
-      }
+    {
+    }
 
-      ~STACK_OF() { delete [] m_data; }
+    ~STACK_OF()
+    {
+        delete [] m_data;
+    }
 
-      void resize( int size )
-      {
-        #ifdef TSTBUG
-          assert( isEmpty() );
-          //  THROW_ERR( "Stack is not empty" )
-        #endif
+    void resize( int size )
+    {
+#ifdef TSTBUG
+        assert( isEmpty() );
+        //  THROW_ERR( "Stack is not empty" )
+#endif
 
         if( size > m_size )
         {
-          delete [] m_data;
-          m_data = new TYPE[ size ];
-          m_size = size;
+            delete [] m_data;
+            m_data = new TYPE[ size ];
+            m_size = size;
         }
-      }
+    }
 
-      int isEmpty() const { return m_top == 0; }
+    int isEmpty() const
+    {
+        return m_top == 0;
+    }
 
-      void clear() { m_top = 0; }
+    void clear()
+    {
+        m_top = 0;
+    }
 
-      void put( const TYPE &info )
-      {
-        #ifdef TSTBUG
-          assert( m_data != 0 );
-            //THROW_ERR( "Trying to put() onto unallocated stack" )
-          assert( m_top < m_size );
-            //THROW_ERR( "Stack overflow" );
-        #endif
+    void put( const TYPE &info )
+    {
+#ifdef TSTBUG
+        assert( m_data != 0 );
+        //THROW_ERR( "Trying to put() onto unallocated stack" )
+        assert( m_top < m_size );
+        //THROW_ERR( "Stack overflow" );
+#endif
 
         m_data[ m_top++ ] = info;
-      }
+    }
 
-      TYPE get()
-      {
-        #ifdef TSTBUG
-          assert( m_data != 0 );
-          //  THROW_ERR( "Trying to get() from unallocated stack" )
-          assert( m_top != 0 );
-          //  THROW_ERR( "Stack underflow" );
-        #endif
+    TYPE get()
+    {
+#ifdef TSTBUG
+        assert( m_data != 0 );
+        //  THROW_ERR( "Trying to get() from unallocated stack" )
+        assert( m_top != 0 );
+        //  THROW_ERR( "Stack underflow" );
+#endif
 
         return m_data[ --m_top ];
-      }
+    }
 
-      TYPE peek()
-      {
-        #ifdef TSTBUG
-          assert( m_data != 0 );
-          //  THROW_ERR( "Trying to peek() into unallocated stack" )
-          assert( m_top != 0 );
-          //  THROW_ERR( "Stack underflow" );
-        #endif
+    TYPE peek()
+    {
+#ifdef TSTBUG
+        assert( m_data != 0 );
+        //  THROW_ERR( "Trying to peek() into unallocated stack" )
+        assert( m_top != 0 );
+        //  THROW_ERR( "Stack underflow" );
+#endif
 
         return m_data[ m_top - 1 ];
-      }
-  };
+    }
+};
 
 #endif
 

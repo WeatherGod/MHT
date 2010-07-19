@@ -52,62 +52,70 @@ static void printProblem( ROW_COL_COST *g_rcc, int g_numRCCs,
                           VECTOR_OF< double > &rowLow,
                           VECTOR_OF< double > &colLow )
 {
-  int row, col;
-  int i, k;
+    int row, col;
+    int i, k;
 
-  i = 0;
-  for( row = -1; row < g_numRows; row++ )
-  {
-    printf( " " );
+    i = 0;
+    for( row = -1; row < g_numRows; row++ )
+    {
+        printf( " " );
+
+        for( col = -1; col < g_numCols; col++ )
+        {
+            k = 0;
+            if( i < g_numRCCs &&
+                    g_rcc[ i ].row == row &&
+                    g_rcc[ i ].col == col )
+            {
+                printf( " (%5.2f", g_rcc[ i ].cost );
+                k += 7;
+                i++;
+                while( i < g_numRCCs &&
+                        g_rcc[ i ].row == row &&
+                        g_rcc[ i ].col == col )
+                {
+                    printf( ",%5.2f", g_rcc[ i ].cost );
+                    k += 6;
+                    i++;
+                }
+                printf( ")" );
+                k += 1;
+            }
+            else
+            {
+                printf( " .");
+                k += 2;
+            }
+            while( k < FIELD_WIDTH )
+            {
+                printf( " " );
+                k += 1;
+            }
+        }
+
+        if( row >= 0 )
+        {
+            printf( " -> %5.2f", rowLow[ row ] );
+        }
+        printf( "\n" );
+    }
 
     for( col = -1; col < g_numCols; col++ )
     {
-      k = 0;
-      if( i < g_numRCCs &&
-          g_rcc[ i ].row == row &&
-          g_rcc[ i ].col == col )
-      {
-        printf( " (%5.2f", g_rcc[ i ].cost ); k += 7;
-        i++;
-        while( i < g_numRCCs &&
-               g_rcc[ i ].row == row &&
-               g_rcc[ i ].col == col )
+        k = 0;
+        if( col >= 0 )
         {
-          printf( ",%5.2f", g_rcc[ i ].cost ); k += 6;
-          i++;
+            printf( " %5.2f", colLow[ col ] );
+            k += 6;
         }
-        printf( ")" ); k += 1;
-      }
-      else
-      {
-        printf( " ."); k += 2;
-      }
-      while( k < FIELD_WIDTH )
-      {
-        printf( " " ); k += 1;
-      }
+        while( k < FIELD_WIDTH )
+        {
+            printf( " " );
+            k += 1;
+        }
     }
-
-    if( row >= 0 )
-      printf( " -> %5.2f", rowLow[ row ] );
     printf( "\n" );
-  }
-
-  for( col = -1; col < g_numCols; col++ )
-  {
-    k = 0;
-    if( col >= 0 )
-    {
-      printf( " %5.2f", colLow[ col ] );
-      k += 6;
-    }
-    while( k < FIELD_WIDTH )
-    {
-      printf( " " ); k += 1;
-    }
-  }
-  printf( "\n" );
-  printf( "  number of rcc's = %d\n", g_numRCCs );
+    printf( "  number of rcc's = %d\n", g_numRCCs );
 }
 /*DBG END */
 
@@ -132,88 +140,92 @@ void apqSOLUTION::setup( void **baseSolutionTag,
 {
 
 #ifdef NEVER
-  static VECTOR_OF< double > lowestCostForRow;
-  static VECTOR_OF< char > rowIsInProblem;
-  int numRowsInProblem;
-  static VECTOR_OF< double > lowestCostForCol;
-  static VECTOR_OF< char > colIsInProblem;
-  int numColsInProblem;
-  double rowTotal;
-  double colTotal;
-  int row;
-  int col;
-  int i;
+    static VECTOR_OF< double > lowestCostForRow;
+    static VECTOR_OF< char > rowIsInProblem;
+    int numRowsInProblem;
+    static VECTOR_OF< double > lowestCostForCol;
+    static VECTOR_OF< char > colIsInProblem;
+    int numColsInProblem;
+    double rowTotal;
+    double colTotal;
+    int row;
+    int col;
+    int i;
 #endif
 
-  memcpy( m_rcc, rcc, m_numRCCs * sizeof( *m_rcc ) );
+    memcpy( m_rcc, rcc, m_numRCCs * sizeof( *m_rcc ) );
 
-  if( m_baseSolutionSize > 0 )
-  {
-    m_baseSolutionTag = new void*[ m_baseSolutionSize ];
-    memcpy( m_baseSolutionTag, baseSolutionTag,
-            m_baseSolutionSize * sizeof( *m_baseSolutionTag ) );
-  }
+    if( m_baseSolutionSize > 0 )
+    {
+        m_baseSolutionTag = new void*[ m_baseSolutionSize ];
+        memcpy( m_baseSolutionTag, baseSolutionTag,
+                m_baseSolutionSize * sizeof( *m_baseSolutionTag ) );
+    }
 
 #ifdef NEVER
-  lowestCostForRow.resize( m_numRows );
-  rowIsInProblem.resize( m_numRows );
-  rowIsInProblem.clear();
-  numRowsInProblem = 0;
+    lowestCostForRow.resize( m_numRows );
+    rowIsInProblem.resize( m_numRows );
+    rowIsInProblem.clear();
+    numRowsInProblem = 0;
 
-  lowestCostForCol.resize( m_numCols );
-  colIsInProblem.resize( m_numCols );
-  colIsInProblem.clear();
-  numColsInProblem = 0;
+    lowestCostForCol.resize( m_numCols );
+    colIsInProblem.resize( m_numCols );
+    colIsInProblem.clear();
+    numColsInProblem = 0;
 
-  for( i = 0; i < m_numRCCs; i++ )
-  {
-    row = m_rcc[ i ].row;
-    if( row >= 0 )
-      if( ! rowIsInProblem[ row ] ||
-          m_rcc[ i ].cost < lowestCostForRow[ row ] )
-      {
-        rowIsInProblem[ row ] = 1;
-        lowestCostForRow[ row ] = m_rcc[ i ].cost;
-      }
-
-    col = m_rcc[ i ].col;
-    if( col >= 0 )
-      if( ! colIsInProblem[ col ] ||
-          m_rcc[ i ].cost < lowestCostForCol[ col ] )
-      {
-        colIsInProblem[ col ] = 1;
-        lowestCostForCol[ col ] = m_rcc[ i ].cost;
-      }
-  }
-
-  rowTotal = 0;
-  for( row = 0; row < m_numRows; row++ )
-    if( rowIsInProblem[ row ] )
+    for( i = 0; i < m_numRCCs; i++ )
     {
-      numRowsInProblem++;
-      rowTotal += lowestCostForRow[ row ];
+        row = m_rcc[ i ].row;
+        if( row >= 0 )
+            if( ! rowIsInProblem[ row ] ||
+                    m_rcc[ i ].cost < lowestCostForRow[ row ] )
+            {
+                rowIsInProblem[ row ] = 1;
+                lowestCostForRow[ row ] = m_rcc[ i ].cost;
+            }
+
+        col = m_rcc[ i ].col;
+        if( col >= 0 )
+            if( ! colIsInProblem[ col ] ||
+                    m_rcc[ i ].cost < lowestCostForCol[ col ] )
+            {
+                colIsInProblem[ col ] = 1;
+                lowestCostForCol[ col ] = m_rcc[ i ].cost;
+            }
     }
 
-  colTotal = 0;
-  for( col = 0; col < m_numCols; col++ )
-    if( colIsInProblem[ col ] )
+    rowTotal = 0;
+    for( row = 0; row < m_numRows; row++ )
+        if( rowIsInProblem[ row ] )
+        {
+            numRowsInProblem++;
+            rowTotal += lowestCostForRow[ row ];
+        }
+
+    colTotal = 0;
+    for( col = 0; col < m_numCols; col++ )
+        if( colIsInProblem[ col ] )
+        {
+            numColsInProblem++;
+            colTotal += lowestCostForCol[ col ];
+        }
+
+    if( numRowsInProblem > numColsInProblem ||
+            (numRowsInProblem == numColsInProblem && rowTotal > colTotal ) )
     {
-      numColsInProblem++;
-      colTotal += lowestCostForCol[ col ];
+        m_cost = m_baseCost + rowTotal;
+    }
+    else
+    {
+        m_cost = m_baseCost + colTotal;
     }
 
-  if( numRowsInProblem > numColsInProblem ||
-      (numRowsInProblem == numColsInProblem && rowTotal > colTotal ) )
-    m_cost = m_baseCost + rowTotal;
-  else
-    m_cost = m_baseCost + colTotal;
-
-  if( m_cost < parentCost )
+    if( m_cost < parentCost )
 #endif
-    m_cost = parentCost;
+        m_cost = parentCost;
 
 #ifdef NEVER
-  m_cost = floor( m_cost * PRECISION ) / PRECISION;
+    m_cost = floor( m_cost * PRECISION ) / PRECISION;
 #endif
 }
 
@@ -223,43 +235,49 @@ void apqSOLUTION::setup( void **baseSolutionTag,
 
 void apqSOLUTION::solve( void )
 {
-  static VECTOR_OF< void * > solutionTag;
-  int solutionSize;
-  int i;
+    static VECTOR_OF< void * > solutionTag;
+    int solutionSize;
+    int i;
 
-  if( m_solutionTag != 0 )
-    return;
+    if( m_solutionTag != 0 )
+    {
+        return;
+    }
 
-  for ( i=0; i<m_numRCCs;i++)
-     {
-       int row = m_rcc[i].row;
-       int col = m_rcc[i].col;
+    for ( i=0; i<m_numRCCs; i++)
+    {
+        int row = m_rcc[i].row;
+        int col = m_rcc[i].col;
 
 #ifdef SDBG
-       printf("before BestAssign  m_rcc=%d row=%d col=%d tag=%d\n",&(m_rcc[i]),row,col,m_rcc[i].tag);
+        printf("before BestAssign  m_rcc=%d row=%d col=%d tag=%d\n",&(m_rcc[i]),row,col,m_rcc[i].tag);
 #endif
 
-     }
+    }
 
-   m_cost = FindBestAssignment( m_rcc, m_numRCCs, m_numRows, m_numCols,
-                               solutionTag, &solutionSize );
-  if( m_cost == UNSOLVABLE )
-    return;
-  m_cost += m_baseCost;
+    m_cost = FindBestAssignment( m_rcc, m_numRCCs, m_numRows, m_numCols,
+                                 solutionTag, &solutionSize );
+    if( m_cost == UNSOLVABLE )
+    {
+        return;
+    }
+    m_cost += m_baseCost;
 
-  m_solutionSize = m_baseSolutionSize + solutionSize;
-  m_solutionTag = new void*[ m_solutionSize ];
+    m_solutionSize = m_baseSolutionSize + solutionSize;
+    m_solutionTag = new void*[ m_solutionSize ];
 
-  if( m_baseSolutionSize > 0 )
-  {
-    memcpy( m_solutionTag, m_baseSolutionTag,
-            m_baseSolutionSize * sizeof( *m_solutionTag ) );
-    delete [] m_baseSolutionTag;
-    m_baseSolutionTag = 0;
-  }
+    if( m_baseSolutionSize > 0 )
+    {
+        memcpy( m_solutionTag, m_baseSolutionTag,
+                m_baseSolutionSize * sizeof( *m_solutionTag ) );
+        delete [] m_baseSolutionTag;
+        m_baseSolutionTag = 0;
+    }
 
-  for( i = 0; i < solutionSize; i++ )
-    m_solutionTag[ m_baseSolutionSize + i ] = solutionTag[ i ];
+    for( i = 0; i < solutionSize; i++ )
+    {
+        m_solutionTag[ m_baseSolutionSize + i ] = solutionTag[ i ];
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -273,140 +291,160 @@ void apqSOLUTION::solve( void )
 
 void apqSOLUTION::partition()
 {
-  void *doomedRCCtag;
-  ROW_COL_COST doomedRCC;
-  char rowIsNotEmpty;
-  char colIsNotEmpty;
-  apqSOLUTION *solution;
-  int i, k;
+    void *doomedRCCtag;
+    ROW_COL_COST doomedRCC;
+    char rowIsNotEmpty;
+    char colIsNotEmpty;
+    apqSOLUTION *solution;
+    int i, k;
 
 #ifdef SDBG
-    for( i = 0; i < m_numRCCs; i++ )
-       printf("m_rcc=%d row=%d col=%d tag=%d\n",&m_rcc[i],m_rcc[i].row,m_rcc[i].col,m_rcc[i].tag);
-#endif
-
-  /* loop through all the assignments in the solution (not counting the
-     ones in the base solution) */
-
-  while( m_baseSolutionSize < m_solutionSize )
-  {
-    /* find the ROW_COL_COST structure for this assignment -- this
-       structure is "doomed" to be removed from the assignment
-       problem */
-    doomedRCCtag = m_solutionTag[ m_baseSolutionSize ];
-
-#ifdef SDBG
-    printf("m_baseSolnSize=%d doomedRCCtag=%d m_numRCCs=%d\n",m_baseSolutionSize,doomedRCCtag,m_numRCCs);
-#endif
-
-    for( i = 0; i < m_numRCCs; i++ )
-      if( m_rcc[ i ].tag == doomedRCCtag )
-        break;
-/*
-    #ifdef TSTBUG */
-      assert( i < m_numRCCs );
-      //  THROW_ERR( "ASSIGNMENT_PQUEUE looking for non-existant tag" )
-/*    #endif*/
-
-#ifdef SDBG
-    printf("doomedRCC was found at i=%d\n",i);
-#endif
-
-    doomedRCC = m_rcc[ i ];
-    /* a row of -1, or a column of -1, should be ignored, since these
-       aren't really nodes */
-    if( doomedRCC.row < 0 )
-      doomedRCC.row = IGNORE_THIS;
-    if( doomedRCC.col < 0 )
-      doomedRCC.col = IGNORE_THIS;
-
-    /* remove the doomed ROW_COL_COST from the assignment problem,
-       maintaining the list of ROW_COL_COST's in order */
-    m_numRCCs--;
-    if( i < m_numRCCs )
-      memmove( &m_rcc[ i ], &m_rcc[ i + 1 ],
-               (m_numRCCs - i) * sizeof( *m_rcc ) );
-
-    /* What we have now is the problem called P' in the header comments
-       for apqueue.H, after <r,c,s> has been removed. */
-
-    /* find out if the row and column can possibly be assigned to
-       other things */
-    rowIsNotEmpty = (doomedRCC.row == IGNORE_THIS);
-    colIsNotEmpty = (doomedRCC.col == IGNORE_THIS);
     for( i = 0; i < m_numRCCs; i++ )
     {
-      if( m_rcc[ i ].row == doomedRCC.row )
-      {
-        rowIsNotEmpty = 1;
-        if( colIsNotEmpty )
-          break;
-      }
-      if( m_rcc[ i ].col == doomedRCC.col )
-      {
-        colIsNotEmpty = 1;
-        if( rowIsNotEmpty )
-          break;
-      }
+        printf("m_rcc=%d row=%d col=%d tag=%d\n",&m_rcc[i],m_rcc[i].row,m_rcc[i].col,m_rcc[i].tag);
     }
-
-    /* if they can, then proceed find a lower limit on the cost of
-       the best solution to this problem, make a problem/solution pair,
-       and place it on the list */
-    if( rowIsNotEmpty && colIsNotEmpty )
-    {
-      /* the constructor both finds a lower limit on the cost of the
-         best solution and makes the problem/solution pair */
-      solution = new apqSOLUTION( m_problemTag,
-                                  m_baseCost,
-                                  m_cost,
-                                  m_solutionTag,
-                                  m_baseSolutionSize,
-                                  m_rcc,
-                                  m_numRCCs,
-                                  m_numRows,
-                                  m_numCols );
-
-      /* the pair is invalid if no solution is possible */
-      if( solution->isValid() )
-        append( solution );
-      else
-        delete solution;
-    }
-
-    /* remove all the possible assignments for this row and column */
-    if( (rowIsNotEmpty && doomedRCC.row != IGNORE_THIS) ||
-        (colIsNotEmpty && doomedRCC.col != IGNORE_THIS) )
-    {
-      for( i = 0;
-           i < m_numRCCs &&
-           m_rcc[ i ].row != doomedRCC.row &&
-           m_rcc[ i ].col != doomedRCC.col;
-           i++ )
-        ;
-
-      k = i;
-      while( i < m_numRCCs )
-      {
-        if( m_rcc[ i ].row != doomedRCC.row &&
-            m_rcc[ i ].col != doomedRCC.col )
-          m_rcc[ k++ ] = m_rcc[ i ];
-        i++;
-      }
-
-      m_numRCCs = k;
-    }
-
-    /* add the "doomed" assignment to the base solution */
-    m_baseCost += doomedRCC.cost;
-    m_baseSolutionSize++;
-
-#ifdef SDBG
-    for( i = 0; i < m_numRCCs; i++ )
-       printf("m_rcc=%d row=%d col=%d tag=%d\n",&m_rcc[i],m_rcc[i].row,m_rcc[i].col,m_rcc[i].tag);
 #endif
 
-  }
+    /* loop through all the assignments in the solution (not counting the
+       ones in the base solution) */
+
+    while( m_baseSolutionSize < m_solutionSize )
+    {
+        /* find the ROW_COL_COST structure for this assignment -- this
+           structure is "doomed" to be removed from the assignment
+           problem */
+        doomedRCCtag = m_solutionTag[ m_baseSolutionSize ];
+
+#ifdef SDBG
+        printf("m_baseSolnSize=%d doomedRCCtag=%d m_numRCCs=%d\n",m_baseSolutionSize,doomedRCCtag,m_numRCCs);
+#endif
+
+        for( i = 0; i < m_numRCCs; i++ )
+            if( m_rcc[ i ].tag == doomedRCCtag )
+            {
+                break;
+            }
+        /*
+            #ifdef TSTBUG */
+        assert( i < m_numRCCs );
+        //  THROW_ERR( "ASSIGNMENT_PQUEUE looking for non-existant tag" )
+        /*    #endif*/
+
+#ifdef SDBG
+        printf("doomedRCC was found at i=%d\n",i);
+#endif
+
+        doomedRCC = m_rcc[ i ];
+        /* a row of -1, or a column of -1, should be ignored, since these
+           aren't really nodes */
+        if( doomedRCC.row < 0 )
+        {
+            doomedRCC.row = IGNORE_THIS;
+        }
+        if( doomedRCC.col < 0 )
+        {
+            doomedRCC.col = IGNORE_THIS;
+        }
+
+        /* remove the doomed ROW_COL_COST from the assignment problem,
+           maintaining the list of ROW_COL_COST's in order */
+        m_numRCCs--;
+        if( i < m_numRCCs )
+            memmove( &m_rcc[ i ], &m_rcc[ i + 1 ],
+                     (m_numRCCs - i) * sizeof( *m_rcc ) );
+
+        /* What we have now is the problem called P' in the header comments
+           for apqueue.H, after <r,c,s> has been removed. */
+
+        /* find out if the row and column can possibly be assigned to
+           other things */
+        rowIsNotEmpty = (doomedRCC.row == IGNORE_THIS);
+        colIsNotEmpty = (doomedRCC.col == IGNORE_THIS);
+        for( i = 0; i < m_numRCCs; i++ )
+        {
+            if( m_rcc[ i ].row == doomedRCC.row )
+            {
+                rowIsNotEmpty = 1;
+                if( colIsNotEmpty )
+                {
+                    break;
+                }
+            }
+            if( m_rcc[ i ].col == doomedRCC.col )
+            {
+                colIsNotEmpty = 1;
+                if( rowIsNotEmpty )
+                {
+                    break;
+                }
+            }
+        }
+
+        /* if they can, then proceed find a lower limit on the cost of
+           the best solution to this problem, make a problem/solution pair,
+           and place it on the list */
+        if( rowIsNotEmpty && colIsNotEmpty )
+        {
+            /* the constructor both finds a lower limit on the cost of the
+               best solution and makes the problem/solution pair */
+            solution = new apqSOLUTION( m_problemTag,
+                                        m_baseCost,
+                                        m_cost,
+                                        m_solutionTag,
+                                        m_baseSolutionSize,
+                                        m_rcc,
+                                        m_numRCCs,
+                                        m_numRows,
+                                        m_numCols );
+
+            /* the pair is invalid if no solution is possible */
+            if( solution->isValid() )
+            {
+                append( solution );
+            }
+            else
+            {
+                delete solution;
+            }
+        }
+
+        /* remove all the possible assignments for this row and column */
+        if( (rowIsNotEmpty && doomedRCC.row != IGNORE_THIS) ||
+                (colIsNotEmpty && doomedRCC.col != IGNORE_THIS) )
+        {
+            for( i = 0;
+                    i < m_numRCCs &&
+                    m_rcc[ i ].row != doomedRCC.row &&
+                    m_rcc[ i ].col != doomedRCC.col;
+                    i++ )
+                ;
+
+            k = i;
+            while( i < m_numRCCs )
+            {
+                if( m_rcc[ i ].row != doomedRCC.row &&
+                        m_rcc[ i ].col != doomedRCC.col )
+                {
+                    m_rcc[ k++ ] = m_rcc[ i ];
+                }
+                i++;
+            }
+
+            m_numRCCs = k;
+        }
+
+        /* add the "doomed" assignment to the base solution */
+        m_baseCost += doomedRCC.cost;
+        m_baseSolutionSize++;
+
+#ifdef SDBG
+        for( i = 0; i < m_numRCCs; i++ )
+        {
+            printf("m_rcc=%d row=%d col=%d tag=%d\n",&m_rcc[i],m_rcc[i].row,m_rcc[i].col,m_rcc[i].tag);
+        }
+#endif
+
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -417,12 +455,14 @@ void apqSOLUTION::partition()
 void apqSOLUTION::
 getSolutionTags( VECTOR_OF< void * > &solutionTag, int *solutionSize )
 {
-  int i;
+    int i;
 
-  solutionTag.resize( m_solutionSize );
-  for( i = 0; i < m_solutionSize; i++ )
-    solutionTag[ i ] = m_solutionTag[ i ];
-  *solutionSize = m_solutionSize;
+    solutionTag.resize( m_solutionSize );
+    for( i = 0; i < m_solutionSize; i++ )
+    {
+        solutionTag[ i ] = m_solutionTag[ i ];
+    }
+    *solutionSize = m_solutionSize;
 
 }
 
@@ -432,37 +472,43 @@ getSolutionTags( VECTOR_OF< void * > &solutionTag, int *solutionSize )
 
 void apqSOLUTION::print()
 {
-  int i, j;
-  ROW_COL_COST *rcc;
+    int i, j;
+    ROW_COL_COST *rcc;
 
-  if( m_cost == UNSOLVABLE )
-    std::cout << "#";
-  else
-    std::cout << m_cost;
-
-  for( i = 0; i < m_solutionSize; i++ )
-  {
-    rcc = (ROW_COL_COST *)m_solutionTag[ i ];
-    if( i < m_baseSolutionSize )
-      std::cout << " [" << rcc->row << ","
-                   << rcc->col << ","
-                   << rcc->cost << "]";
+    if( m_cost == UNSOLVABLE )
+    {
+        std::cout << "#";
+    }
     else
-      std::cout << " (" << rcc->row << ","
-                   << rcc->col << ","
-                   << rcc->cost << ")";
-  }
+    {
+        std::cout << m_cost;
+    }
 
-  for( i = 0; i < m_numRCCs; i++ )
-  {
-    for( j = 0; j < m_solutionSize; j++ )
-      if( m_solutionTag[ j ] == m_rcc[ i ].tag )
-        break;
-    if( j >= m_solutionSize )
-      std::cout << "  " << m_rcc[ i ].row << ","
-                   << m_rcc[ i ].col << ","
-                   << m_rcc[ i ].cost << " ";
-  }
+    for( i = 0; i < m_solutionSize; i++ )
+    {
+        rcc = (ROW_COL_COST *)m_solutionTag[ i ];
+        if( i < m_baseSolutionSize )
+            std::cout << " [" << rcc->row << ","
+                      << rcc->col << ","
+                      << rcc->cost << "]";
+        else
+            std::cout << " (" << rcc->row << ","
+                      << rcc->col << ","
+                      << rcc->cost << ")";
+    }
+
+    for( i = 0; i < m_numRCCs; i++ )
+    {
+        for( j = 0; j < m_solutionSize; j++ )
+            if( m_solutionTag[ j ] == m_rcc[ i ].tag )
+            {
+                break;
+            }
+        if( j >= m_solutionSize )
+            std::cout << "  " << m_rcc[ i ].row << ","
+                      << m_rcc[ i ].col << ","
+                      << m_rcc[ i ].cost << " ";
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -476,15 +522,19 @@ void ASSIGNMENT_PQUEUE::addProblem( void *problemTag,
                                     int numRows,
                                     int numCols )
 {
-  apqSOLUTION *solution = new apqSOLUTION( problemTag,
-                                           rcc,
-                                           numRCCs,
-                                           numRows,
-                                           numCols );
-  if( solution->isValid() )
-    m_solutionList.prepend( solution );
-  else
-    delete solution;
+    apqSOLUTION *solution = new apqSOLUTION( problemTag,
+            rcc,
+            numRCCs,
+            numRows,
+            numCols );
+    if( solution->isValid() )
+    {
+        m_solutionList.prepend( solution );
+    }
+    else
+    {
+        delete solution;
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -494,11 +544,13 @@ void ASSIGNMENT_PQUEUE::addProblem( void *problemTag,
 
 void ASSIGNMENT_PQUEUE::removeProblem( void *problemTag )
 {
-  PTR_INTO_iDLIST_OF< apqSOLUTION > ptr;
+    PTR_INTO_iDLIST_OF< apqSOLUTION > ptr;
 
-  LOOP_DLIST( ptr, m_solutionList )
+    LOOP_DLIST( ptr, m_solutionList )
     if( (*ptr).getProblemTag() == problemTag )
-      ptr.remove();
+    {
+        ptr.remove();
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -509,20 +561,22 @@ void ASSIGNMENT_PQUEUE::removeProblem( void *problemTag )
 void *ASSIGNMENT_PQUEUE::
 getNextSolution( VECTOR_OF< void * > &solutionTag, int *solutionSize )
 {
-  void *problemTag;
+    void *problemTag;
 
-  findBestSolution();
-  if( m_bestSolution == 0 )
-    return 0;
+    findBestSolution();
+    if( m_bestSolution == 0 )
+    {
+        return 0;
+    }
 
-  problemTag = m_bestSolution->getProblemTag();
-  m_bestSolution->getSolutionTags( solutionTag, solutionSize );
+    problemTag = m_bestSolution->getProblemTag();
+    m_bestSolution->getSolutionTags( solutionTag, solutionSize );
 
-  m_bestSolution->partition();
-  delete m_bestSolution;
-  m_bestSolution = 0;
+    m_bestSolution->partition();
+    delete m_bestSolution;
+    m_bestSolution = 0;
 
-  return problemTag;
+    return problemTag;
 }
 
 /*-------------------------------------------------------------------*
@@ -533,54 +587,64 @@ getNextSolution( VECTOR_OF< void * > &solutionTag, int *solutionSize )
 
 void ASSIGNMENT_PQUEUE::findBestSolution()
 {
-  PTR_INTO_iDLIST_OF< apqSOLUTION > ptr;
-  double estimatedCost;
+    PTR_INTO_iDLIST_OF< apqSOLUTION > ptr;
+    double estimatedCost;
 
-  m_bestSolution = 0;
+    m_bestSolution = 0;
 
-  while( m_bestSolution == 0 )
-  {
-    if( m_solutionList.isEmpty() )
-      return;
-
-    m_bestSolution = m_solutionList.getHead();
-    LOOP_DLIST( ptr, m_solutionList )
+    while( m_bestSolution == 0 )
     {
-      if( (*ptr).getCost() < m_bestSolution->getCost() )
-        m_bestSolution = ptr.get();
-      else if( (*ptr).getCost() == m_bestSolution->getCost() )
-        if( (*ptr).isSolved() == m_bestSolution->isSolved() )
+        if( m_solutionList.isEmpty() )
         {
-          if( (*ptr).getNumRCCs() < m_bestSolution->getNumRCCs() )
-            m_bestSolution = ptr.get();
+            return;
         }
-        else if( (*ptr).isSolved() )
-          m_bestSolution = ptr.get();
-    }
 
-    if( ! m_bestSolution->isSolved() )
-    {
-      estimatedCost = m_bestSolution->getCost();
-      m_bestSolution->solve();
-/*
-      #ifdef TSTBUG
-*/
-        assert( m_bestSolution->getCost()- estimatedCost >= -0.001 );
-        //  THROW_ERR( "Estimated cost (" << estimatedCost << ")"
-        //             " higher than actual (" <<
-        //             m_bestSolution->getCost() << ")" );
-/*
-      #endif
-*/
+        m_bestSolution = m_solutionList.getHead();
+        LOOP_DLIST( ptr, m_solutionList )
+        {
+            if( (*ptr).getCost() < m_bestSolution->getCost() )
+            {
+                m_bestSolution = ptr.get();
+            }
+            else if( (*ptr).getCost() == m_bestSolution->getCost() )
+                if( (*ptr).isSolved() == m_bestSolution->isSolved() )
+                {
+                    if( (*ptr).getNumRCCs() < m_bestSolution->getNumRCCs() )
+                    {
+                        m_bestSolution = ptr.get();
+                    }
+                }
+                else if( (*ptr).isSolved() )
+                {
+                    m_bestSolution = ptr.get();
+                }
+        }
 
-      if( m_bestSolution->getCost() == UNSOLVABLE )
-      {
-        delete m_bestSolution;
-        m_bestSolution = 0;
-      }
-      else if( m_bestSolution->getCost() > estimatedCost )
-        m_bestSolution = 0;
+        if( ! m_bestSolution->isSolved() )
+        {
+            estimatedCost = m_bestSolution->getCost();
+            m_bestSolution->solve();
+            /*
+                  #ifdef TSTBUG
+            */
+            assert( m_bestSolution->getCost()- estimatedCost >= -0.001 );
+            //  THROW_ERR( "Estimated cost (" << estimatedCost << ")"
+            //             " higher than actual (" <<
+            //             m_bestSolution->getCost() << ")" );
+            /*
+                  #endif
+            */
+
+            if( m_bestSolution->getCost() == UNSOLVABLE )
+            {
+                delete m_bestSolution;
+                m_bestSolution = 0;
+            }
+            else if( m_bestSolution->getCost() > estimatedCost )
+            {
+                m_bestSolution = 0;
+            }
+        }
     }
-  }
 }
 

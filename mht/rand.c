@@ -12,35 +12,40 @@ typedef float REAL;
 
 REAL gasdev()
 {
-   static int iset=0;
-   static REAL gset;
-   REAL fac,r,v1,v2;
-   double drand48();
+    static int iset=0;
+    static REAL gset;
+    REAL fac,r,v1,v2;
+    double drand48();
 
-   if (iset == 0) {
-     do {                          /* We don't have an extra deviate handy,so */
-        v1=2.0*drand48()-1.0;     /* pick two uniform variates in the square */
-        v2=2.0*drand48()-1.0;   /* extending from -1 to +1 in each direction */
-        r=v1*v1+v2*v2;             /* see if they are in the unit circle, and */
-     } while (r >=1.0 || r == 0.0);             /* if they are not, try again */
+    if (iset == 0)
+    {
+        do                            /* We don't have an extra deviate handy,so */
+        {
+            v1=2.0*drand48()-1.0;     /* pick two uniform variates in the square */
+            v2=2.0*drand48()-1.0;   /* extending from -1 to +1 in each direction */
+            r=v1*v1+v2*v2;             /* see if they are in the unit circle, and */
+        }
+        while (r >=1.0 || r == 0.0);               /* if they are not, try again */
 
-     fac = sqrt(-2.0*log(r)/r);
-     /* Now make the Box-Muller transformation to get two normal deviates.
-        Return one and save the other for next time. */
-     gset = v1*fac;
-     iset = 1;                 /* Set flag */
-     return(v2*fac);
-   } else {                   /* We have an extra deviate handy, so */
-      iset=0;                 /* unset the flag,                    */
-      return(gset);           /* and return it.                     */
-   }
+        fac = sqrt(-2.0*log(r)/r);
+        /* Now make the Box-Muller transformation to get two normal deviates.
+           Return one and save the other for next time. */
+        gset = v1*fac;
+        iset = 1;                 /* Set flag */
+        return(v2*fac);
+    }
+    else                       /* We have an extra deviate handy, so */
+    {
+        iset=0;                 /* unset the flag,                    */
+        return(gset);           /* and return it.                     */
+    }
 }
 
 /**************************************************************************/
 
- 
-                                
- 
+
+
+
 /*
 #define M1 259200
 #define IA1 7141

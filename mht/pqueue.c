@@ -47,6 +47,6 @@
 #include "pqueue.h"
 
 #if TMPLT_HANDLING == 1
-  #include "pqueue.code"
+#include "pqueue.code"
 #endif
 

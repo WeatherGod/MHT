@@ -49,18 +49,18 @@
 void XMakeLinkBase( void *obj0, LINKSbase &links0,
                     void *obj1, LINKSbase &links1 )
 {
-  /* the following two nodes will be partners */
-  LINK_NODE *node0 = new LINK_NODE;
-  LINK_NODE *node1 = new LINK_NODE;
+    /* the following two nodes will be partners */
+    LINK_NODE *node0 = new LINK_NODE;
+    LINK_NODE *node1 = new LINK_NODE;
 
-  links0.m_list.prepend( node0 );
-  links1.m_list.prepend( node1 );
+    links0.m_list.prepend( node0 );
+    links1.m_list.prepend( node1 );
 
-  node0->m_thatObj = obj1;
-  node0->m_partner = node1;
+    node0->m_thatObj = obj1;
+    node0->m_partner = node1;
 
-  node1->m_thatObj = obj0;
-  node1->m_partner = node0;
+    node1->m_thatObj = obj0;
+    node1->m_partner = node0;
 }
 
 /*-------------------------------------------------------------------*
@@ -77,10 +77,10 @@ void XMakeLinkBase( void *obj0, LINKSbase &links0,
 
 LINK_NODE::~LINK_NODE()
 {
-  if( m_thatObj != 0 )
-  {
-    m_partner->m_thatObj = 0;
-    delete m_partner;
-  }
+    if( m_thatObj != 0 )
+    {
+        m_partner->m_thatObj = 0;
+        delete m_partner;
+    }
 }
 

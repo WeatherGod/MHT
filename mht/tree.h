@@ -726,36 +726,47 @@ class START_AT_LAST_LEAFdummy;
 
 class TREEnode: public DLISTnode
 {
-  friend class TREEbase;
-  friend class PTR_INTO_TREEbase;
+    friend class TREEbase;
+    friend class PTR_INTO_TREEbase;
 
-  private:
+private:
 
     TREEnode *m_parent;
     iDLIST_OF< TREEnode > m_childList;
 
-  protected:
+protected:
 
     TREEnode(): DLISTnode(), m_parent( this ), m_childList() {}
 
     TREEnode( const TREEnode &node ):
-      DLISTnode( node ),
-      m_parent( this ),
-      m_childList()
+        DLISTnode( node ),
+        m_parent( this ),
+        m_childList()
     {
     }
 
     virtual ~TREEnode() {}
 
-    TREEnode *XgetParent() const { return m_parent; }
+    TREEnode *XgetParent() const
+    {
+        return m_parent;
+    }
     TREEnode *XgetPrevSibling() const
-      { return (TREEnode *)XgetPrev(); }
+    {
+        return (TREEnode *)XgetPrev();
+    }
     TREEnode *XgetNextSibling() const
-      { return (TREEnode *)XgetNext(); }
+    {
+        return (TREEnode *)XgetNext();
+    }
     TREEnode *XgetFirstChild() const
-      { return (TREEnode *)m_childList.XgetHead(); }
+    {
+        return (TREEnode *)m_childList.XgetHead();
+    }
     TREEnode *XgetLastChild() const
-      { return (TREEnode *)m_childList.XgetTail(); }
+    {
+        return (TREEnode *)m_childList.XgetTail();
+    }
     TREEnode *XgetFirstLeaf() const;
     TREEnode *XgetLastLeaf() const;
     TREEnode *XgetRoot() const;
@@ -766,136 +777,169 @@ class TREEnode: public DLISTnode
 
     void XinsertPrevSibling( TREEnode *node )
     {
-      node->m_parent = m_parent;
-      Xprepend( node );
-      check();
+        node->m_parent = m_parent;
+        Xprepend( node );
+        check();
     }
 
     void XinsertNextSibling( TREEnode *node )
     {
-      node->m_parent = m_parent;
-      Xappend( node );
-      check();
+        node->m_parent = m_parent;
+        Xappend( node );
+        check();
     }
 
     void XinsertFirstChild( TREEnode *node )
     {
-      node->m_parent = this;
-      m_childList.prepend( node );
-      check();
+        node->m_parent = this;
+        m_childList.prepend( node );
+        check();
     }
 
     void XinsertLastChild( TREEnode *node )
     {
-      node->m_parent = this;
-      m_childList.append( node );
-      check();
+        node->m_parent = this;
+        m_childList.append( node );
+        check();
     }
 
-  public:
+public:
 
-    int isOnTree() const { return m_parent != this; }
-    int isLeaf() const { return m_childList.isEmpty(); }
-    int isRoot() const { return isOnTree() && ! m_parent->isNode(); }
-    int isLastSibling() const { return isTail(); }
-    int isFirstSibling() const { return isHead(); }
-    int hasOneChild() const { return m_childList.hasOneMember(); }
+    int isOnTree() const
+    {
+        return m_parent != this;
+    }
+    int isLeaf() const
+    {
+        return m_childList.isEmpty();
+    }
+    int isRoot() const
+    {
+        return isOnTree() && ! m_parent->isNode();
+    }
+    int isLastSibling() const
+    {
+        return isTail();
+    }
+    int isFirstSibling() const
+    {
+        return isHead();
+    }
+    int hasOneChild() const
+    {
+        return m_childList.hasOneMember();
+    }
 
-    int getNumChildren() const { return m_childList.getLength(); }
+    int getNumChildren() const
+    {
+        return m_childList.getLength();
+    }
     int getDepth() const;
 
     void Xreset()
     {
-      DLISTnode::Xreset();
-      m_parent = this;
-      m_childList.Xreset();
+        DLISTnode::Xreset();
+        m_parent = this;
+        m_childList.Xreset();
     }
 
     void XcopyLinks( const TREEnode &src )
     {
-      DLISTnode::XcopyLinks( src );
-      m_parent = src.m_parent;
+        DLISTnode::XcopyLinks( src );
+        m_parent = src.m_parent;
     }
 
-    #ifdef DEBUG
-      void check() const;
-    #elif defined( TSTBUG )
-      void check() const
-      {
+#ifdef DEBUG
+    void check() const;
+#elif defined( TSTBUG )
+    void check() const
+    {
         DLISTnode::check();
-      }
-    #else
-      void check() const {}
-    #endif
+    }
+#else
+    void check() const {}
+#endif
 
-    #ifdef TSTBUG
-      // NOTE:  all assertions have to negate the boolean expression.
-      //        from the original if statements tied to the THROW_ERR statements.
-      void checkOnTree() const
-        { assert( isOnTree() );}// THROW_ERR( "Node must be on tree" ) }
-      void checkNotOnTree() const
-        { assert( ! isOnTree() );}// THROW_ERR( "Node mustn't be on tree" ) }
-      void checkIsLeaf() const
-        { assert( isLeaf() );}// THROW_ERR( "Node must be leaf" ) }
-      void checkNotLeaf() const
-        { assert( ! isLeaf() );}// THROW_ERR( "Node mustn't be leaf" ) }
-      void checkIsRoot() const
-        { assert( isRoot() );}// THROW_ERR( "Node must be root" ) }
-      void checkNotRoot() const
-        { assert( ! isRoot() );}// THROW_ERR( "Node mustn't be root" ) }
+#ifdef TSTBUG
+    // NOTE:  all assertions have to negate the boolean expression.
+    //        from the original if statements tied to the THROW_ERR statements.
+    void checkOnTree() const
+    {
+        assert( isOnTree() );
+    }// THROW_ERR( "Node must be on tree" ) }
+    void checkNotOnTree() const
+    {
+        assert( ! isOnTree() );
+    }// THROW_ERR( "Node mustn't be on tree" ) }
+    void checkIsLeaf() const
+    {
+        assert( isLeaf() );
+    }// THROW_ERR( "Node must be leaf" ) }
+    void checkNotLeaf() const
+    {
+        assert( ! isLeaf() );
+    }// THROW_ERR( "Node mustn't be leaf" ) }
+    void checkIsRoot() const
+    {
+        assert( isRoot() );
+    }// THROW_ERR( "Node must be root" ) }
+    void checkNotRoot() const
+    {
+        assert( ! isRoot() );
+    }// THROW_ERR( "Node mustn't be root" ) }
 
-      void checkIsFirstSibling() const
-      {
+    void checkIsFirstSibling() const
+    {
         assert( isFirstSibling() );
         //  THROW_ERR( "Node must be first sibling" )
-      }
+    }
 
-      void checkNotFirstSibling() const
-      {
+    void checkNotFirstSibling() const
+    {
         assert( ! isFirstSibling() );
         //  THROW_ERR( "Node mustn't be first sibling" )
-      }
+    }
 
-      void checkIsLastSibling() const
-      {
+    void checkIsLastSibling() const
+    {
         assert( isLastSibling() );
         //  THROW_ERR( "Node must be last sibling" )
-      }
+    }
 
-      void checkNotLastSibling() const
-      {
+    void checkNotLastSibling() const
+    {
         assert( ! isLastSibling() );
         //  THROW_ERR( "Node mustn't be last sibling" )
-      }
+    }
 
-      void checkHasOneChild() const
-      {
+    void checkHasOneChild() const
+    {
         assert( hasOneChild() );
         //  THROW_ERR( "Node must have one and only one child" )
-      }
+    }
 
-      void checkNotHasOneChild() const
-      {
+    void checkNotHasOneChild() const
+    {
         assert( ! hasOneChild() );
         //  THROW_ERR( "Node mustn't have one and only child" )
-      }
+    }
 
-    #else
-      void checkOnTree() const {}
-      void checkNotOnTree() const {}
-      void checkIsLeaf() const {}
-      void checkNotLeaf() const {}
-      void checkIsRoot() const {}
-      void checkNotRoot() const {}
-      void checkIsFirstSibling() const {}
-      void checkNotFirstSibling() const {}
-      void checkIsLastSibling() const {}
-      void checkNotLastSibling() const {}
-      void checkHasOneChild() const {}
-      void checkNotHasOneChild() const {}
-    #endif
+#else
+    void checkOnTree() const {}
+    void checkNotOnTree() const {}
+    void checkIsLeaf() const {}
+    void checkNotLeaf() const {}
+    void checkIsRoot() const {}
+    void checkNotRoot() const {}
+    void checkIsFirstSibling() const {}
+    void checkNotFirstSibling() const {}
+    void checkIsLastSibling() const {}
+    void checkNotLastSibling() const {}
+    void checkHasOneChild() const {}
+    void checkNotHasOneChild() const {}
+#endif
 
-  private:
+private:
 
     void XrcrsvCheck() const;
     void XrcrsvCopy( const TREEnode *node );
@@ -921,17 +965,22 @@ class TREEnode: public DLISTnode
 
 class dummyTREEnode: public TREEnode
 {
-  friend class TREEbase;
-  friend class PTR_INTO_TREEbase;
+    friend class TREEbase;
+    friend class PTR_INTO_TREEbase;
 
-  protected:
+protected:
 
     virtual DLISTnode *XmakeCopy() const
-      { return new dummyTREEnode( *this ); }
+    {
+        return new dummyTREEnode( *this );
+    }
 
-  public:
+public:
 
-    virtual int isNode() const { return 0; }
+    virtual int isNode() const
+    {
+        return 0;
+    }
 };
 
 /*-------------------------------------------------------------------*
@@ -979,60 +1028,88 @@ class dummyTREEnode: public TREEnode
     { return (TYPE *)XmakeCopy(); }                               \
   virtual DLISTnode *XmakeCopy() const                                \
     { return new TYPE( *this ); }                                 \
-
+ 
 /*-------------------------------------------------------------------*
  | TREEbase -- base class for all trees
  *-------------------------------------------------------------------*/
 
 class TREEbase
 {
-  friend class PTR_INTO_TREEbase;
+    friend class PTR_INTO_TREEbase;
 
-  private:
+private:
 
     dummyTREEnode m_vnode;
 
-  protected:
+protected:
 
     TREEbase(): m_vnode() {}
     TREEbase( const TREEbase &tree ): m_vnode()
-      { XcopyTree( tree ); }
+    {
+        XcopyTree( tree );
+    }
 
     virtual ~TREEbase() {}
 
-  public:
+public:
 
     TREEnode *XgetRoot() const
-      { return m_vnode.XgetFirstChild(); }
+    {
+        return m_vnode.XgetFirstChild();
+    }
     TREEnode *XgetFirstLeaf() const
-      { return m_vnode.XgetFirstLeaf(); }
+    {
+        return m_vnode.XgetFirstLeaf();
+    }
     TREEnode *XgetLastLeaf() const
-      { return m_vnode.XgetLastLeaf(); }
+    {
+        return m_vnode.XgetLastLeaf();
+    }
     void XinsertRoot( TREEnode *node )
-      { m_vnode.XinsertFirstChild( node ); }
+    {
+        m_vnode.XinsertFirstChild( node );
+    }
     void XcopyTree( const TREEbase &tree )
-      { m_vnode.XrcrsvCopy( &tree.m_vnode ); }
+    {
+        m_vnode.XrcrsvCopy( &tree.m_vnode );
+    }
 
-  public:
+public:
 
-    int isEmpty() const { return m_vnode.isLeaf(); }
+    int isEmpty() const
+    {
+        return m_vnode.isLeaf();
+    }
 
     int getHeight() const;
 
     void removeRoot();
-    void removeAll() { if( ! isEmpty() ) delete XgetRoot(); }
+    void removeAll()
+    {
+        if( ! isEmpty() )
+        {
+            delete XgetRoot();
+        }
+    }
 
-    void check() const { m_vnode.check(); }
+    void check() const
+    {
+        m_vnode.check();
+    }
 
-    #ifdef TSTBUG
-      void checkEmpty() const
-        { assert( isEmpty() );}// THROW_ERR( "Tree must be empty" ); }
-      void checkNotEmpty() const
-        { assert( ! isEmpty() );}// THROW_ERR( "Tree mustn't be empty" ); }
-    #else
-      void checkEmpty() const {}
-      void checkNotEmpty() const {}
-    #endif
+#ifdef TSTBUG
+    void checkEmpty() const
+    {
+        assert( isEmpty() );
+    }// THROW_ERR( "Tree must be empty" ); }
+    void checkNotEmpty() const
+    {
+        assert( ! isEmpty() );
+    }// THROW_ERR( "Tree mustn't be empty" ); }
+#else
+    void checkEmpty() const {}
+    void checkNotEmpty() const {}
+#endif
 };
 
 /*-------------------------------------------------------------------*
@@ -1051,225 +1128,303 @@ class TREEbase
     TREEbase( tree ) {}                                               \
   TREEtmplt< TYPE > &operator=( const TREEtmplt< TYPE > &tree )       \
     { removeAll(); XcopyTree( tree ); return *this; }             \
-
+ 
 /*-------------------------------------------------------------------*
  | PTR_INTO_TREEbase -- base class for all PTR_INTO_xTREE's
  *-------------------------------------------------------------------*/
 
 class PTR_INTO_TREEbase
 {
-  private:
+private:
 
     dummyTREEnode m_dummy;
     TREEnode *m_ptr;
 
-  protected:
+protected:
 
     PTR_INTO_TREEbase(): m_dummy(), m_ptr( &m_dummy ) {}
 
     PTR_INTO_TREEbase( TREEnode *ptr ):
-      m_dummy(),
-      m_ptr( ptr )
+        m_dummy(),
+        m_ptr( ptr )
     {
     }
 
     PTR_INTO_TREEbase( TREEbase &tree ):
-      m_dummy(),
-      m_ptr( tree.XgetRoot() )
+        m_dummy(),
+        m_ptr( tree.XgetRoot() )
     {
     }
 
     PTR_INTO_TREEbase( TREEbase &tree, START_AT_ROOTversion ):
-      m_dummy(),
-      m_ptr( tree.XgetRoot() )
+        m_dummy(),
+        m_ptr( tree.XgetRoot() )
     {
     }
 
     PTR_INTO_TREEbase( TREEbase &tree, START_AT_FIRST_LEAFversion ):
-      m_dummy(),
-      m_ptr( tree.XgetFirstLeaf() )
+        m_dummy(),
+        m_ptr( tree.XgetFirstLeaf() )
     {
     }
 
     PTR_INTO_TREEbase( TREEbase &tree, START_AT_LAST_LEAFversion ):
-      m_dummy(),
-      m_ptr( tree.XgetLastLeaf() )
+        m_dummy(),
+        m_ptr( tree.XgetLastLeaf() )
     {
     }
 
     PTR_INTO_TREEbase( const PTR_INTO_TREEbase &ptr ):
-      m_dummy(),
-      m_ptr( ptr.m_ptr )
+        m_dummy(),
+        m_ptr( ptr.m_ptr )
     {
-      ptr.checkNotRemoved();
+        ptr.checkNotRemoved();
     }
 
-    virtual ~PTR_INTO_TREEbase() { m_dummy.Xreset(); }
+    virtual ~PTR_INTO_TREEbase()
+    {
+        m_dummy.Xreset();
+    }
 
-  public:
+public:
 
-    void Xset( TREEnode *ptr ) { m_ptr = ptr; }
+    void Xset( TREEnode *ptr )
+    {
+        m_ptr = ptr;
+    }
     void Xset( TREEbase &tree )
-      { m_ptr = tree.XgetRoot(); }
+    {
+        m_ptr = tree.XgetRoot();
+    }
     void Xset( TREEbase &tree, START_AT_ROOTversion )
-      { m_ptr = tree.XgetRoot(); }
+    {
+        m_ptr = tree.XgetRoot();
+    }
     void Xset( TREEbase &tree, START_AT_FIRST_LEAFversion )
-      { m_ptr = tree.XgetFirstLeaf(); }
+    {
+        m_ptr = tree.XgetFirstLeaf();
+    }
     void Xset( TREEbase &tree, START_AT_LAST_LEAFversion )
-      { m_ptr = tree.XgetLastLeaf(); }
-    void Xset( const PTR_INTO_TREEbase &ptr ) { m_ptr = ptr.m_ptr; }
+    {
+        m_ptr = tree.XgetLastLeaf();
+    }
+    void Xset( const PTR_INTO_TREEbase &ptr )
+    {
+        m_ptr = ptr.m_ptr;
+    }
 
     void XinsertParent( TREEnode *node )
-      { m_ptr->XinsertParent( node ); }
+    {
+        m_ptr->XinsertParent( node );
+    }
     void XinsertPrevSibling( TREEnode *node )
-      { m_ptr->XinsertPrevSibling( node ); }
+    {
+        m_ptr->XinsertPrevSibling( node );
+    }
     void XinsertNextSibling( TREEnode *node )
-      { m_ptr->XinsertNextSibling( node ); }
+    {
+        m_ptr->XinsertNextSibling( node );
+    }
     void XinsertFirstChild( TREEnode *node )
-      { m_ptr->XinsertFirstChild( node ); }
+    {
+        m_ptr->XinsertFirstChild( node );
+    }
     void XinsertLastChild( TREEnode *node )
-      { m_ptr->XinsertLastChild( node ); }
+    {
+        m_ptr->XinsertLastChild( node );
+    }
 
-    TREEnode *Xget() const { return m_ptr; }
+    TREEnode *Xget() const
+    {
+        return m_ptr;
+    }
 
-  public:
+public:
 
-    int isInitialized() const { return m_ptr->isOnTree(); }
-    int isValid() const { return m_ptr->isNode(); }
-    int isRemoved() const { return m_ptr == &m_dummy; }
-    int isAtRoot() const { return m_ptr->isRoot(); }
-    int isAtFirstSibling() const { return m_ptr->isFirstSibling(); }
-    int isAtLastSibling() const { return m_ptr->isLastSibling(); }
-    int isAtLeaf() const { return m_ptr->isLeaf(); }
+    int isInitialized() const
+    {
+        return m_ptr->isOnTree();
+    }
+    int isValid() const
+    {
+        return m_ptr->isNode();
+    }
+    int isRemoved() const
+    {
+        return m_ptr == &m_dummy;
+    }
+    int isAtRoot() const
+    {
+        return m_ptr->isRoot();
+    }
+    int isAtFirstSibling() const
+    {
+        return m_ptr->isFirstSibling();
+    }
+    int isAtLastSibling() const
+    {
+        return m_ptr->isLastSibling();
+    }
+    int isAtLeaf() const
+    {
+        return m_ptr->isLeaf();
+    }
 
     int isEqualTo( const TREEnode *ptr ) const
-      { return m_ptr == ptr; }
+    {
+        return m_ptr == ptr;
+    }
     int isEqualTo( const PTR_INTO_TREEbase &ptr ) const
-      { return m_ptr == ptr.m_ptr; }
+    {
+        return m_ptr == ptr.m_ptr;
+    }
 
-    int getDepth() { return m_ptr->getDepth(); }
+    int getDepth()
+    {
+        return m_ptr->getDepth();
+    }
 
-    void gotoParent() { m_ptr = m_ptr->XgetParent(); }
-    void gotoPrevSibling() { m_ptr = m_ptr->XgetPrevSibling(); }
-    void gotoNextSibling() { m_ptr = m_ptr->XgetNextSibling(); }
-    void gotoFirstChild() { m_ptr = m_ptr->XgetFirstChild(); }
-    void gotoLastChild() { m_ptr = m_ptr->XgetLastChild(); }
-    void gotoPreOrderNext() { m_ptr = m_ptr->XgetPreOrderNext(); }
+    void gotoParent()
+    {
+        m_ptr = m_ptr->XgetParent();
+    }
+    void gotoPrevSibling()
+    {
+        m_ptr = m_ptr->XgetPrevSibling();
+    }
+    void gotoNextSibling()
+    {
+        m_ptr = m_ptr->XgetNextSibling();
+    }
+    void gotoFirstChild()
+    {
+        m_ptr = m_ptr->XgetFirstChild();
+    }
+    void gotoLastChild()
+    {
+        m_ptr = m_ptr->XgetLastChild();
+    }
+    void gotoPreOrderNext()
+    {
+        m_ptr = m_ptr->XgetPreOrderNext();
+    }
     void gotoPostOrderNext()
-      { m_ptr = m_ptr->XgetPostOrderNext(); }
+    {
+        m_ptr = m_ptr->XgetPostOrderNext();
+    }
 
     void removeSubtree()
     {
-      checkValid();
+        checkValid();
 
-      m_dummy.XcopyLinks( *m_ptr );
-      delete m_ptr;
-      m_ptr = &m_dummy;
+        m_dummy.XcopyLinks( *m_ptr );
+        delete m_ptr;
+        m_ptr = &m_dummy;
     }
 
-    #ifdef TSTBUG
-      // NOTE: The boolean in the assertions needed to be negated from the original
-      //       boolean for the ifs that were tied to the THROW_ERR statements.
-      void checkInitialized() const
-      {
+#ifdef TSTBUG
+    // NOTE: The boolean in the assertions needed to be negated from the original
+    //       boolean for the ifs that were tied to the THROW_ERR statements.
+    void checkInitialized() const
+    {
         assert( isInitialized() );
         //  THROW_ERR( "Pointer into tree must be initialized" );
-      }
+    }
 
-      void checkNotInitialized() const
-      {
+    void checkNotInitialized() const
+    {
         assert( ! isInitialized() );
         //  THROW_ERR( "Pointer into tree mustn't be initialized" );
-      }
+    }
 
-      void checkValid() const
-      {
+    void checkValid() const
+    {
         assert( isValid() );
         //  THROW_ERR( "Pointer into tree must be valid" );
-      }
+    }
 
-      void checkNotValid() const
-      {
+    void checkNotValid() const
+    {
         assert( ! isValid() );
         //  THROW_ERR( "Pointer into tree mustn't be valid" );
-      }
+    }
 
-      void checkRemoved() const
-      {
+    void checkRemoved() const
+    {
         assert( isRemoved() );
         //  THROW_ERR( "Pointer into tree must point to removed node" );
-      }
+    }
 
-      void checkNotRemoved() const
-      {
+    void checkNotRemoved() const
+    {
         assert( ! isRemoved() );
         //  THROW_ERR( "Pointer into tree mustn't point to removed node" );
-      }
+    }
 
-      void checkIsAtRoot() const
-      {
+    void checkIsAtRoot() const
+    {
         assert( isAtRoot() );
         //  THROW_ERR( "Pointer into tree must be at root" );
-      }
+    }
 
-      void checkNotAtRoot() const
-      {
+    void checkNotAtRoot() const
+    {
         assert( ! isAtRoot() );
-          //THROW_ERR( "Pointer into tree mustn't be at root" );
-      }
+        //THROW_ERR( "Pointer into tree mustn't be at root" );
+    }
 
-      void checkIsAtFirstSibling() const
-      {
+    void checkIsAtFirstSibling() const
+    {
         assert( isAtFirstSibling() );
-          //THROW_ERR( "Pointer into tree must be at first sibling" );
-      }
+        //THROW_ERR( "Pointer into tree must be at first sibling" );
+    }
 
-      void checkNotAtFirstSibling() const
-      {
+    void checkNotAtFirstSibling() const
+    {
         assert( ! isAtFirstSibling() );
-          //THROW_ERR( "Pointer into tree mustn't be at first sibling" );
-      }
+        //THROW_ERR( "Pointer into tree mustn't be at first sibling" );
+    }
 
-      void checkIsAtLastSibling() const
-      {
+    void checkIsAtLastSibling() const
+    {
         assert( isAtLastSibling() );
-          //THROW_ERR( "Pointer into tree must be at last sibling" )
-      }
+        //THROW_ERR( "Pointer into tree must be at last sibling" )
+    }
 
-      void checkNotAtLastSibling() const
-      {
+    void checkNotAtLastSibling() const
+    {
         assert( ! isAtLastSibling() );
-          //THROW_ERR( "Pointer into tree mustn't be at last sibling" )
-      }
+        //THROW_ERR( "Pointer into tree mustn't be at last sibling" )
+    }
 
-      void checkIsAtLeaf() const
-      {
+    void checkIsAtLeaf() const
+    {
         assert( isAtLastSibling() );
         //  THROW_ERR( "Pointer into tree must be at leaf" )
-      }
+    }
 
-      void checkNotAtLeaf() const
-      {
+    void checkNotAtLeaf() const
+    {
         assert( ! isAtLastSibling() );
         //  THROW_ERR( "Pointer into tree mustn't be at leaf" )
-      }
+    }
 
-    #else
-      void checkInitialized() const {}
-      void checkNotInitialized() const {}
-      void checkValid() const {}
-      void checkNotValid() const {}
-      void checkRemoved() const {}
-      void checkNotRemoved() const {}
-      void checkIsAtRoot() const {}
-      void checkNotAtRoot() const {}
-      void checkIsAtFirstSibling() const {}
-      void checkNotAtFirstSibling() const {}
-      void checkIsAtLastSibling() const {}
-      void checkNotAtLastSibling() const {}
-      void checkIsAtLeaf() const {}
-      void checkNotAtLeaf() const {}
-    #endif
+#else
+    void checkInitialized() const {}
+    void checkNotInitialized() const {}
+    void checkValid() const {}
+    void checkNotValid() const {}
+    void checkRemoved() const {}
+    void checkNotRemoved() const {}
+    void checkIsAtRoot() const {}
+    void checkNotAtRoot() const {}
+    void checkIsAtFirstSibling() const {}
+    void checkNotAtFirstSibling() const {}
+    void checkIsAtLastSibling() const {}
+    void checkNotAtLastSibling() const {}
+    void checkIsAtLeaf() const {}
+    void checkNotAtLeaf() const {}
+#endif
 };
 
 /*-------------------------------------------------------------------*
@@ -1312,284 +1467,346 @@ class PTR_INTO_TREEbase
     { return isEqualTo( ptr ); }                                  \
   int operator!=( const PTRtmplt< TYPE > ptr ) const                  \
     { return ! isEqualTo( ptr ); }                                \
-
+ 
 /*-------------------------------------------------------------------*
  | Templates for store-by-value trees
  *-------------------------------------------------------------------*/
 
 template< class TYPE >
-  class vTREE_NODE_OF: public TREEnode
-  {
+class vTREE_NODE_OF: public TREEnode
+{
     friend class vTREE_OF< TYPE >;
     friend class PTR_INTO_vTREE_OF< TYPE >;
 
-    private:
+private:
 
-      TYPE m_info;
+    TYPE m_info;
 
-    private:
+private:
 
-      vTREE_NODE_OF( const TYPE &info ):
+    vTREE_NODE_OF( const TYPE &info ):
         TREEnode(),
         m_info( info )
-      {
-      }
+    {
+    }
 
-    protected:
+protected:
 
-      MEMBERS_FOR_TREEnode( vTREE_NODE_OF< TYPE > )
-  };
+    MEMBERS_FOR_TREEnode( vTREE_NODE_OF< TYPE > )
+};
 
 template< class TYPE >
-  class vTREE_OF: public TREEbase
-  {
-    public:
+class vTREE_OF: public TREEbase
+{
+public:
 
-      MEMBERS_FOR_TREEbase( vTREE_OF, TYPE )
+    MEMBERS_FOR_TREEbase( vTREE_OF, TYPE )
 
-      TYPE *getRoot() const
-      {
+    TYPE *getRoot() const
+    {
         checkNotEmpty();
         return &((vTREE_NODE_OF< TYPE > *)XgetRoot())->m_info;
-      }
+    }
 
-      TYPE *getFirstLeaf() const
-      {
+    TYPE *getFirstLeaf() const
+    {
         checkNotEmpty();
         return &((vTREE_NODE_OF< TYPE > *)XgetFirstLeaf())->m_info;
-      }
+    }
 
-      TYPE *getLastLeaf() const
-      {
+    TYPE *getLastLeaf() const
+    {
         checkNotEmpty();
         return &((vTREE_NODE_OF< TYPE > *)XgetLastLeaf())->m_info;
-      }
+    }
 
-      void insertRoot( const TYPE &info )
-        { XinsertRoot( new vTREE_NODE_OF< TYPE >( info ) ); }
-      TYPE &operator*() const
-        { return *getRoot(); }
-  };
+    void insertRoot( const TYPE &info )
+    {
+        XinsertRoot( new vTREE_NODE_OF< TYPE >( info ) );
+    }
+    TYPE &operator*() const
+    {
+        return *getRoot();
+    }
+};
 
 template< class TYPE >
-  class PTR_INTO_vTREE_OF: public PTR_INTO_TREEbase
-  {
-    public:
+class PTR_INTO_vTREE_OF: public PTR_INTO_TREEbase
+{
+public:
 
-      MEMBERS_FOR_PTR_INTO_TREEbase( PTR_INTO_vTREE_OF,
-                                     vTREE_OF,
-                                     TYPE )
+    MEMBERS_FOR_PTR_INTO_TREEbase( PTR_INTO_vTREE_OF,
+                                   vTREE_OF,
+                                   TYPE )
 
-      operator TYPE*() { return get(); }
+    operator TYPE*()
+    {
+        return get();
+    }
 
-      TYPE *get() const
-      {
+    TYPE *get() const
+    {
         checkValid();
         return &((vTREE_NODE_OF< TYPE > *)Xget())->m_info;
-      }
+    }
 
-      void insertParent( const TYPE &info )
-      {
+    void insertParent( const TYPE &info )
+    {
         checkValid();
         XinsertParent( new vTREE_NODE_OF< TYPE >( info ) );
-      }
+    }
 
-      void insertPrevSibling( const TYPE &info )
-      {
+    void insertPrevSibling( const TYPE &info )
+    {
         checkValid();
         XinsertPrevSibling( new vTREE_NODE_OF< TYPE >( info ) );
-      }
+    }
 
-      void insertNextSibling( const TYPE &info )
-      {
+    void insertNextSibling( const TYPE &info )
+    {
         checkValid();
         XinsertNextSibling( new vTREE_NODE_OF< TYPE >( info ) );
-      }
+    }
 
-      void insertFirstChild( const TYPE &info )
-      {
+    void insertFirstChild( const TYPE &info )
+    {
         checkValid();
         XinsertFirstChild( new vTREE_NODE_OF< TYPE >( info ) );
-      }
+    }
 
-      void insertLastChild( const TYPE &info )
-      {
+    void insertLastChild( const TYPE &info )
+    {
         checkValid();
         XinsertLastChild( new vTREE_NODE_OF< TYPE >( info ) );
-      }
+    }
 
-      TYPE &operator*() const { return *get(); }
-  };
+    TYPE &operator*() const
+    {
+        return *get();
+    }
+};
 
 /*-------------------------------------------------------------------*
  | Templates for store-by-address trees
  *-------------------------------------------------------------------*/
 
 template< class TYPE >
-  class ptrTREE_NODE_OF: public TREEnode
-  {
+class ptrTREE_NODE_OF: public TREEnode
+{
     friend class ptrTREE_OF< TYPE >;
     friend class PTR_INTO_ptrTREE_OF< TYPE >;
 
-    private:
+private:
 
-      TYPE *m_info;
+    TYPE *m_info;
 
-    private:
+private:
 
-      ptrTREE_NODE_OF( TYPE &info ):
+    ptrTREE_NODE_OF( TYPE &info ):
         TREEnode(),
         m_info( &info )
-      {
-      }
+    {
+    }
 
-    protected:
+protected:
 
-      MEMBERS_FOR_TREEnode( ptrTREE_NODE_OF< TYPE > )
-  };
+    MEMBERS_FOR_TREEnode( ptrTREE_NODE_OF< TYPE > )
+};
 
 template< class TYPE >
-  class ptrTREE_OF: public TREEbase
-  {
-    public:
+class ptrTREE_OF: public TREEbase
+{
+public:
 
-      MEMBERS_FOR_TREEbase( ptrTREE_OF, TYPE )
+    MEMBERS_FOR_TREEbase( ptrTREE_OF, TYPE )
 
-      TYPE *getRoot() const
-      {
+    TYPE *getRoot() const
+    {
         checkNotEmpty();
         return ((ptrTREE_NODE_OF< TYPE > *)XgetRoot())->m_info;
-      }
+    }
 
-      TYPE *getFirstLeaf() const
-      {
+    TYPE *getFirstLeaf() const
+    {
         checkNotEmpty();
         return ((ptrTREE_NODE_OF< TYPE > *)XgetFirstLeaf())->m_info;
-      }
+    }
 
-      TYPE *getLastLeaf() const
-      {
+    TYPE *getLastLeaf() const
+    {
         checkNotEmpty();
         return ((ptrTREE_NODE_OF< TYPE > *)XgetLastLeaf())->m_info;
-      }
+    }
 
-      void insertRoot( TYPE &info )
-        { XinsertRoot( new ptrTREE_NODE_OF< TYPE >( info ) ); }
-      TYPE &operator*() const
-        { return *getRoot(); }
-  };
+    void insertRoot( TYPE &info )
+    {
+        XinsertRoot( new ptrTREE_NODE_OF< TYPE >( info ) );
+    }
+    TYPE &operator*() const
+    {
+        return *getRoot();
+    }
+};
 
 template< class TYPE >
-  class PTR_INTO_ptrTREE_OF: public PTR_INTO_TREEbase
-  {
-    public:
+class PTR_INTO_ptrTREE_OF: public PTR_INTO_TREEbase
+{
+public:
 
-      MEMBERS_FOR_PTR_INTO_TREEbase( PTR_INTO_ptrTREE_OF,
-                                     ptrTREE_OF,
-                                     TYPE )
+    MEMBERS_FOR_PTR_INTO_TREEbase( PTR_INTO_ptrTREE_OF,
+                                   ptrTREE_OF,
+                                   TYPE )
 
-      operator TYPE*() { return get(); }
+    operator TYPE*()
+    {
+        return get();
+    }
 
-      TYPE *get() const
-      {
+    TYPE *get() const
+    {
         checkValid();
         return ((ptrTREE_NODE_OF< TYPE > *)Xget())->m_info;
-      }
+    }
 
-      void insertParent( TYPE &info )
-      {
+    void insertParent( TYPE &info )
+    {
         checkValid();
         XinsertParent( new ptrTREE_NODE_OF< TYPE >( info ) );
-      }
+    }
 
-      void insertPrevSibling( TYPE &info )
-      {
+    void insertPrevSibling( TYPE &info )
+    {
         checkValid();
         XinsertPrevSibling( new ptrTREE_NODE_OF< TYPE >( info ) );
-      }
+    }
 
-      void insertNextSibling( TYPE &info )
-      {
+    void insertNextSibling( TYPE &info )
+    {
         checkValid();
         XinsertNextSibling( new ptrTREE_NODE_OF< TYPE >( info ) );
-      }
+    }
 
-      void insertFirstChild( TYPE &info )
-      {
+    void insertFirstChild( TYPE &info )
+    {
         checkValid();
         XinsertFirstChild( new ptrTREE_NODE_OF< TYPE >( info ) );
-      }
+    }
 
-      void insertLastChild( TYPE &info )
-      {
+    void insertLastChild( TYPE &info )
+    {
         checkValid();
         XinsertLastChild( new ptrTREE_NODE_OF< TYPE >( info ) );
-      }
+    }
 
-      TYPE &operator*() const { return *get(); }
-  };
+    TYPE &operator*() const
+    {
+        return *get();
+    }
+};
 
 /*-------------------------------------------------------------------*
  | Templates for intrusive trees
  *-------------------------------------------------------------------*/
 
 template< class TYPE >
-  class iTREE_OF: public TREEbase
-  {
-    public:
+class iTREE_OF: public TREEbase
+{
+public:
 
-      MEMBERS_FOR_TREEbase( iTREE_OF, TYPE )
+    MEMBERS_FOR_TREEbase( iTREE_OF, TYPE )
 
-      TYPE *getRoot() const
-        { checkNotEmpty(); return (TYPE *)XgetRoot(); }
-      TYPE *getFirstLeaf() const
-        { checkNotEmpty(); return (TYPE *)XgetFirstLeaf(); }
-      TYPE *getLastLeaf() const
-        { checkNotEmpty(); return (TYPE *)XgetLastLeaf(); }
-      void insertRoot( TYPE *node )
-        { XinsertRoot( node ); }
-      TYPE &operator*() const
-        { return *getRoot(); }
-  };
+    TYPE *getRoot() const
+    {
+        checkNotEmpty();
+        return (TYPE *)XgetRoot();
+    }
+    TYPE *getFirstLeaf() const
+    {
+        checkNotEmpty();
+        return (TYPE *)XgetFirstLeaf();
+    }
+    TYPE *getLastLeaf() const
+    {
+        checkNotEmpty();
+        return (TYPE *)XgetLastLeaf();
+    }
+    void insertRoot( TYPE *node )
+    {
+        XinsertRoot( node );
+    }
+    TYPE &operator*() const
+    {
+        return *getRoot();
+    }
+};
 
 template< class TYPE >
-  class PTR_INTO_iTREE_OF: public PTR_INTO_TREEbase
-  {
-    public:
+class PTR_INTO_iTREE_OF: public PTR_INTO_TREEbase
+{
+public:
 
-      MEMBERS_FOR_PTR_INTO_TREEbase( PTR_INTO_iTREE_OF,
-                                     iTREE_OF,
-                                     TYPE )
+    MEMBERS_FOR_PTR_INTO_TREEbase( PTR_INTO_iTREE_OF,
+                                   iTREE_OF,
+                                   TYPE )
 
-      PTR_INTO_iTREE_OF( TYPE *node ):
+    PTR_INTO_iTREE_OF( TYPE *node ):
         PTR_INTO_TREEbase( node )
-      {
+    {
         node->checkOnTree();
-      }
+    }
 
-      operator TYPE*() { return get(); }
+    operator TYPE*()
+    {
+        return get();
+    }
 
-      TYPE *get() const
-        { checkValid(); return (TYPE *)Xget(); }
-      void set( TYPE *ptr )
-        { Xset( ptr ); }
-      void insertParent( TYPE *node )
-        { checkValid(); XinsertParent( node ); }
-      void insertPrevSibling( TYPE *node )
-        { checkValid(); XinsertPrevSibling( node ); }
-      void insertNextSibling( TYPE *node )
-        { checkValid(); XinsertNextSibling( node ); }
-      void insertFirstChild( TYPE *node )
-        { checkValid(); XinsertFirstChild( node ); }
-      void insertLastChild( TYPE *node )
-        { checkValid(); XinsertLastChild( node ); }
-      TYPE &operator*() const
-        { return *get(); }
-      int operator==( const TYPE *ptr ) const
-        { return isEqualTo( ptr ); }
-      int operator!=( const TYPE *ptr ) const
-        { return ! isEqualTo( ptr ); }
-  };
+    TYPE *get() const
+    {
+        checkValid();
+        return (TYPE *)Xget();
+    }
+    void set( TYPE *ptr )
+    {
+        Xset( ptr );
+    }
+    void insertParent( TYPE *node )
+    {
+        checkValid();
+        XinsertParent( node );
+    }
+    void insertPrevSibling( TYPE *node )
+    {
+        checkValid();
+        XinsertPrevSibling( node );
+    }
+    void insertNextSibling( TYPE *node )
+    {
+        checkValid();
+        XinsertNextSibling( node );
+    }
+    void insertFirstChild( TYPE *node )
+    {
+        checkValid();
+        XinsertFirstChild( node );
+    }
+    void insertLastChild( TYPE *node )
+    {
+        checkValid();
+        XinsertLastChild( node );
+    }
+    TYPE &operator*() const
+    {
+        return *get();
+    }
+    int operator==( const TYPE *ptr ) const
+    {
+        return isEqualTo( ptr );
+    }
+    int operator!=( const TYPE *ptr ) const
+    {
+        return ! isEqualTo( ptr );
+    }
+};
 
 /*-------------------------------------------------------------------*
  | Looping macros
@@ -1599,17 +1816,17 @@ template< class TYPE >
   for( ptr.set( tree, START_AT_ROOT );                                \
        ptr.isValid();                                                 \
        ptr.gotoPreOrderNext() )                                       \
-
+ 
 #define LOOP_TREEpostOrder( ptr, tree )                               \
   for( ptr.set( tree, START_AT_FIRST_LEAF );                          \
        ptr.isValid();                                                 \
        ptr.gotoPostOrderNext() )                                      \
-
+ 
 #define LOOP_TREEchildren( ptr, node )                                \
   for( ptr.set( node ), ptr.gotoFirstChild(); ptr.isValid(); ++ptr )  \
-
+ 
 #define LOOP_TREEchildrenRev( ptr, node )                             \
   for( ptr.set( node ), ptr.gotoLastChild(); ptr.isValid(); --ptr )   \
-
+ 
 #endif
 

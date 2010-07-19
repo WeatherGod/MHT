@@ -49,21 +49,21 @@
 
 DLISTnode *DLISTnode::XgetHead() const
 {
-  
 
-  DLISTnode const*node;
 
-  checkOnList();
+    DLISTnode const*node;
 
-  for( node = m_prev; node->isNode(); node = node->m_prev )
-  {
-    #ifdef TSTBUG
-      assert( node != this );
-      //  THROW_ERR( "Dlist has no head" )
-    #endif
-  }
+    checkOnList();
 
-  return node->m_next;
+    for( node = m_prev; node->isNode(); node = node->m_prev )
+    {
+#ifdef TSTBUG
+        assert( node != this );
+        //  THROW_ERR( "Dlist has no head" )
+#endif
+    }
+
+    return node->m_next;
 }
 
 /*-------------------------------------------------------------------*
@@ -72,21 +72,21 @@ DLISTnode *DLISTnode::XgetHead() const
 
 DLISTnode *DLISTnode::XgetTail() const
 {
-  
 
-  DLISTnode const*node;
 
-  checkOnList();
+    DLISTnode const*node;
 
-  for( node = m_prev; node->isNode(); node = node->m_prev )
-  {
-    #ifdef TSTBUG
-      assert( node != this );
-      //  THROW_ERR( "Dlist has no tail" )
-    #endif
-  }
+    checkOnList();
 
-  return node->m_prev;
+    for( node = m_prev; node->isNode(); node = node->m_prev )
+    {
+#ifdef TSTBUG
+        assert( node != this );
+        //  THROW_ERR( "Dlist has no tail" )
+#endif
+    }
+
+    return node->m_prev;
 }
 
 /*-------------------------------------------------------------------*
@@ -97,9 +97,9 @@ DLISTnode *DLISTnode::XgetTail() const
 
 #ifdef DEBUG
 
-  void DLISTnode::check() const
-  {
-    
+void DLISTnode::check() const
+{
+
 
     DLISTnode const*node;
     int listHasHeader;
@@ -108,30 +108,32 @@ DLISTnode *DLISTnode::XgetTail() const
     //  THROW_ERR( "Bad dlist node -- NULL link" );
 
     if( ! isOnList() )
-      return;
+    {
+        return;
+    }
 
     listHasHeader = 0;
     node = this;
     do
     {
-      assert( node->m_prev->m_next == node &&
-          node->m_next->m_prev == node );
-      //  THROW_ERR( "Bad dlist node -- links don't match" )
+        assert( node->m_prev->m_next == node &&
+                node->m_next->m_prev == node );
+        //  THROW_ERR( "Bad dlist node -- links don't match" )
 
-      if( ! node->isNode() )
-      {
-        assert( ! listHasHeader );
-        //  THROW_ERR( "More than one header on dlist" )
-        listHasHeader = 1;
-      }
+        if( ! node->isNode() )
+        {
+            assert( ! listHasHeader );
+            //  THROW_ERR( "More than one header on dlist" )
+            listHasHeader = 1;
+        }
 
-      node = node->m_next;
+        node = node->m_next;
     }
     while( node != this );
 
     assert( listHasHeader );
     //  THROW_ERR( "Dlist without header" )
-  }
+}
 
 #endif
 
@@ -142,12 +144,14 @@ DLISTnode *DLISTnode::XgetTail() const
 
 void DLISTbase::XprependCopy( const DLISTbase &dlist )
 {
-  
 
-  DLISTnode const*node;
 
-  for( node = dlist.XgetTail(); node->isNode(); node = node->m_prev )
-    Xprepend( node->XmakeCopy() );
+    DLISTnode const*node;
+
+    for( node = dlist.XgetTail(); node->isNode(); node = node->m_prev )
+    {
+        Xprepend( node->XmakeCopy() );
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -157,12 +161,14 @@ void DLISTbase::XprependCopy( const DLISTbase &dlist )
 
 void DLISTbase::XappendCopy( const DLISTbase &dlist )
 {
-  
 
-  DLISTnode const*node;
 
-  for( node = dlist.XgetHead(); node->isNode(); node = node->m_next )
-    Xappend( node->XmakeCopy() );
+    DLISTnode const*node;
+
+    for( node = dlist.XgetHead(); node->isNode(); node = node->m_next )
+    {
+        Xappend( node->XmakeCopy() );
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -173,38 +179,40 @@ void DLISTbase::XappendCopy( const DLISTbase &dlist )
 
 void DLISTbase::Xsplice( DLISTbase &dlist )
 {
-  
 
-  if( dlist.isEmpty() )
-    return;
 
-  if( this->isEmpty() )
-  {
-    DLISTnode *dlistHead = dlist.XgetHead();
-    DLISTnode *dlistTail = dlist.XgetTail();
+    if( dlist.isEmpty() )
+    {
+        return;
+    }
 
-    dlistHead->m_prev = &m_vnode;
-    m_vnode.m_next = dlistHead;
+    if( this->isEmpty() )
+    {
+        DLISTnode *dlistHead = dlist.XgetHead();
+        DLISTnode *dlistTail = dlist.XgetTail();
 
-    dlistTail->m_next = &m_vnode;
-    m_vnode.m_prev = dlistTail;
-  }
-  else
-  {
-    DLISTnode *thisTail = XgetTail();
-    DLISTnode *dlistHead = dlist.XgetHead();
-    DLISTnode *dlistTail = dlist.XgetTail();
+        dlistHead->m_prev = &m_vnode;
+        m_vnode.m_next = dlistHead;
 
-    thisTail->m_next = dlistHead;
-    dlistHead->m_prev = thisTail;
+        dlistTail->m_next = &m_vnode;
+        m_vnode.m_prev = dlistTail;
+    }
+    else
+    {
+        DLISTnode *thisTail = XgetTail();
+        DLISTnode *dlistHead = dlist.XgetHead();
+        DLISTnode *dlistTail = dlist.XgetTail();
 
-    dlistTail->m_next = &m_vnode;
-    m_vnode.m_prev = dlistTail;
-  }
+        thisTail->m_next = dlistHead;
+        dlistHead->m_prev = thisTail;
 
-  dlist.m_vnode.Xreset();
+        dlistTail->m_next = &m_vnode;
+        m_vnode.m_prev = dlistTail;
+    }
 
-  m_vnode.check();
+    dlist.m_vnode.Xreset();
+
+    m_vnode.check();
 }
 
 /*-------------------------------------------------------------------*
@@ -213,16 +221,18 @@ void DLISTbase::Xsplice( DLISTbase &dlist )
 
 int DLISTbase::getLength() const
 {
-  
 
-  DLISTnode const*node;
-  int length;
 
-  length = 0;
-  for( node = XgetHead(); node->isNode(); node = node->m_next )
-    length++;
+    DLISTnode const*node;
+    int length;
 
-  return length;
+    length = 0;
+    for( node = XgetHead(); node->isNode(); node = node->m_next )
+    {
+        length++;
+    }
+
+    return length;
 }
 
 /*-------------------------------------------------------------------*
@@ -231,9 +241,11 @@ int DLISTbase::getLength() const
 
 void DLISTbase::removeAll()
 {
-  
 
-  while( ! isEmpty() )
-    removeHead();
+
+    while( ! isEmpty() )
+    {
+        removeHead();
+    }
 }
 

@@ -175,9 +175,9 @@ class ASSIGNMENT_PQUEUE;
 
 class apqSOLUTION: public DLISTnode
 {
-  friend class ASSIGNMENT_PQUEUE;
+    friend class ASSIGNMENT_PQUEUE;
 
-  private:
+private:
 
     void *m_problemTag;              // id of original problem
     double m_baseCost;               // cost of "base" part of solution
@@ -185,17 +185,17 @@ class apqSOLUTION: public DLISTnode
     int m_solutionSize;              // total solution size
     void **m_solutionTag;            // completed solution
     int m_baseSolutionSize;          // the first m_baseSolutionSize
-                                     //   assignments in m_solutionTag
-                                     //   form the "base" solution
+    //   assignments in m_solutionTag
+    //   form the "base" solution
     void **m_baseSolutionTag;        // storage for the "base" solution
-                                     //   before the problem is really
-                                     //   solved
+    //   before the problem is really
+    //   solved
     ROW_COL_COST *m_rcc;             // possible assignments
     int m_numRCCs;                   // number of possible assignments
     int m_numRows;                   // number of rows
     int m_numCols;                   // number of columns
 
-  private:
+private:
 
     apqSOLUTION( void *problemTag,
                  double baseCost,
@@ -206,19 +206,19 @@ class apqSOLUTION: public DLISTnode
                  int numRCCs,
                  int numRows,
                  int numCols ):
-      m_problemTag( problemTag ),
-      m_baseCost( baseCost ),
-      m_cost( 0 ),
-      m_solutionSize( 0 ),
-      m_solutionTag( 0 ),
-      m_baseSolutionSize( baseSolutionSize ),
-      m_baseSolutionTag( 0 ),
-      m_rcc( new ROW_COL_COST[ numRCCs ] ),
-      m_numRCCs( numRCCs ),
-      m_numRows( numRows ),
-      m_numCols( numCols )
+        m_problemTag( problemTag ),
+        m_baseCost( baseCost ),
+        m_cost( 0 ),
+        m_solutionSize( 0 ),
+        m_solutionTag( 0 ),
+        m_baseSolutionSize( baseSolutionSize ),
+        m_baseSolutionTag( 0 ),
+        m_rcc( new ROW_COL_COST[ numRCCs ] ),
+        m_numRCCs( numRCCs ),
+        m_numRows( numRows ),
+        m_numCols( numCols )
     {
-      setup( baseSolutionTag, rcc, parentCost );
+        setup( baseSolutionTag, rcc, parentCost );
     }
 
     apqSOLUTION( void *problemTag,
@@ -226,30 +226,33 @@ class apqSOLUTION: public DLISTnode
                  int numRCCs,
                  int numRows,
                  int numCols ):
-      m_problemTag( problemTag ),
-      m_baseCost( 0 ),
-      m_cost( 0 ),
-      m_solutionSize( 0 ),
-      m_solutionTag( 0 ),
-      m_baseSolutionSize( 0 ),
-      m_baseSolutionTag( 0 ),
-      m_rcc( new ROW_COL_COST[ numRCCs ] ),
-      m_numRCCs( numRCCs ),
-      m_numRows( numRows ),
-      m_numCols( numCols )
+        m_problemTag( problemTag ),
+        m_baseCost( 0 ),
+        m_cost( 0 ),
+        m_solutionSize( 0 ),
+        m_solutionTag( 0 ),
+        m_baseSolutionSize( 0 ),
+        m_baseSolutionTag( 0 ),
+        m_rcc( new ROW_COL_COST[ numRCCs ] ),
+        m_numRCCs( numRCCs ),
+        m_numRows( numRows ),
+        m_numCols( numCols )
     {
-      setup( 0, rcc );
+        setup( 0, rcc );
     }
 
     ~apqSOLUTION()
     {
-      
-      delete [] m_solutionTag;
-      delete [] m_baseSolutionTag;
-      delete [] m_rcc;
+
+        delete [] m_solutionTag;
+        delete [] m_baseSolutionTag;
+        delete [] m_rcc;
     }
 
-    int isSolved() const { return m_solutionTag != 0; }
+    int isSolved() const
+    {
+        return m_solutionTag != 0;
+    }
 
     void setup( void **baseSolutionTag,
                 ROW_COL_COST *rcc,
@@ -257,17 +260,29 @@ class apqSOLUTION: public DLISTnode
     void solve( void );
     void partition();
 
-    int isValid() { return m_cost != UNSOLVABLE; }
+    int isValid()
+    {
+        return m_cost != UNSOLVABLE;
+    }
 
-    void *getProblemTag() { return m_problemTag; }
-    double getCost() { return m_cost; }
+    void *getProblemTag()
+    {
+        return m_problemTag;
+    }
+    double getCost()
+    {
+        return m_cost;
+    }
     void getSolutionTags( VECTOR_OF< void * > &solutionTag,
                           int *solutionSize );
-    int getNumRCCs() { return m_numRCCs; }
+    int getNumRCCs()
+    {
+        return m_numRCCs;
+    }
 
     void print();
 
-  protected:
+protected:
 
     MEMBERS_FOR_DLISTnode( apqSOLUTION )
 };
@@ -279,12 +294,12 @@ class apqSOLUTION: public DLISTnode
 
 class ASSIGNMENT_PQUEUE
 {
-  private:
+private:
 
     iDLIST_OF< apqSOLUTION > m_solutionList;
     apqSOLUTION *m_bestSolution;
 
-  public:
+public:
 
     ASSIGNMENT_PQUEUE(): m_solutionList(), m_bestSolution( 0 ) {}
 
@@ -299,34 +314,34 @@ class ASSIGNMENT_PQUEUE
     void removeAllProblems()
     {
 
-      m_solutionList.removeAll();
+        m_solutionList.removeAll();
     }
 
     int isEmpty()
     {
-      findBestSolution();
-      return m_solutionList.isEmpty() ||
-             m_bestSolution->getCost() == INFINITY;
+        findBestSolution();
+        return m_solutionList.isEmpty() ||
+               m_bestSolution->getCost() == INFINITY;
     }
 
     double getNextSolutionCost()
     {
 
-      findBestSolution();
+        findBestSolution();
 
-      #ifdef TSTBUG
+#ifdef TSTBUG
         // NOTE: Assertion boolean was negated from original for the if-statement
         assert( m_bestSolution != 0 );
         //  THROW_ERR("Assignment priority queue is empty")
-      #endif
+#endif
 
-      return m_bestSolution->getCost();
+        return m_bestSolution->getCost();
     }
 
     void *getNextSolution( VECTOR_OF< void * > &solutionTag,
                            int *solutionSize );
 
-  private:
+private:
 
     void findBestSolution();
 };

@@ -61,14 +61,14 @@
  *-------------------------------------------------------------------*/
 
 #if defined( __SGICC__ ) // NOTE: I couldn't find the predefined
-                         //       token that uniquely defines the SGI
-                         //       compiler, CC.  I'm just defining
-                         //       this token on the command line.
+//       token that uniquely defines the SGI
+//       compiler, CC.  I'm just defining
+//       this token on the command line.
 
-  #define TMPLT_HANDLING 1
-  extern const double __infinity;
-  #define INFINITY __infinity
-  #define STATIC_FUNC static
+#define TMPLT_HANDLING 1
+extern const double __infinity;
+#define INFINITY __infinity
+#define STATIC_FUNC static
 
 /*-------------------------------------------------------------------*
  | GNU compiler (g++)
@@ -76,10 +76,10 @@
 
 #elif defined( __GNUC__ )
 
-  #define TMPLT_HANDLING 0
-  extern const double __infinity;
-  #define INFINITY __infinity
-  #define STATIC_FUNC static
+#define TMPLT_HANDLING 0
+extern const double __infinity;
+#define INFINITY __infinity
+#define STATIC_FUNC static
 
 /*-------------------------------------------------------------------*
  | Unknown compiler -- generate error
@@ -87,7 +87,7 @@
 
 #else
 
-  #error Unknown compiler -- please modify portspecs.h
+#error Unknown compiler -- please modify portspecs.h
 
 #endif
 

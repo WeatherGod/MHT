@@ -48,59 +48,79 @@
 void T_HYPO::describe( int spaces, int depth )
 {
 
-  PTR_INTO_LINKS_TO< G_HYPO > gHypoPtr;
-  int i, k;
+    PTR_INTO_LINKS_TO< G_HYPO > gHypoPtr;
+    int i, k;
 
-  Indent( spaces - 1);
-  for( i = 0; i < depth; i++ )
-    std::cout << " |";
-  std::cout << " **T_HYPO "; print(); std::cout << std::endl;
-
-  Indent( spaces - 1 );
-  for( i = 0; i <= depth; i++ )
-    std::cout << " |";
-  std::cout << "   track = " << getTrackStamp();
-  std::cout << ", time = " << m_timeStamp;
-  std::cout << ", group id = " << getGroupId();
-  std::cout << std::endl;
-
-  Indent( spaces - 1 );
-  for( i = 0; i <= depth; i++ )
-    std::cout << " |";
-  if( m_reportLink.isEmpty() )
-    std::cout << "   NO REPORT";
-  else
-  {
-    std::cout << "   report = "; (*m_reportLink).print();
-  }
-  std::cout << ", logLikelihood = " << m_logLikelihood;
-  if( ! m_mustVerify )
-    std::cout << ", NEED NOT VERIFY";
-  if( m_endsTrack )
-    std::cout << ", ENDS TRACK";
-  std::cout << std::endl;
-
-  Indent( spaces - 1 );
-  for( i = 0; i <= depth; i++ )
-    std::cout << " |";
-  std::cout << "   gHypo's:";
-  k = 0;
-
-  LOOP_LINKS( gHypoPtr, m_gHypoLinks )
-  {
-    if( k++ >= 3 )
+    Indent( spaces - 1);
+    for( i = 0; i < depth; i++ )
     {
-      std::cout << std::endl;
-      Indent( spaces - 1 );
-      for( i = 0; i <= depth; i++ )
         std::cout << " |";
-      std::cout << "           ";
-      k = 0;
     }
+    std::cout << " **T_HYPO ";
+    print();
+    std::cout << std::endl;
 
-    std::cout << " "; (*gHypoPtr).print();
-  }
-  std::cout << std::endl;
+    Indent( spaces - 1 );
+    for( i = 0; i <= depth; i++ )
+    {
+        std::cout << " |";
+    }
+    std::cout << "   track = " << getTrackStamp();
+    std::cout << ", time = " << m_timeStamp;
+    std::cout << ", group id = " << getGroupId();
+    std::cout << std::endl;
+
+    Indent( spaces - 1 );
+    for( i = 0; i <= depth; i++ )
+    {
+        std::cout << " |";
+    }
+    if( m_reportLink.isEmpty() )
+    {
+        std::cout << "   NO REPORT";
+    }
+    else
+    {
+        std::cout << "   report = ";
+        (*m_reportLink).print();
+    }
+    std::cout << ", logLikelihood = " << m_logLikelihood;
+    if( ! m_mustVerify )
+    {
+        std::cout << ", NEED NOT VERIFY";
+    }
+    if( m_endsTrack )
+    {
+        std::cout << ", ENDS TRACK";
+    }
+    std::cout << std::endl;
+
+    Indent( spaces - 1 );
+    for( i = 0; i <= depth; i++ )
+    {
+        std::cout << " |";
+    }
+    std::cout << "   gHypo's:";
+    k = 0;
+
+    LOOP_LINKS( gHypoPtr, m_gHypoLinks )
+    {
+        if( k++ >= 3 )
+        {
+            std::cout << std::endl;
+            Indent( spaces - 1 );
+            for( i = 0; i <= depth; i++ )
+            {
+                std::cout << " |";
+            }
+            std::cout << "           ";
+            k = 0;
+        }
+
+        std::cout << " ";
+        (*gHypoPtr).print();
+    }
+    std::cout << std::endl;
 }
 
 /*-------------------------------------------------------------------*
@@ -110,13 +130,13 @@ void T_HYPO::describe( int spaces, int depth )
 void T_HYPO::describeTree( int spaces, int depth )
 {
 
-  PTR_INTO_iTREE_OF< T_HYPO > childPtr;
+    PTR_INTO_iTREE_OF< T_HYPO > childPtr;
 
-  describe( spaces, depth );
+    describe( spaces, depth );
 
-  LOOP_TREEchildren( childPtr, this )
-  {
-    (*childPtr).describeTree( spaces, depth + 1 );
-  }
+    LOOP_TREEchildren( childPtr, this )
+    {
+        (*childPtr).describeTree( spaces, depth + 1 );
+    }
 }
 

@@ -68,15 +68,17 @@ static int luDecompose( MATRIX &mat, int *originalRow );
 
 MATRIX &MATRIX::operator=( double val )
 {
-  
 
-  int i;
-  double *p = m_data;
 
-  for( i = 0; i < m_size; i++ )
-    *p++ = val;
+    int i;
+    double *p = m_data;
 
-  return *this;
+    for( i = 0; i < m_size; i++ )
+    {
+        *p++ = val;
+    }
+
+    return *this;
 }
 
 /*-------------------------------------------------------------------*
@@ -85,24 +87,26 @@ MATRIX &MATRIX::operator=( double val )
 
 void MATRIX::set( double firstVal, ... )
 {
-  va_list ap;
+    va_list ap;
 
-  va_start( ap, firstVal );
-  vset( firstVal, ap );
-  va_end( ap );
+    va_start( ap, firstVal );
+    vset( firstVal, ap );
+    va_end( ap );
 }
 
 void MATRIX::vset( double firstVal, va_list ap )
 {
-  
 
-  int i;
-  double *p = m_data;
 
-  *p++ = firstVal;
+    int i;
+    double *p = m_data;
 
-  for( i = 1; i < m_size; i++ )
-    *p++ = va_arg( ap, double );
+    *p++ = firstVal;
+
+    for( i = 1; i < m_size; i++ )
+    {
+        *p++ = va_arg( ap, double );
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -112,23 +116,29 @@ void MATRIX::vset( double firstVal, va_list ap )
 
 int MATRIX::isIdentity() const
 {
-  
 
-  int row, col;
-  double *p = m_data;
 
-  if( m_numRows != m_numCols )
-    return 0;
+    int row, col;
+    double *p = m_data;
 
-  for( row = 0; row < m_numRows; row++ )
-    for( col = 0; col < m_numCols; col++ )
-      if( (row == col && *p != 1) ||
-          (row != col && *p != 0) )
+    if( m_numRows != m_numCols )
+    {
         return 0;
-      else
-        p++;
+    }
 
-  return 1;
+    for( row = 0; row < m_numRows; row++ )
+        for( col = 0; col < m_numCols; col++ )
+            if( (row == col && *p != 1) ||
+                    (row != col && *p != 0) )
+            {
+                return 0;
+            }
+            else
+            {
+                p++;
+            }
+
+    return 1;
 }
 
 /*-------------------------------------------------------------------*
@@ -137,27 +147,27 @@ int MATRIX::isIdentity() const
 
 tmpMATRIX MATRIX::trans()
 {
-  
 
-  tmpMATRIX tmp( m_numCols, m_numRows );
-  int row, col;
-  double *thisPtr;
-  double *tmpPtr;
 
-  thisPtr = m_data;
-  tmpPtr = tmp.getData();
+    tmpMATRIX tmp( m_numCols, m_numRows );
+    int row, col;
+    double *thisPtr;
+    double *tmpPtr;
 
-  for( row = 0; row < m_numRows; row++ )
-  {
-    for( col = 0; col < m_numCols; col++ )
+    thisPtr = m_data;
+    tmpPtr = tmp.getData();
+
+    for( row = 0; row < m_numRows; row++ )
     {
-      *tmpPtr = *thisPtr++;
-      tmpPtr += m_numRows;
+        for( col = 0; col < m_numCols; col++ )
+        {
+            *tmpPtr = *thisPtr++;
+            tmpPtr += m_numRows;
+        }
+        tmpPtr -= m_size - 1;
     }
-    tmpPtr -= m_size - 1;
-  }
 
-  return tmp;
+    return tmp;
 }
 
 /*-------------------------------------------------------------------*
@@ -167,32 +177,34 @@ tmpMATRIX MATRIX::trans()
 
 tmpMATRIX MATRIX::reduce( int numRows, int numCols )
 {
-  
 
-  #ifdef TSTBUG
+
+#ifdef TSTBUG
     assert( numRows <= m_numRows && numCols <= m_numCols );
     //  THROW_ERR( "Can't reduce "
     //             << m_numRows << "x" << m_numCols << " matrix "
     //             << "to"
     //             << numRows << "x" << numCols )
-  #endif
+#endif
 
-  tmpMATRIX tmp( numRows, numCols );
-  int row, col;
-  double *thisPtr;
-  double *tmpPtr;
+    tmpMATRIX tmp( numRows, numCols );
+    int row, col;
+    double *thisPtr;
+    double *tmpPtr;
 
-  thisPtr = m_data;
-  tmpPtr = tmp.getData();
+    thisPtr = m_data;
+    tmpPtr = tmp.getData();
 
-  for( row = 0; row < numRows; row++ )
-  {
-    for( col = 0; col < numCols; col++ )
-      *tmpPtr++ = *thisPtr++;
-    thisPtr += m_numCols - numCols;
-  }
+    for( row = 0; row < numRows; row++ )
+    {
+        for( col = 0; col < numCols; col++ )
+        {
+            *tmpPtr++ = *thisPtr++;
+        }
+        thisPtr += m_numCols - numCols;
+    }
 
-  return tmp;
+    return tmp;
 }
 
 /*-------------------------------------------------------------------*
@@ -206,34 +218,36 @@ tmpMATRIX MATRIX::reduce( int numRows, int numCols )
 
 tmpMATRIX MATRIX::inv()
 {
-  
 
-  static VECTOR_OF< int > originalRow; originalRow.resize( m_numRows );
-  static VECTOR_OF< double > colBuf; colBuf.resize( m_numRows );
-  MATRIX lu( *this );
-  tmpMATRIX tmp( m_numRows, m_numCols );
-  double *p0, *p1;
-  int row, col;
 
-  luDecompose( lu, &originalRow[ 0 ] );
+    static VECTOR_OF< int > originalRow;
+    originalRow.resize( m_numRows );
+    static VECTOR_OF< double > colBuf;
+    colBuf.resize( m_numRows );
+    MATRIX lu( *this );
+    tmpMATRIX tmp( m_numRows, m_numCols );
+    double *p0, *p1;
+    int row, col;
 
-  for( col = 0; col < m_numCols; col++ )
-  {
-    colBuf.clear();
-    colBuf[ col ] = 1;
+    luDecompose( lu, &originalRow[ 0 ] );
 
-    luSolve( lu, &originalRow[ 0 ], &colBuf[ 0 ] );
-
-    p0 = &tmp( 0, col );
-    p1 = &colBuf[ 0 ];
-    for( row = 0; row < m_numRows; row++ )
+    for( col = 0; col < m_numCols; col++ )
     {
-      *p0 = *p1++;
-      p0 += m_numCols;
-    }
-  }
+        colBuf.clear();
+        colBuf[ col ] = 1;
 
-  return tmp;
+        luSolve( lu, &originalRow[ 0 ], &colBuf[ 0 ] );
+
+        p0 = &tmp( 0, col );
+        p1 = &colBuf[ 0 ];
+        for( row = 0; row < m_numRows; row++ )
+        {
+            *p0 = *p1++;
+            p0 += m_numCols;
+        }
+    }
+
+    return tmp;
 }
 
 /*-------------------------------------------------------------------*
@@ -247,33 +261,34 @@ tmpMATRIX MATRIX::inv()
 
 double MATRIX::det()
 {
-  
 
-  #ifdef TSTBUG
+
+#ifdef TSTBUG
     assert( m_numRows == m_numCols );
     //  THROW_ERR( "Can't find determinant of "
     //             << m_numRows << "x" << m_numCols << " matrix -- "
     //             << "must be square" )
-  #endif
+#endif
 
-  MATRIX lu( *this );
-  static VECTOR_OF< int > dummyBuf; dummyBuf.resize( m_numRows );
-  double d;
-  int numSwapsWasOdd;
-  double *p0;
-  int i;
+    MATRIX lu( *this );
+    static VECTOR_OF< int > dummyBuf;
+    dummyBuf.resize( m_numRows );
+    double d;
+    int numSwapsWasOdd;
+    double *p0;
+    int i;
 
-  numSwapsWasOdd = luDecompose( lu, &dummyBuf[ 0 ] );
+    numSwapsWasOdd = luDecompose( lu, &dummyBuf[ 0 ] );
 
-  p0 = lu.getData();
-  d = numSwapsWasOdd ? -*p0 : *p0;
-  for( i = 1; i < m_numRows; i++ )
-  {
-    p0 += m_numCols + 1;
-    d *= *p0;
-  }
+    p0 = lu.getData();
+    d = numSwapsWasOdd ? -*p0 : *p0;
+    for( i = 1; i < m_numRows; i++ )
+    {
+        p0 += m_numCols + 1;
+        d *= *p0;
+    }
 
-  return d;
+    return d;
 }
 
 /*-------------------------------------------------------------------*
@@ -282,28 +297,28 @@ double MATRIX::det()
 
 void MATRIX::print( int numSpaces ) const
 {
-  
 
-  int row, col;
-  double *p = m_data;
 
-  #define ROUND( v ) (((v) >= 0) ? (int)((v) + .5) : -(int)(-(v) + .5))
-  #define DBL( v ) ((double)ROUND( (v) * 10000 ) / 10000)
+    int row, col;
+    double *p = m_data;
 
-  for( row = 0; row < m_numRows; row++ )
-  {
-    Indent( numSpaces );
+#define ROUND( v ) (((v) >= 0) ? (int)((v) + .5) : -(int)(-(v) + .5))
+#define DBL( v ) ((double)ROUND( (v) * 10000 ) / 10000)
 
-    for( col = 0; col < m_numCols; col++ )
+    for( row = 0; row < m_numRows; row++ )
     {
-      std::cout << DBL( *p ) << " ";
-      p++;
-    }
-    std::cout << std::endl;
-  }
+        Indent( numSpaces );
 
-  #undef DBL
-  #undef ROUND
+        for( col = 0; col < m_numCols; col++ )
+        {
+            std::cout << DBL( *p ) << " ";
+            p++;
+        }
+        std::cout << std::endl;
+    }
+
+#undef DBL
+#undef ROUND
 }
 
 /*-------------------------------------------------------------------*
@@ -312,49 +327,51 @@ void MATRIX::print( int numSpaces ) const
  *-------------------------------------------------------------------*/
 
 tmpMATRIX::tmpMATRIX( const MATRIX &m0, const MATRIX &m1 ):
-  MATRIX( m0.getNumRows(), m1.getNumCols() )
+    MATRIX( m0.getNumRows(), m1.getNumCols() )
 {
-  
 
-  #ifdef TSTBUG
+
+#ifdef TSTBUG
     assert( m1.getNumRows() == m0.getNumCols() );
     //  THROW_ERR( "Bad multiply -- "
     //             << m0.getNumRows() << "x" << m0.getNumCols()
     //             << " matrix * "
     //             << m1.getNumRows() << "x" << m1.getNumRows()
     //             << " matrix" )
-  #endif
+#endif
 
-  const int num_m0Cols_m1Rows =      // both the number of rows in m1
-              m0.getNumCols();       //   and the number of columns in
-                                     //   m0 (they're equal)
-  int m0Row;                         // row in m0
-  int m0Col_m1Row;                   // both row in m1 and column in m0
-  int m1Col;                         // column in m1
-  double *thisRowPtr;                // beginning of row m0Row in
-                                     //   this->m_data
-  double *thisPtr;                   // pointer into this->m_data
-  double *m0Ptr;                     // pointer into m0->m_data
-  double *m1Ptr;                     // pointer into m1->m_data
+    const int num_m0Cols_m1Rows =      // both the number of rows in m1
+        m0.getNumCols();       //   and the number of columns in
+    //   m0 (they're equal)
+    int m0Row;                         // row in m0
+    int m0Col_m1Row;                   // both row in m1 and column in m0
+    int m1Col;                         // column in m1
+    double *thisRowPtr;                // beginning of row m0Row in
+    //   this->m_data
+    double *thisPtr;                   // pointer into this->m_data
+    double *m0Ptr;                     // pointer into m0->m_data
+    double *m1Ptr;                     // pointer into m1->m_data
 
-  memset( m_data, 0, m_size * sizeof( *m_data ) );
+    memset( m_data, 0, m_size * sizeof( *m_data ) );
 
-  m0Ptr = m0.getData();
-  thisRowPtr = m_data;
-  for( m0Row = 0; m0Row < m_numRows; m0Row++ )
-  {
-    m1Ptr = m1.getData();
-    for( m0Col_m1Row = 0;
-         m0Col_m1Row < num_m0Cols_m1Rows;
-         m0Col_m1Row++ )
+    m0Ptr = m0.getData();
+    thisRowPtr = m_data;
+    for( m0Row = 0; m0Row < m_numRows; m0Row++ )
     {
-      thisPtr = thisRowPtr;
-      for( m1Col = 0; m1Col < m_numCols; m1Col++ )
-        *thisPtr++ += *m0Ptr * *m1Ptr++;
-      m0Ptr++;
+        m1Ptr = m1.getData();
+        for( m0Col_m1Row = 0;
+                m0Col_m1Row < num_m0Cols_m1Rows;
+                m0Col_m1Row++ )
+        {
+            thisPtr = thisRowPtr;
+            for( m1Col = 0; m1Col < m_numCols; m1Col++ )
+            {
+                *thisPtr++ += *m0Ptr * *m1Ptr++;
+            }
+            m0Ptr++;
+        }
+        thisRowPtr += m_numCols;
     }
-    thisRowPtr += m_numCols;
-  }
 }
 
 /*-------------------------------------------------------------------*
@@ -363,26 +380,28 @@ tmpMATRIX::tmpMATRIX( const MATRIX &m0, const MATRIX &m1 ):
 
 tmpMATRIX &tmpMATRIX::add( const MATRIX &src )
 {
-  
 
-  #ifdef TSTBUG
+
+#ifdef TSTBUG
     assert( m_numRows == src.getNumRows() &&
-        m_numCols == src.getNumCols() );
+            m_numCols == src.getNumCols() );
     //  THROW_ERR( "Bad add -- "
     //             << m_numRows << "x" << m_numCols
     //             << " matrix + "
     //             << src.getNumRows() << "x" << src.getNumRows()
     //             << " matrix" )
-  #endif
+#endif
 
-  int i;
-  double *p0 = m_data;
-  double const * p1 = src.getData();
+    int i;
+    double *p0 = m_data;
+    double const * p1 = src.getData();
 
-  for( i = 0; i < m_size; i++ )
-    *p0++ += *p1++;
+    for( i = 0; i < m_size; i++ )
+    {
+        *p0++ += *p1++;
+    }
 
-  return *this;
+    return *this;
 }
 
 /*-------------------------------------------------------------------*
@@ -392,26 +411,28 @@ tmpMATRIX &tmpMATRIX::add( const MATRIX &src )
 
 tmpMATRIX &tmpMATRIX::subtract( const MATRIX &src )
 {
-  
 
-  #ifdef TSTBUG
+
+#ifdef TSTBUG
     assert( m_numRows == src.getNumRows() &&
-        m_numCols == src.getNumCols() );
+            m_numCols == src.getNumCols() );
     //  THROW_ERR( "Bad subtract -- "
     //             << m_numRows << "x" << m_numCols
     //             << " matrix - "
     //             << src.getNumRows() << "x" << src.getNumRows()
     //             << " matrix" )
-  #endif
+#endif
 
-  int i;
-  double *p0 = m_data;
-  double const * p1 = src.getData();
+    int i;
+    double *p0 = m_data;
+    double const * p1 = src.getData();
 
-  for( i = 0; i < m_size; i++ )
-    *p0++ -= *p1++;
+    for( i = 0; i < m_size; i++ )
+    {
+        *p0++ -= *p1++;
+    }
 
-  return *this;
+    return *this;
 }
 
 /*-------------------------------------------------------------------*
@@ -421,30 +442,30 @@ tmpMATRIX &tmpMATRIX::subtract( const MATRIX &src )
 
 tmpMATRIX &tmpMATRIX::subtractFrom( const MATRIX &src )
 {
-  
 
-  #ifdef TSTBUG
+
+#ifdef TSTBUG
     assert( m_numRows == src.getNumRows() &&
-        m_numCols == src.getNumCols() );
+            m_numCols == src.getNumCols() );
     //  THROW_ERR( "Bad subtract -- "
     //             << m_numRows << "x" << m_numCols
     //             << " matrix - "
     //             << src.getNumRows() << "x" << src.getNumRows()
     //             << " matrix" )
-  #endif
+#endif
 
-  int i;
-  double *p0 = m_data;
-  double const * p1 = src.getData();
+    int i;
+    double *p0 = m_data;
+    double const * p1 = src.getData();
 
-  for( i = 0; i < m_size; i++ )
-  {
-    *p0 = *p1 - *p0;
-    p0++;
-    p1++;
-  }
+    for( i = 0; i < m_size; i++ )
+    {
+        *p0 = *p1 - *p0;
+        p0++;
+        p1++;
+    }
 
-  return *this;
+    return *this;
 }
 
 /*-------------------------------------------------------------------*
@@ -454,15 +475,17 @@ tmpMATRIX &tmpMATRIX::subtractFrom( const MATRIX &src )
 
 tmpMATRIX &tmpMATRIX::multiply( double src )
 {
-  
 
-  int i;
-  double *p = m_data;
 
-  for( i = 0; i < m_size; i++ )
-    *p++ *= src;
+    int i;
+    double *p = m_data;
 
-  return *this;
+    for( i = 0; i < m_size; i++ )
+    {
+        *p++ *= src;
+    }
+
+    return *this;
 }
 
 /*-------------------------------------------------------------------*
@@ -509,68 +532,76 @@ tmpMATRIX &tmpMATRIX::multiply( double src )
 static void luSolve( const MATRIX &lu, int *originalRow,
                      double *colBuf )
 {
-  
 
-  int firstNonZeroRow = -1;
-  double sum = -1;
-  int row;
-  double *rowPtr;
-  double *p;
-  int i;
 
-  /* solve the L part of problem by forward substitution */
+    int firstNonZeroRow = -1;
+    double sum = -1;
+    int row;
+    double *rowPtr;
+    double *p;
+    int i;
 
-  /* this first loop solves up to the first row where the solution
-     is not zero */
-  for( row = 0; row < lu.getNumRows(); row++ )
-  {
-    i = originalRow[ row ];
-    sum = colBuf[ i ];
-    colBuf[ i ] = colBuf[ row ];
+    /* solve the L part of problem by forward substitution */
 
-    colBuf[ row ] = sum;
-
-    if( sum != 0 )
-      break;
-  }
-
-  /* this second loop solves the rest */
-  if( row < lu.getNumRows() )
-  {
-    firstNonZeroRow = row;
-    rowPtr = lu.getData() + row * lu.getNumCols();
-
-    while( ++row < lu.getNumRows() )
+    /* this first loop solves up to the first row where the solution
+       is not zero */
+    for( row = 0; row < lu.getNumRows(); row++ )
     {
-      i = originalRow[ row ];
-      sum = colBuf[ i ];
-      colBuf[ i ] = colBuf[ row ];
+        i = originalRow[ row ];
+        sum = colBuf[ i ];
+        colBuf[ i ] = colBuf[ row ];
 
-      rowPtr += lu.getNumCols();
-      for( i = firstNonZeroRow; i < row; i++ )
-        sum -= rowPtr[ i ] * colBuf[ i ];
+        colBuf[ row ] = sum;
 
-      colBuf[ row ] = sum;
+        if( sum != 0 )
+        {
+            break;
+        }
     }
-  }
-  else
-    rowPtr = lu.getData() + (row - 1) * lu.getNumCols();
 
-  /* solve the U part of the problem by backward substitution */
-  p = lu.getData() + row * (lu.getNumCols() + 1);
-  while( --row >= 0 )
-  {
-    p -= lu.getNumCols() + 1;
+    /* this second loop solves the rest */
+    if( row < lu.getNumRows() )
+    {
+        firstNonZeroRow = row;
+        rowPtr = lu.getData() + row * lu.getNumCols();
 
-    sum = colBuf[ row ];
+        while( ++row < lu.getNumRows() )
+        {
+            i = originalRow[ row ];
+            sum = colBuf[ i ];
+            colBuf[ i ] = colBuf[ row ];
 
-    for( i = row + 1; i < lu.getNumRows(); i++ )
-      sum -= rowPtr[ i ] * colBuf[ i ];
+            rowPtr += lu.getNumCols();
+            for( i = firstNonZeroRow; i < row; i++ )
+            {
+                sum -= rowPtr[ i ] * colBuf[ i ];
+            }
 
-    colBuf[ row ] = sum / *p;
+            colBuf[ row ] = sum;
+        }
+    }
+    else
+    {
+        rowPtr = lu.getData() + (row - 1) * lu.getNumCols();
+    }
 
-    rowPtr -= lu.getNumCols();
-  }
+    /* solve the U part of the problem by backward substitution */
+    p = lu.getData() + row * (lu.getNumCols() + 1);
+    while( --row >= 0 )
+    {
+        p -= lu.getNumCols() + 1;
+
+        sum = colBuf[ row ];
+
+        for( i = row + 1; i < lu.getNumRows(); i++ )
+        {
+            sum -= rowPtr[ i ] * colBuf[ i ];
+        }
+
+        colBuf[ row ] = sum / *p;
+
+        rowPtr -= lu.getNumCols();
+    }
 }
 
 /*-------------------------------------------------------------------*
@@ -620,118 +651,123 @@ static void luSolve( const MATRIX &lu, int *originalRow,
 
 static int luDecompose( MATRIX &mat, int *originalRow )
 {
-  
 
-  int numSwapsIsOdd = 0;
-  int row, col;
-  double *rowPtr, *colPtr;
-  double *p0, *p1, *p2;
-  const int numRows = mat.getNumRows();
-  #define numCols numRows
-  double sum;
-  static VECTOR_OF< double > scaler; scaler.resize( numRows );
-  double biggest;
-  int biggestRow;
-  double tmpDbl;
-  static VECTOR_OF< double > tmpDblArray;
-                             tmpDblArray.resize( numCols );
-  int i;
 
-  p0 = mat.getData();
-  for( row = 0; row < numRows; row++ )
-  {
-    biggest = fabs( *p0++ );
-    for( col = 1; col < numCols; col++ )
-      if( (tmpDbl = fabs( *p0++ )) > biggest )
-        biggest = tmpDbl;
+    int numSwapsIsOdd = 0;
+    int row, col;
+    double *rowPtr, *colPtr;
+    double *p0, *p1, *p2;
+    const int numRows = mat.getNumRows();
+#define numCols numRows
+    double sum;
+    static VECTOR_OF< double > scaler;
+    scaler.resize( numRows );
+    double biggest;
+    int biggestRow;
+    double tmpDbl;
+    static VECTOR_OF< double > tmpDblArray;
+    tmpDblArray.resize( numCols );
+    int i;
 
-    #ifdef TSTBUG
-      assert( biggest != 0 );
-      //  THROW_ERR( "Trying to LU-decompose singular matrix" );
-    #endif
-
-    scaler[ row ] = 1. / biggest;
-  }
-
-  colPtr = mat.getData();
-  for( col = 0; col < numCols; col++ )
-  {
-    rowPtr = mat.getData();
-    p0 = colPtr;
-    for( row = 0; row < col; row++ )
+    p0 = mat.getData();
+    for( row = 0; row < numRows; row++ )
     {
-      sum = *p0;
-      p1 = rowPtr;
-      p2 = colPtr;
-      for( i = 0; i < row; i++ )
-      {
-        sum -= *p1++ * *p2;
-        p2 += numCols;
-      }
-      *p0 = sum;
-      p0 += numCols;
-      rowPtr += numCols;
+        biggest = fabs( *p0++ );
+        for( col = 1; col < numCols; col++ )
+            if( (tmpDbl = fabs( *p0++ )) > biggest )
+            {
+                biggest = tmpDbl;
+            }
+
+#ifdef TSTBUG
+        assert( biggest != 0 );
+        //  THROW_ERR( "Trying to LU-decompose singular matrix" );
+#endif
+
+        scaler[ row ] = 1. / biggest;
     }
 
-    biggest = 0;
-    for( row = col; row < numRows; row++ )
+    colPtr = mat.getData();
+    for( col = 0; col < numCols; col++ )
     {
-      sum = *p0;
-      p1 = rowPtr;
-      p2 = colPtr;
-      for( i = 0; i < col; i++ )
-      {
-        sum -= *p1++ * *p2;
-        p2 += numCols;
-      }
-      *p0 = sum;
-      p0 += numCols;
-      rowPtr += numCols;
+        rowPtr = mat.getData();
+        p0 = colPtr;
+        for( row = 0; row < col; row++ )
+        {
+            sum = *p0;
+            p1 = rowPtr;
+            p2 = colPtr;
+            for( i = 0; i < row; i++ )
+            {
+                sum -= *p1++ * *p2;
+                p2 += numCols;
+            }
+            *p0 = sum;
+            p0 += numCols;
+            rowPtr += numCols;
+        }
 
-      if( (tmpDbl = scaler[ row ] * fabs( sum )) >= biggest )
-      {
-        biggest = tmpDbl;
-        biggestRow = row;
-      }
+        biggest = 0;
+        for( row = col; row < numRows; row++ )
+        {
+            sum = *p0;
+            p1 = rowPtr;
+            p2 = colPtr;
+            for( i = 0; i < col; i++ )
+            {
+                sum -= *p1++ * *p2;
+                p2 += numCols;
+            }
+            *p0 = sum;
+            p0 += numCols;
+            rowPtr += numCols;
+
+            if( (tmpDbl = scaler[ row ] * fabs( sum )) >= biggest )
+            {
+                biggest = tmpDbl;
+                biggestRow = row;
+            }
+        }
+
+        if( col != biggestRow )
+        {
+            p0 = &mat( biggestRow, 0 );
+            p1 = &mat( col, 0 );
+            memcpy( &tmpDblArray[ 0 ], p0,
+                    numCols * sizeof( tmpDblArray[ 0 ] ) );
+            memcpy( p0, p1, numCols * sizeof( *mat.getData() ) );
+            memcpy( p1, &tmpDblArray[ 0 ],
+                    numCols * sizeof( *mat.getData() ) );
+
+            scaler[ biggestRow ] = scaler[ col ];
+
+            numSwapsIsOdd ^= 1;
+        }
+
+        originalRow[ col ] = biggestRow;
+
+        p0 = &mat( col, col );
+        if( *p0 == 0 )
+        {
+            *p0 = TINY;
+        }
+
+        if( col != numCols - 1 )
+        {
+            tmpDbl = 1. / *p0;
+            p1 = colPtr + (col + 1) * numCols;
+            for( row = col + 1; row < numRows; row++ )
+            {
+                *p1 *= tmpDbl;
+                p1 += numCols;
+            }
+        }
+
+        colPtr++;
     }
 
-    if( col != biggestRow )
-    {
-      p0 = &mat( biggestRow, 0 );
-      p1 = &mat( col, 0 );
-      memcpy( &tmpDblArray[ 0 ], p0,
-              numCols * sizeof( tmpDblArray[ 0 ] ) );
-      memcpy( p0, p1, numCols * sizeof( *mat.getData() ) );
-      memcpy( p1, &tmpDblArray[ 0 ],
-              numCols * sizeof( *mat.getData() ) );
+    return numSwapsIsOdd;
 
-      scaler[ biggestRow ] = scaler[ col ];
-
-      numSwapsIsOdd ^= 1;
-    }
-
-    originalRow[ col ] = biggestRow;
-
-    p0 = &mat( col, col );
-    if( *p0 == 0 )
-      *p0 = TINY;
-
-    if( col != numCols - 1 )
-    {
-      tmpDbl = 1. / *p0;
-      p1 = colPtr + (col + 1) * numCols;
-      for( row = col + 1; row < numRows; row++ )
-      {
-        *p1 *= tmpDbl;
-        p1 += numCols;
-      }
-    }
-
-    colPtr++;
-  }
-
-  return numSwapsIsOdd;
-
-  #undef numCols
+#undef numCols
 }
 

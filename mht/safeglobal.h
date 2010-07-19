@@ -126,7 +126,7 @@
   static SAFE_GLOBAL_INITIALIZER< TYPE >                              \
     XG_safe##var##Initializer( &XG_safe##var );                       \
   static TYPE &var = *XG_safe##var.m_var;                             \
-
+ 
 /*-------------------------------------------------------------------*
  | SAFE_GLOBAL_HOLDER< TYPE > -- global data structure to hold a
  |                               safe global variable
@@ -140,11 +140,11 @@
  *-------------------------------------------------------------------*/
 
 template< class TYPE >
-  struct SAFE_GLOBAL_HOLDER
-  {
+struct SAFE_GLOBAL_HOLDER
+{
     short m_counter;
     TYPE *m_var;
-  };
+};
 
 /*-------------------------------------------------------------------*
  | SAFE_GLOBAL_INITIALIZER< TYPE > -- initializer for a safe global
@@ -170,27 +170,31 @@ template< class TYPE >
  *-------------------------------------------------------------------*/
 
 template< class TYPE >
-  class SAFE_GLOBAL_INITIALIZER
-  {
-    private:
+class SAFE_GLOBAL_INITIALIZER
+{
+private:
 
-      SAFE_GLOBAL_HOLDER< TYPE > *m_global;
+    SAFE_GLOBAL_HOLDER< TYPE > *m_global;
 
-    public:
+public:
 
-      SAFE_GLOBAL_INITIALIZER( SAFE_GLOBAL_HOLDER< TYPE > *global ):
+    SAFE_GLOBAL_INITIALIZER( SAFE_GLOBAL_HOLDER< TYPE > *global ):
         m_global( global )
-      {
+    {
         if( m_global->m_counter++ == 0 )
-          m_global->m_var = new TYPE;
-      }
+        {
+            m_global->m_var = new TYPE;
+        }
+    }
 
-      ~SAFE_GLOBAL_INITIALIZER()
-      {
+    ~SAFE_GLOBAL_INITIALIZER()
+    {
         if( --m_global->m_counter == 0 )
-          delete m_global->m_var;
-      }
-  };
+        {
+            delete m_global->m_var;
+        }
+    }
+};
 
 #endif
 

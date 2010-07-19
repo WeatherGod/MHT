@@ -165,9 +165,9 @@
 #include <assert.h>
 
 #ifdef DECLARE_MEM
-  #define GLOBAL
+#define GLOBAL
 #else
-  #define GLOBAL extern
+#define GLOBAL extern
 #endif
 
 /*-------------------------------------------------------------------*
@@ -175,18 +175,18 @@
  *-------------------------------------------------------------------*/
 
 GLOBAL long G_allocatedMemory;       // Total number of bytes currently
-                                     //   allocated and in use, in
-                                     //   memory pools, or used for
-                                     //   internal bookkeeping
+//   allocated and in use, in
+//   memory pools, or used for
+//   internal bookkeeping
 GLOBAL long G_peakAllocatedMemory;   // Largest value of
-                                     //   G_allocatedMemory since the
-                                     //   beginning of the program run
+//   G_allocatedMemory since the
+//   beginning of the program run
 GLOBAL long G_numAllocations;        // Number of times operator new()
-                                     //   has been called
+//   has been called
 GLOBAL long G_numDeallocations;      // Number of times
-                                     //   operator delete() has been
-                                     //   called with a non-zero
-                                     //   argument
+//   operator delete() has been
+//   called with a non-zero
+//   argument
 
 /*-------------------------------------------------------------------*
  | Global routines
@@ -195,11 +195,11 @@ GLOBAL long G_numDeallocations;      // Number of times
 GLOBAL void CollectGarbage();
 
 #ifdef DEBUG
-  GLOBAL void CheckMem();
-  GLOBAL void CheckMem( void *mem );
+GLOBAL void CheckMem();
+GLOBAL void CheckMem( void *mem );
 #else
-  static inline void CheckMem() {}
-  static inline void CheckMem( void * ) {}
+static inline void CheckMem() {}
+static inline void CheckMem( void * ) {}
 #endif
 
 #undef GLOBAL
