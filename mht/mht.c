@@ -51,12 +51,20 @@
 /*-------------------------------------------------------------------*
  | MHT::scan() -- do an iteration of the mht algorithm
  *-------------------------------------------------------------------*/
-
-int MHT::scan(const CORNERLIST &newReports)
+int MHT::scan()
 {
     Timer timer;
 
     G_numCallsToScan++;
+
+    if (m_reportsQueue.empty())
+    {
+        G_timeSpentInScan += timer.elapsedTime();
+        return 0;
+    }
+
+    const CORNERLIST newReports = m_reportsQueue.front();
+    m_reportsQueue.pop();
 
     measureAndValidate(newReports.list);
     m_currentTime++;
@@ -103,6 +111,22 @@ int MHT::scan(const CORNERLIST &newReports)
     G_timeSpentInScan += timer.elapsedTime();
 
     return 1;
+}
+
+
+/*-------------------------------------------------------------------*
+ | MHT::addReports() -- push another set of reports to the internal
+ |                      queue.
+ |
+ | The Internal MHT queue helps to allow for asynchronous running of
+ |     MHT in a variety of use cases.  One could load up all the reports
+ |     at once and then do all the scans, or one could load up reports
+ |     as they become available and call scan on a regular interval,
+ |     or some other real-time processing paradigm.
+ *-------------------------------------------------------------------*/
+void MHT::addReports(const CORNERLIST &newReports)
+{
+    m_reportsQueue.push(newReports);
 }
 
 /*-------------------------------------------------------------------*

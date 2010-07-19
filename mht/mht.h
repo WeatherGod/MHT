@@ -456,9 +456,9 @@
 #include "tree.h"
 #include "links.h"
 #include "vector.h"
-//#include "mem.h"
-#include <list>
-#include "corner.h"
+#include <list>			// for std::list<>
+#include "corner.h"		// for CORNER, CORNERLIST
+#include <queue>		// for std::queue<>
 
 
 #ifdef DECLARE_MHT
@@ -583,10 +583,10 @@ private:
 
     T_TREE *m_tree;                  // tree that this T_HYPO is on
     int m_timeStamp;                 // number of calls to MHT::scan()
-    //   before this T_HYPO was made
+                                     //   before this T_HYPO was made
     LINKS_TO< REPORT > m_reportLink; // link to one REPORT
     LINKS_TO< G_HYPO > m_gHypoLinks; // links to the G_HYPOs that
-    //   postulate this T_HYPO
+                                     //   postulate this T_HYPO
     char m_flag;                     // used in splitting GROUPs
 
 protected:
@@ -979,6 +979,7 @@ protected:
     int m_dbgStartA;
     iDLIST_OF< REPORT > m_newReportList;
     ptrDLIST_OF< T_HYPO > m_activeTHypoList;
+    std::queue<CORNERLIST> m_reportsQueue;
 
 protected:
 
@@ -994,6 +995,7 @@ protected:
         m_oldReportList(),
         m_newReportList(),
         m_activeTHypoList(),
+        m_reportsQueue(),
         m_dbgStartA( 0x7FFFFFFF ),
         m_dbgEndA( 0x7FFFFFFF ),
         m_dbgStartB( 0x7FFFFFFF ),
@@ -1042,7 +1044,8 @@ public:
         return m_currentTime;
     }
 
-    int scan(const CORNERLIST &newReport);
+    void addReports(const CORNERLIST &newReport);
+    int scan();
     void clear();
 
 private:

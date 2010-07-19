@@ -215,15 +215,21 @@ int main(int argc, char **argv)
      * Now do all the work by calling mht.scan()
      * mht.scan() returns 0 when there are no more measurements to be processed
      * Otherwise it gets the next set of measurements and processes them.
+     *
+     * AddReport adds another report the mht's queue.
      */
     std::cout << "About to scan...\n";
 
     int didIscan=0;
-    while( cornerListIter != inputData.end()
-           && (didIscan=mht.scan(*cornerListIter)) != 0 )
+    for ( std::list<CORNERLIST>::iterator cornerListIter = inputData.begin();
+          cornerListIter != inputData.end();
+          cornerListIter++ )
     {
+        mht.addReports(*cornerListIter);
+        didIscan = mht.scan();
         std::cout << "******************CURRENT_TIME=" << mht.getCurrentTime() << ' '
                   << "ENDTIME=" << param.endScan << "****************\n";
+
         g_time=mht.getCurrentTime();
         mht.printStats(2);
         if( mht.getCurrentTime() > param.endScan )
@@ -238,7 +244,6 @@ int main(int argc, char **argv)
                 g_isFirstScan=0;
             }
 //        mht.describe();
-            cornerListIter++;
         }
 
     }
