@@ -18,7 +18,7 @@
 /*
  * External Variables
  */
-int g_isFirstScan=1;
+//int g_isFirstScan=1;
 //iDLIST_OF< FALARM > *g_falarms_ptr;   // list of false alarms found
 //iDLIST_OF< CORNER_TRACK > *g_cornerTracks_ptr; // list of cornerTracks found
 //CORNERLIST *g_currentCornerList;
@@ -239,10 +239,6 @@ int main(int argc, char **argv)
 
         if (didIscan)
         {
-            if ( g_isFirstScan)
-            {
-                g_isFirstScan=0;
-            }
 //        mht.describe();
         }
 

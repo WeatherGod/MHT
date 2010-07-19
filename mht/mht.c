@@ -108,8 +108,8 @@ int MHT::scan()
         doDbgC();
     }
 
+    m_isFirstScan = false;
     G_timeSpentInScan += timer.elapsedTime();
-
     return 1;
 }
 

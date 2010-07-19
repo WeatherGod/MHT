@@ -980,6 +980,7 @@ protected:
     iDLIST_OF< REPORT > m_newReportList;
     ptrDLIST_OF< T_HYPO > m_activeTHypoList;
     std::queue<CORNERLIST> m_reportsQueue;
+    bool m_isFirstScan;
 
 protected:
 
@@ -996,6 +997,7 @@ protected:
         m_newReportList(),
         m_activeTHypoList(),
         m_reportsQueue(),
+        m_isFirstScan(true),
         m_dbgStartA( 0x7FFFFFFF ),
         m_dbgEndA( 0x7FFFFFFF ),
         m_dbgStartB( 0x7FFFFFFF ),

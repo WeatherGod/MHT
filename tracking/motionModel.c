@@ -65,7 +65,7 @@
 double EPSILON = 0.00000000000001;
 
 //extern CORNERLIST *g_currentCornerList;
-extern int g_isFirstScan;
+//extern int g_isFirstScan;
 extern int g_time;
 
 using std::cout;
@@ -586,12 +586,6 @@ int CONSTVEL_MDL::beginNewStates( MDL_STATE *mdlState,
     CONSTVEL_STATE *state = (CONSTVEL_STATE *)mdlState;
     CONSTPOS_REPORT *report = (CONSTPOS_REPORT *)mdlReport;
 
-#ifdef NO_NEW_TRACKS
-    if (!g_isFirstScan && state==0)
-    {
-        return 0;
-    }
-#endif
     return 1;
 }
 

@@ -604,7 +604,7 @@ class MDL_T_HYPO: public T_HYPO
 protected:
 
     MDL_MHT *m_mdlMht;                   // MDL_MHT object that this
-    //   tree is part of
+                                         //   tree is part of
 
 protected:
 
