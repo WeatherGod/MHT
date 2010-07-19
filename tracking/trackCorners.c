@@ -55,8 +55,8 @@ int main(int argc, char **argv)
 {
     Parameter read_param(const std::string &paramFileName);
     void writeCornerTrackFile(const std::string &trackFileName, const Parameter &param);
-    void readCorners(const std::string &inputFileName, iDLIST_OF<CORNERLIST> *in);
-    int numPixels;
+    iDLIST_OF<CORNERLIST>* readCorners(const std::string &inputFileName);
+
     iDLIST_OF<CORNERLIST> *inputData;
     ptrDLIST_OF<MODEL> mdl;
 
@@ -162,8 +162,7 @@ int main(int argc, char **argv)
      * Read the corners
      */
 
-    inputData = new iDLIST_OF<CORNERLIST>;
-    readCorners(inputFileName, inputData);
+    inputData = readCorners(inputFileName);
 
     /*
      * Create constant velocity model
@@ -265,12 +264,8 @@ int main(int argc, char **argv)
 
 Parameter read_param(const std::string &paramFile)
 {
-
-    FILE *fp;
-
-    fp = fopen( paramFile.c_str(), "r" );
-//  std::cout << "Open Parameter File :" << paramFile << std::endl;
-    if (fp <= 0)
+    std::ifstream fp( paramFile.c_str(), std::ios_base::in );
+    if (!fp.is_open())
     {
         throw std::runtime_error("Couldn't open parameter file: " + paramFile);
     }
@@ -278,149 +273,150 @@ Parameter read_param(const std::string &paramFile)
 
     std::cout << "Using Parameter File: " << paramFile << std::endl;
     Parameter param;
-    char buf[ 100 ];
-    char *f;
-
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    std::string buf;
+    
+    // read lines from fp, skipping lines with ';' at the beginning and empty lines.
+    // Note, this won't handle "empty" lines that have whitespace characters, I think.
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.positionVarianceX = atof( buf );
+        param.positionVarianceX = atof( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.positionVarianceY = atof( buf );
+        param.positionVarianceY = atof( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.gradientVariance = atof( buf );
+        param.gradientVariance = atof( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.intensityVariance = atof( buf );
+        param.intensityVariance = atof( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.processVariance = atof( buf );
+        param.processVariance = atof( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.probDetect = atof( buf );
+        param.probDetect = atof( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.probEnd = atof( buf );
+        param.probEnd = atof( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.meanNew = atof( buf );
+        param.meanNew = atof( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.meanFalarms = atof( buf );
+        param.meanFalarms = atof( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.maxGHypos = atoi( buf );
+        param.maxGHypos = atoi( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.maxDepth = atoi( buf );
+        param.maxDepth = atoi( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.minGHypoRatio = atof( buf );
+        param.minGHypoRatio = atof( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.intensityThreshold = atof( buf );
+        param.intensityThreshold = atof( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.maxDistance1 = atof( buf );
+        param.maxDistance1 = atof( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.maxDistance2 = atof( buf );
+        param.maxDistance2 = atof( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.maxDistance3 = atof( buf );
+        param.maxDistance3 = atof( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.stateVariance = atof( buf );
+        param.stateVariance = atof( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.endScan = atoi( buf );
+        param.endScan = atoi( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.pos2velLikelihood = atoi( buf );
+        param.pos2velLikelihood = atoi( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.vel2curvLikelihood = atoi( buf );
+        param.vel2curvLikelihood = atoi( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.startA = atoi( buf );
+        param.startA = atoi( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.startB = atoi( buf );
+        param.startB = atoi( buf.c_str() );
     }
 
-    while( (f = fgets( buf, sizeof( buf ), fp )) && buf[ 0 ] == ';' ) ;
-    if( f )
+    while( std::getline(fp, buf) && buf.size() > 0 && buf[ 0 ] == ';' ) ;
+    if( fp )
     {
-        param.startC = atoi( buf );
+        param.startC = atoi( buf.c_str() );
     }
 
 
-    fclose( fp );
+    fp.close();
 
 
     std::cout << " positionVarianceX = " << param.positionVarianceX << std::endl;
@@ -564,8 +560,9 @@ void writeCornerTrackFile(const std::string &name, const Parameter &param)
  *------------------------------------------------------------------*/
 
 
-void readCorners(const std::string &inputFileName, iDLIST_OF<CORNERLIST> *inputData)
+iDLIST_OF<CORNERLIST>* readCorners(const std::string &inputFileName)
 {
+    iDLIST_OF<CORNERLIST> *inputData = new iDLIST_OF<CORNERLIST>;
 
     PTR_INTO_iDLIST_OF<CORNERLIST> cptr;
     PTR_INTO_iDLIST_OF<CORNER> ptr;
@@ -641,6 +638,8 @@ void readCorners(const std::string &inputFileName, iDLIST_OF<CORNERLIST> *inputD
         }
         inDataFile.close();
     }
+
+    return inputData;
 
 }
 
