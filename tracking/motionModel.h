@@ -589,7 +589,7 @@ public:
         DLISTnode(),
         sx(s_x),sy(s_y),rx(r_x),ry(r_y),logLikelihood(prob),time(t),frameNo(f)
     {
-        if (r_x >0.0 && r_y > 0.0)
+        if (!isnan(r_x) && !isnan(r_y))
         {
             hasReport=1;
         }
@@ -597,6 +597,7 @@ public:
         {
             hasReport=0;
         }
+
         switch(type)
         {
         case 1:
@@ -720,7 +721,7 @@ protected:
     {
         CONSTVEL_MDL* mdl = (CONSTVEL_MDL*)(state->getMdl());
 //      printf("Calling Verify in skipTRack\n");
-        verify( trackId, 0,0,mdl->getStateX(state), mdl->getStateY(state),
+        verify( trackId, NAN, NAN, mdl->getStateX(state), mdl->getStateY(state),
                 state->getLogLikelihood(),
                 mdl->type,-9);
     }

@@ -613,7 +613,7 @@ std::list<CORNERLIST> readCorners(const std::string &inputFileName)
          aCornerList != inputData.end();
          aCornerList++)
     {
-        int x,y;
+        float x,y;
         USHORT i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15;
         USHORT i16,i17,i18,i19,i20,i21,i22,i23,i24,i25;
         std::stringstream stringRep;
@@ -630,16 +630,7 @@ std::list<CORNERLIST> readCorners(const std::string &inputFileName)
         int j=0;
         while (std::getline(inDataFile, str) && j < ncorners[i-startFrame-1])
         {
-#ifdef OXFORD    // float data
-            float fx,fy;
-            sscanf(str.c_str(),"%f %f",&fx,&fy);
-            x = (int)fx;
-            y = (int)fy;
-#else           // integer data
-
-            sscanf(str.c_str(),"%d %d %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd",&x,&y,&i1,&i2,&i3,&i4,&i5,&i6,&i7,&i8, &i9, &i10, &i11, &i12, &i13, &i14, &i15,&i16, &i17, &i18, &i19, &i20, &i21, &i22, &i23, &i24, &i25 );
-
-#endif
+            sscanf(str.c_str(),"%f %f %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd",&x,&y,&i1,&i2,&i3,&i4,&i5,&i6,&i7,&i8, &i9, &i10, &i11, &i12, &i13, &i14, &i15,&i16, &i17, &i18, &i19, &i20, &i21, &i22, &i23, &i24, &i25 );
 
             aCornerList->list.push_back(CORNER(x,y, Texture_t(i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15,i16,i17,i18,i19,i20,i21,i22,i23,i24,i25),i-1));
             j++;
