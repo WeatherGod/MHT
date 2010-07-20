@@ -462,10 +462,8 @@
 
 
 #ifdef DECLARE_MHT
-#define GLOBAL
 #define INITVAL( v ) = (v)
 #else
-#define GLOBAL extern
 #define INITVAL( v )
 #endif
 
@@ -474,14 +472,6 @@ static const double DOUBLE_NOT_READY = -INFINITY;
 /*-------------------------------------------------------------------*
  | Stuff declared in this file
  *-------------------------------------------------------------------*/
-
-GLOBAL double G_numCallsToPruneAndHypothesize;
-GLOBAL long G_numApqueueProblems;
-GLOBAL long G_totalApqueueProblemSizes;
-GLOBAL long G_maxApqueueProblemSize;
-GLOBAL double G_totalApqueueProblemCoverage;
-GLOBAL double G_minApqueueProblemCoverage INITVAL( INFINITY );
-GLOBAL double G_maxApqueueProblemCoverage;
 
 class REPORT;
 class T_HYPO;
