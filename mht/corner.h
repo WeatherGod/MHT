@@ -77,9 +77,9 @@ public:
     Texture_t m_textureInfo;
     int m_frameNo;
 
-    CORNER(const int &a, const int &b, const Texture_t &info, const int &f):
+    CORNER(const double &a, const double &b, const Texture_t &info, const int &f):
         DLISTnode(),
-        x(double(a)),y(double(b)),
+        x(a),y(b),
         m_textureInfo(info),
         m_frameNo(f)
     {
