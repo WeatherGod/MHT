@@ -153,58 +153,20 @@ private:
     MATRIX m_z;                      // (x, dx, y, dy)
 
 public:
-
-    USHORT m_int[25];
+    Texture_t m_textureInfo;
     int m_frameNo;
-    CONSTPOS_REPORT( double falarmLogLikelihood,
-                     double x, double y,
-                     USHORT i1, USHORT i2,
-                     USHORT i3, USHORT i4,
-                     USHORT i5, USHORT i6,
-                     USHORT i7, USHORT i8,
-                     USHORT i9, USHORT i10,
-                     USHORT i11, USHORT i12,
-                     USHORT i13, USHORT i14,
-                     USHORT i15, USHORT i16,
-                     USHORT i17, USHORT i18,
-                     USHORT i19, USHORT i20,
-                     USHORT i21, USHORT i22,
-                     USHORT i23, USHORT i24,
-                     USHORT i25,
-                     int f):
+    CONSTPOS_REPORT( const double &falarmLogLikelihood,
+                     const double &x, const double &y,
+                     const Texture_t &textureInfo,
+                     const int &f):
         MDL_REPORT(),
         m_falarmLogLikelihood( falarmLogLikelihood ),
         m_z( 2, 1 ),
-        m_frameNo(f)
+        m_frameNo(f),
+        m_textureInfo(textureInfo)
 
     {
         m_z.set( x, y);
-        m_int[0] = i1;
-        m_int[4] = i5;
-        m_int[1] = i2;
-        m_int[5] = i6;
-        m_int[2] = i3;
-        m_int[6] = i7;
-        m_int[3] = i4;
-        m_int[7] = i8;
-
-        m_int[8] = i9;
-        m_int[9] = i10;
-        m_int[10] = i11;
-        m_int[11] = i12;
-        m_int[12] = i13;
-        m_int[13] = i14;
-        m_int[14] = i15;
-        m_int[15] = i16;
-        m_int[16] = i17;
-        m_int[17] = i18;
-        m_int[18] = i19;
-        m_int[19] = i20;
-        m_int[20] = i21;
-        m_int[21] = i22;
-        m_int[22] = i23;
-        m_int[23] = i24;
-        m_int[24] = i25;
     }
 
     CONSTPOS_REPORT( const CONSTPOS_REPORT &src ):
@@ -386,43 +348,19 @@ private:
     MATRIX *m_nextP;                 // updated state covariance
                                      //   (covariance for next state)
     MATRIX *m_x1;                    // state prediction
-    USHORT m_prevInt[25];
+    Texture_t m_prevTextureInfo;
 
 private:
 
     CONSTVEL_STATE( CONSTVEL_MDL *mdl,
-                    double x,
-                    double dx,
-                    double y,
-                    double dy,
-                    USHORT i1,
-                    USHORT i2,
-                    USHORT i3,
-                    USHORT i4,
-                    USHORT i5,
-                    USHORT i6,
-                    USHORT i7,
-                    USHORT i8,
-                    USHORT i9,
-                    USHORT i10,
-                    USHORT i11,
-                    USHORT i12,
-                    USHORT i13,
-                    USHORT i14,
-                    USHORT i15,
-                    USHORT i16,
-                    USHORT i17,
-                    USHORT i18,
-                    USHORT i19,
-                    USHORT i20,
-                    USHORT i21,
-                    USHORT i22,
-                    USHORT i23,
-                    USHORT i24,
-                    USHORT i25,
+                    const double &x,
+                    const double &dx,
+                    const double &y,
+                    const double &dy,
+                    const Texture_t &info,
                     MATRIX &P,
-                    double logLikelihood,
-                    int numSkipped):
+                    const double &logLikelihood,
+                    const int &numSkipped):
         MDL_STATE( mdl ),
         m_logLikelihood( logLikelihood ),
         m_hasBeenSetup( 0 ),
@@ -433,40 +371,13 @@ private:
         m_x1( 0 ),
         m_nextP( 0 ),
         m_Sinv( 0 ),
-        m_W( 0 )
+        m_W( 0 ),
+        m_prevTextureInfo(info)
     {
         m_x(0)=x;
         m_x(1)=dx;
         m_x(2)=y;
         m_x(3)=dy;
-        m_prevInt[0]=i1;
-        m_prevInt[1]=i2;
-        m_prevInt[2]=i3;
-        m_prevInt[3]=i4;
-        m_prevInt[4]=i5;
-        m_prevInt[5]=i6;
-        m_prevInt[6]=i7;
-        m_prevInt[7]=i8;
-        m_prevInt[8]=i9;
-        m_prevInt[9]=i10;
-        m_prevInt[10]=i11;
-        m_prevInt[11]=i12;
-        m_prevInt[12]=i13;
-        m_prevInt[13]=i14;
-        m_prevInt[14]=i15;
-        m_prevInt[15]=i16;
-        m_prevInt[16]=i17;
-        m_prevInt[17]=i18;
-        m_prevInt[18]=i19;
-        m_prevInt[19]=i20;
-        m_prevInt[20]=i21;
-        m_prevInt[21]=i22;
-        m_prevInt[22]=i23;
-        m_prevInt[23]=i24;
-        m_prevInt[24]=i25;
-//      printf("New contVel_STA with Prev Int = %hd %hd %hd %hd %hd %hd %hd %hd\n",m_prevInt[0],
-//m_prevInt[1],m_prevInt[2],m_prevInt[3],m_prevInt[4],
-//m_prevInt[5],m_prevInt[6],m_prevInt[7]);
     }
 
 
@@ -481,33 +392,9 @@ private:
         m_x1( 0 ),
         m_nextP( 0 ),
         m_Sinv( 0 ),
-        m_W( 0 )
+        m_W( 0 ),
+        m_prevTextureInfo(src.m_prevTextureInfo)
     {
-        m_prevInt[0]=src.m_prevInt[0];
-        m_prevInt[1]=src.m_prevInt[1];
-        m_prevInt[2]=src.m_prevInt[2];
-        m_prevInt[3]=src.m_prevInt[3];
-        m_prevInt[4]=src.m_prevInt[4];
-        m_prevInt[5]=src.m_prevInt[5];
-        m_prevInt[6]=src.m_prevInt[6];
-        m_prevInt[7]=src.m_prevInt[7];
-        m_prevInt[8]=src.m_prevInt[8];
-        m_prevInt[9]=src.m_prevInt[9];
-        m_prevInt[10]=src.m_prevInt[10];
-        m_prevInt[11]=src.m_prevInt[11];
-        m_prevInt[12]=src.m_prevInt[12];
-        m_prevInt[13]=src.m_prevInt[13];
-        m_prevInt[14]=src.m_prevInt[14];
-        m_prevInt[15]=src.m_prevInt[15];
-        m_prevInt[16]=src.m_prevInt[16];
-        m_prevInt[17]=src.m_prevInt[17];
-        m_prevInt[18]=src.m_prevInt[18];
-        m_prevInt[19]=src.m_prevInt[19];
-        m_prevInt[20]=src.m_prevInt[20];
-        m_prevInt[21]=src.m_prevInt[21];
-        m_prevInt[22]=src.m_prevInt[22];
-        m_prevInt[23]=src.m_prevInt[23];
-        m_prevInt[24]=src.m_prevInt[24];
     }
 
 

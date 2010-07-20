@@ -135,20 +135,7 @@ void CORNER_TRACK_MHT::measure(const std::list<CORNER> &newReports)
     {
         installReport(new CONSTPOS_REPORT(m_falarmLogLikelihood,
                                           cornerPtr->x, cornerPtr->y,
-                                          cornerPtr->i1, cornerPtr->i2,
-                                          cornerPtr->i3, cornerPtr->i4,
-                                          cornerPtr->i5, cornerPtr->i6,
-                                          cornerPtr->i7, cornerPtr->i8,
-                                          cornerPtr->i9, cornerPtr->i10,
-                                          cornerPtr->i11, cornerPtr->i12,
-                                          cornerPtr->i13, cornerPtr->i14,
-                                          cornerPtr->i15, cornerPtr->i16,
-                                          cornerPtr->i17, cornerPtr->i18,
-                                          cornerPtr->i19, cornerPtr->i20,
-                                          cornerPtr->i21, cornerPtr->i22,
-                                          cornerPtr->i23, cornerPtr->i24,
-                                          cornerPtr->i25,
-                                          cornerPtr->frameNo)
+                                          cornerPtr->m_textureInfo, cornerPtr->m_frameNo)
                      );
     }
 
@@ -381,31 +368,7 @@ CONSTVEL_STATE* CONSTVEL_MDL::getNextState( CONSTVEL_STATE *state,
                                         0.,
                                         y,
                                         0.,
-                                        report->m_int[0],
-                                        report->m_int[1],
-                                        report->m_int[2],
-                                        report->m_int[3],
-                                        report->m_int[4],
-                                        report->m_int[5],
-                                        report->m_int[6],
-                                        report->m_int[7],
-                                        report->m_int[8],
-                                        report->m_int[9],
-                                        report->m_int[10],
-                                        report->m_int[11],
-                                        report->m_int[12],
-                                        report->m_int[13],
-                                        report->m_int[14],
-                                        report->m_int[15],
-                                        report->m_int[16],
-                                        report->m_int[17],
-                                        report->m_int[18],
-                                        report->m_int[19],
-                                        report->m_int[20],
-                                        report->m_int[21],
-                                        report->m_int[22],
-                                        report->m_int[23],
-                                        report->m_int[24],
+                                        report->m_textureInfo,
                                         m_startP,
                                         m_startLogLikelihood,
                                         0 );
@@ -427,31 +390,7 @@ CONSTVEL_STATE* CONSTVEL_MDL::getNextState( CONSTVEL_STATE *state,
                                         state->getDX1(),
                                         state->getY1(),
                                         state->getDY1(),
-                                        state->m_prevInt[0],
-                                        state->m_prevInt[1],
-                                        state->m_prevInt[2],
-                                        state->m_prevInt[3],
-                                        state->m_prevInt[4],
-                                        state->m_prevInt[5],
-                                        state->m_prevInt[6],
-                                        state->m_prevInt[7],
-                                        state->m_prevInt[8],
-                                        state->m_prevInt[9],
-                                        state->m_prevInt[10],
-                                        state->m_prevInt[11],
-                                        state->m_prevInt[12],
-                                        state->m_prevInt[13],
-                                        state->m_prevInt[14],
-                                        state->m_prevInt[15],
-                                        state->m_prevInt[16],
-                                        state->m_prevInt[17],
-                                        state->m_prevInt[18],
-                                        state->m_prevInt[19],
-                                        state->m_prevInt[20],
-                                        state->m_prevInt[21],
-                                        state->m_prevInt[22],
-                                        state->m_prevInt[23],
-                                        state->m_prevInt[24],
+                                        state->m_prevTextureInfo,
                                         state->getNextP(),
                                         0.,
                                         state->getNumSkipped() + 1 );
@@ -504,12 +443,16 @@ CONSTVEL_STATE* CONSTVEL_MDL::getNextState( CONSTVEL_STATE *state,
                 printf("\nMahalinobus dist(innovTrans * s_inv * innov)=%lf maxDist=%lf\n",
                        distance,m_maxDistance);
                 printf("intDist=%lf\n",intDistance);
-                printf("Prev Int = %hd %hd %hd %hd %hd %hd %hd %hd\n",state->m_prevInt[0],
-                       state->m_prevInt[1],state->m_prevInt[2],state->m_prevInt[3],state->m_prevInt[4],
-                       state->m_prevInt[5],state->m_prevInt[6],state->m_prevInt[7]);
-                printf("Current Int = %hd %hd %hd %hd %hd %hd %hd %hd\n",report->m_int[0],
-                       report->m_int[1],report->m_int[2],report->m_int[3],report->m_int[4],
-                       report->m_int[5],report->m_int[6],report->m_int[7]);
+                printf("Prev Int = %hd %hd %hd %hd %hd %hd %hd %hd\n",
+                       state->m_prevTextureInfo[0],state->m_prevTextureInfo[1],
+                       state->m_prevTextureInfo[2],state->m_prevTextureInfo[3],
+                       state->m_prevTextureInfo[4],state->m_prevTextureInfo[5],
+                       state->m_prevTextureInfo[6],state->m_prevTextureInfo[7]);
+                printf("Current Int = %hd %hd %hd %hd %hd %hd %hd %hd\n",
+                       report->m_textureInfo[0],report->m_textureInfo[1],
+                       report->m_textureInfo[2],report->m_textureInfo[3],
+                       report->m_textureInfo[4],report->m_textureInfo[5],
+                       report->m_textureInfo[6],report->m_textureInfo[7]);
 #endif
                 nextState=0;
             }
@@ -532,31 +475,7 @@ CONSTVEL_STATE* CONSTVEL_MDL::getNextState( CONSTVEL_STATE *state,
                                                 new_m_x(1),
                                                 new_m_x(2),
                                                 new_m_x(3),
-                                                report->m_int[0],
-                                                report->m_int[1],
-                                                report->m_int[2],
-                                                report->m_int[3],
-                                                report->m_int[4],
-                                                report->m_int[5],
-                                                report->m_int[6],
-                                                report->m_int[7],
-                                                report->m_int[8],
-                                                report->m_int[9],
-                                                report->m_int[10],
-                                                report->m_int[11],
-                                                report->m_int[12],
-                                                report->m_int[13],
-                                                report->m_int[14],
-                                                report->m_int[15],
-                                                report->m_int[16],
-                                                report->m_int[17],
-                                                report->m_int[18],
-                                                report->m_int[19],
-                                                report->m_int[20],
-                                                report->m_int[21],
-                                                report->m_int[22],
-                                                report->m_int[23],
-                                                report->m_int[24],
+                                                report->m_textureInfo,
                                                 state->getNextP(),
                                                 state->getLogLikelihoodCoef() -
                                                 distance / 2,
@@ -770,8 +689,13 @@ void CORNER_TRACK_MHT::describe(int spaces)
 double CONSTVEL_MDL::getCorr(CONSTVEL_STATE *state, CONSTPOS_REPORT *report)
 {
 #ifdef DEBUG3
-    printf("State: %hd %hd %hd %hd %hd\n",state->m_prevInt[0],state->m_prevInt[1],state->m_prevInt[2],state->m_prevInt[3],state->m_prevInt[4]);
-    printf("Report: %hd %hd %hd %hd %hd\n",report->m_int[0],report->m_int[1],report->m_int[2],report->m_int[3],report->m_int[4]);
+    printf("State: %hd %hd %hd %hd %hd\n",state->m_prevTextureInfo[0],
+           state->m_prevTextureInfo[1],state->m_prevTextureInfo[2],
+           state->m_prevTextureInfo[3],state->m_prevTextureInfo[4]);
+    printf("Report: %hd %hd %hd %hd %hd\n",
+           report->m_textureInfo[0],report->m_textureInfo[1],
+           report->m_textureInfo[2],report->m_textureInfo[3],
+           report->m_textureInfo[4]);
 #endif
 
     int width = 5;
@@ -796,8 +720,8 @@ double CONSTVEL_MDL::getCorr(CONSTVEL_STATE *state, CONSTPOS_REPORT *report)
                     int x1 = 2 + i;
                     index = width * y + x;
                     int index1 = width * y1 + x1;
-                    dist += (double)(state->m_prevInt[index1] - report->m_int[index]) *
-                            (double)(state->m_prevInt[index1] - report->m_int[index]);
+                    dist += (double)(state->m_prevTextureInfo[index1] - report->m_textureInfo[index]) *
+                            (double)(state->m_prevTextureInfo[index1] - report->m_textureInfo[index]);
                 }
             }
             dist = dist / m_intensityVariance;
@@ -830,8 +754,8 @@ double CONSTVEL_MDL::getCorr(CONSTVEL_STATE *state, CONSTPOS_REPORT *report)
         {
             int x=xm + i ;
             index = width * y + x;
-            stateMean += (double)(state->m_prevInt[index]);
-            stateSigma += (double)(state->m_prevInt[index]) *( state->m_prevInt[index]);
+            stateMean += (double)(state->m_prevTextureInfo[index]);
+            stateSigma += (double)(state->m_prevTextureInfo[index]) *( state->m_prevTextureInfo[index]);
         }
     }
     stateMean /= 9;
@@ -862,8 +786,8 @@ double CONSTVEL_MDL::getCorr(CONSTVEL_STATE *state, CONSTPOS_REPORT *report)
                 {
                     int x=xm + i ;
                     index = width * y + x;
-                    reportMean += (double)(report->m_int[index]);
-                    reportSigma += (double)(report->m_int[index])*( report->m_int[index]);
+                    reportMean += (double)(report->m_textureInfo[index]);
+                    reportSigma += (double)(report->m_textureInfo[index])*( report->m_textureInfo[index]);
                 }
             }
             reportMean /= 9.;
@@ -883,8 +807,8 @@ double CONSTVEL_MDL::getCorr(CONSTVEL_STATE *state, CONSTPOS_REPORT *report)
                     int x1 = 2 + i;
                     index = width * y + x;
                     int index1 = width *y1 + x1;
-                    corr += (double)(state->m_prevInt[index1] - stateMean) *
-                            (double)(report->m_int[index] - reportMean);
+                    corr += (double)(state->m_prevTextureInfo[index1] - stateMean) *
+                            (double)(report->m_textureInfo[index] - reportMean);
                 }
             }
             corr = corr / (9.0 * reportSigma * stateSigma);
