@@ -606,7 +606,7 @@ std::list<CORNERLIST> readCorners(const std::string &inputFileName)
 
     controlFile.close();
 
-    size_t cornerID = 0;
+    //size_t cornerID = 0;
     /*
      * Open each frame and read the corner Data from them, saving
      * the data in inputData
@@ -619,6 +619,7 @@ std::list<CORNERLIST> readCorners(const std::string &inputFileName)
         float x,y;
         USHORT i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15;
         USHORT i16,i17,i18,i19,i20,i21,i22,i23,i24,i25;
+        size_t cornerID;
         std::stringstream stringRep;
         stringRep << basename << '.' << i++;
         std::string fname = stringRep.str();
@@ -633,11 +634,13 @@ std::list<CORNERLIST> readCorners(const std::string &inputFileName)
         int j=0;
         while (std::getline(inDataFile, str) && j < ncorners[i-startFrame-1])
         {
-            sscanf(str.c_str(),"%f %f %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd",&x,&y,&i1,&i2,&i3,&i4,&i5,&i6,&i7,&i8, &i9, &i10, &i11, &i12, &i13, &i14, &i15,&i16, &i17, &i18, &i19, &i20, &i21, &i22, &i23, &i24, &i25 );
+            sscanf(str.c_str(),"%f %f %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %zd",
+                   &x,&y,&i1,&i2,&i3,&i4,&i5,&i6,&i7,&i8, &i9, &i10, &i11, &i12, &i13, &i14,
+                   &i15,&i16, &i17, &i18, &i19, &i20, &i21, &i22, &i23, &i24, &i25, &cornerID );
 
             aCornerList->list.push_back(CORNER(x,y, Texture_t(i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15,i16,i17,i18,i19,i20,i21,i22,i23,i24,i25),i-1,cornerID));
             j++;
-            cornerID++;
+//            cornerID++;
         }
         inDataFile.close();
     }
