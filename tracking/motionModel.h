@@ -155,15 +155,17 @@ private:
 public:
     Texture_t m_textureInfo;
     int m_frameNo;
+    size_t m_cornerID;
     CONSTPOS_REPORT( const double &falarmLogLikelihood,
                      const double &x, const double &y,
                      const Texture_t &textureInfo,
-                     const int &f):
+                     const int &f, const size_t &cornerID):
         MDL_REPORT(),
         m_falarmLogLikelihood( falarmLogLikelihood ),
         m_z( 2, 1 ),
         m_frameNo(f),
-        m_textureInfo(textureInfo)
+        m_textureInfo(textureInfo),
+        m_cornerID(cornerID)
 
     {
         m_z.set( x, y);
@@ -173,7 +175,8 @@ public:
         MDL_REPORT(),
         m_falarmLogLikelihood( src.m_falarmLogLikelihood ),
         m_z( src.m_z ),
-        m_frameNo(src.m_frameNo)
+        m_frameNo(src.m_frameNo),
+        m_cornerID(src.m_cornerID)
     {
     }
 
@@ -549,12 +552,14 @@ class FALARM: public DLISTnode
 public:
     double rX, rY;
     int frameNo;
+    size_t cornerID;
 
     FALARM( CONSTPOS_REPORT *xreport ):
         DLISTnode(),
         rX( xreport->getX() ),
         rY( xreport->getY() ),
-        frameNo( xreport->m_frameNo )
+        frameNo( xreport->m_frameNo ),
+        cornerID( xreport->m_cornerID )
     {
     }
 
@@ -584,10 +589,11 @@ public:
     int time;
     double logLikelihood;
     char   model[30];
+    size_t cornerID;
 
-    CORNER_TRACK_ELEMENT(double s_x, double s_y, double r_x, double r_y, double prob, int type,int t,int f):
+    CORNER_TRACK_ELEMENT(double s_x, double s_y, double r_x, double r_y, double prob, int type,int t,int f,size_t id):
         DLISTnode(),
-        sx(s_x),sy(s_y),rx(r_x),ry(r_y),logLikelihood(prob),time(t),frameNo(f)
+        sx(s_x),sy(s_y),rx(r_x),ry(r_y),logLikelihood(prob),time(t),frameNo(f),cornerID(id)
     {
         if (!isnan(r_x) && !isnan(r_y))
         {
@@ -700,7 +706,7 @@ protected:
                 mdl->getStateX(state),
                 mdl->getStateY(state),
                 state->getLogLikelihood(),
-                mdl->type,r->m_frameNo);
+                mdl->type,r->m_frameNo,r->m_cornerID);
     }
 
     virtual void continueTrack( int trackId, int,
@@ -714,7 +720,7 @@ protected:
                 mdl->getStateX(state),
                 mdl->getStateY(state),
                 state->getLogLikelihood(),
-                mdl->type,r->m_frameNo);
+                mdl->type,r->m_frameNo,r->m_cornerID);
     }
 
     virtual void skipTrack( int trackId, int, MDL_STATE *state )
@@ -723,7 +729,7 @@ protected:
 //      printf("Calling Verify in skipTRack\n");
         verify( trackId, NAN, NAN, mdl->getStateX(state), mdl->getStateY(state),
                 state->getLogLikelihood(),
-                mdl->type,-9);
+                mdl->type,-9,0);
     }
 
     virtual void endTrack( int, int )
@@ -741,7 +747,7 @@ private:
     CORNER_TRACK* findTrack( const int &id );
     void saveFalarm( CONSTPOS_REPORT *report );
     void verify( int trackID, double r_x, double r_y, double s_x,
-                 double s_y, double likelihood, int modelType, int frame);
+                 double s_y, double likelihood, int modelType, int frame, size_t cornerID);
 };
 
 int getTrackColor( int trackId );

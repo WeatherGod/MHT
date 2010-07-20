@@ -540,7 +540,8 @@ void writeCornerTrackFile(const std::string &name, const Parameter &param,
                             << cornerTrackEl->logLikelihood << ' '
                             << cornerTrackEl->time << ' '
                             << cornerTrackEl->frameNo << ' '
-                            << cornerTrackEl->model << std::endl;
+                            << cornerTrackEl->model << ' '
+                            << cornerTrackEl->cornerID << std::endl;
         }
     }
 
@@ -555,7 +556,8 @@ void writeCornerTrackFile(const std::string &name, const Parameter &param,
     {
         CornerTrackFile << falarm->rX << ' '
                         << falarm->rY << ' '
-                        << falarm->frameNo << std::endl;
+                        << falarm->frameNo << ' '
+                        << falarm->cornerID << std::endl;
     }
 
     CornerTrackFile.close();
@@ -604,6 +606,7 @@ std::list<CORNERLIST> readCorners(const std::string &inputFileName)
 
     controlFile.close();
 
+    size_t cornerID = 0;
     /*
      * Open each frame and read the corner Data from them, saving
      * the data in inputData
@@ -632,8 +635,9 @@ std::list<CORNERLIST> readCorners(const std::string &inputFileName)
         {
             sscanf(str.c_str(),"%f %f %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd",&x,&y,&i1,&i2,&i3,&i4,&i5,&i6,&i7,&i8, &i9, &i10, &i11, &i12, &i13, &i14, &i15,&i16, &i17, &i18, &i19, &i20, &i21, &i22, &i23, &i24, &i25 );
 
-            aCornerList->list.push_back(CORNER(x,y, Texture_t(i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15,i16,i17,i18,i19,i20,i21,i22,i23,i24,i25),i-1));
+            aCornerList->list.push_back(CORNER(x,y, Texture_t(i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15,i16,i17,i18,i19,i20,i21,i22,i23,i24,i25),i-1,cornerID));
             j++;
+            cornerID++;
         }
         inDataFile.close();
     }

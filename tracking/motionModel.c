@@ -111,14 +111,14 @@ void CORNER_TRACK_MHT::saveFalarm( CONSTPOS_REPORT *report )
  *-------------------------------------------------------------------*/
 void CORNER_TRACK_MHT::verify( int trackId, double r_x, double r_y, double s_x, double s_y,
                                double logLikelihood,
-                               int modelType, int frame)
+                               int modelType, int frame, size_t id)
 {
     CORNER_TRACK *track;
 
 //  printf("Verifying trackId=%d r_x=%lf r_y=%lf s_x=%lf s_y=%lf frame=%d\n",
 //			trackId,r_x,r_y,s_x,s_y,frame);
     track = findTrack( trackId );
-    track->list.push_back( CORNER_TRACK_ELEMENT( s_x,s_y,r_x,r_y,logLikelihood,modelType,g_time,frame));
+    track->list.push_back( CORNER_TRACK_ELEMENT( s_x,s_y,r_x,r_y,logLikelihood,modelType,g_time,frame,id));
 }
 
 /**-------------------------------------------------------------------
@@ -135,7 +135,8 @@ void CORNER_TRACK_MHT::measure(const std::list<CORNER> &newReports)
     {
         installReport(new CONSTPOS_REPORT(m_falarmLogLikelihood,
                                           cornerPtr->x, cornerPtr->y,
-                                          cornerPtr->m_textureInfo, cornerPtr->m_frameNo)
+                                          cornerPtr->m_textureInfo,
+                                          cornerPtr->m_frameNo,cornerPtr->m_cornerID)
                      );
     }
 
