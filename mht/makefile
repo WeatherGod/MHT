@@ -31,13 +31,6 @@ libmht.a: apqueue.o assign.o \
 	  $(AR) $(ARFLAGS) libmht.a $?
 	  @echo lib is now up-to-date
 
-apqueue_test: apqueue_test.o libmht.a
-	$(build) apqueue_test.o -L. -lmht -lm
-
-assign_test: assign_test.o bassign.o libmht.a
-	$(build) assign_test.o bassign.o -L. -lmht -lm
-
-
 mdlmht.o: mdlmht.h mht.h except.h safeglobal.h list.h tree.h links.h vector.h corner.h mdlmht.c
 	$(C++) -c $(C++FLAGS) mdlmht.c
 
@@ -55,14 +48,8 @@ mht_report.o: mht.h pqueue.h apqueue.h safeglobal.h list.h tree.h \
 mht_track.o: mht.h safeglobal.h list.h tree.h links.h vector.h except.h mht_track.c
 	$(C++) -c $(C++FLAGS) mht_track.c
 
-apqueue_test.o: apqueue.h except.h apqueue_test.c
-	$(C++) -c $(C++FLAGS) apqueue_test.c
-
 apqueue.o: apqueue.h except.h safeglobal.h list.h assign.h vector.h apqueue.c
 	$(C++) -c $(C++FLAGS) apqueue.c
-
-assign_test.o: bassign.h except.h assign_test.c
-	$(C++) -c $(C++FLAGS) assign_test.c
 
 assign.o: assign.h queue.h except.h vector.h assign.c
 	$(C++) -c $(C++FLAGS) assign.c
@@ -85,11 +72,5 @@ matrix.o: matrix.h vector.h safeglobal.h except.h matrix.c
 pqueue.o: pqueue.h except.h safeglobal.h pqueue.c
 	$(C++) -c $(C++FLAGS) pqueue.c
 
-#mem.o: mem.h except.h  safeglobal.h mem.c
-#	$(C++) -c $(C++FLAGS) mem.c
-
 except.o: except.h  safeglobal.h except.c
 	$(C++) -c $(C++FLAGS) except.c
-
-normrand.o: normrand.h normrand.c
-	$(C++) -c $(C++FLAGS) normrand.c

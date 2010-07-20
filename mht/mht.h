@@ -475,11 +475,7 @@ static const double DOUBLE_NOT_READY = -INFINITY;
  | Stuff declared in this file
  *-------------------------------------------------------------------*/
 
-GLOBAL long G_numCallsToScan;
-GLOBAL double G_timeSpentInScan;
 GLOBAL double G_numCallsToPruneAndHypothesize;
-GLOBAL double G_timeSpentInPruneAndHypothesize;
-GLOBAL double G_timeSpentInApqueue;
 GLOBAL long G_numApqueueProblems;
 GLOBAL long G_totalApqueueProblemSizes;
 GLOBAL long G_maxApqueueProblemSize;

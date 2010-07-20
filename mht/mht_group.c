@@ -44,7 +44,6 @@
 #include "mht.h"
 #include "apqueue.h"
 #include "pqueue.h"
-#include "timer.h"
 
 /*-------------------------------------------------------------------*
  | g_apqueue -- assignment priority queue for generating new G_HYPOs
@@ -516,10 +515,6 @@ void GROUP::pruneAndHypothesize( int maxDepth,
 {
 
 
-    Timer timer0;
-    Timer timer1;
-    G_numCallsToPruneAndHypothesize++;
-
     VECTOR_OF< void * > solution;
     int solutionSize;
     double bestCost;
@@ -545,13 +540,11 @@ void GROUP::pruneAndHypothesize( int maxDepth,
        empty */
     if( g_apqueue.isEmpty() )
     {
-        G_timeSpentInPruneAndHypothesize += timer0.elapsedTime();
         return;
     }
 
     /* get the best solution to an assignment problem */
 
-    timer1.reset_clock();
     bestCost = g_apqueue.getNextSolutionCost();
     g_apqueue.getNextSolution( solution, &solutionSize );
 
@@ -576,7 +569,6 @@ void GROUP::pruneAndHypothesize( int maxDepth,
         newGHypoList.append( newGHypo );
         numNewGHypos++;
     }
-    G_timeSpentInApqueue += timer1.elapsedTime();
 
     LOOP_DLIST( gHypoPtr, newGHypoList )
     {
@@ -598,8 +590,6 @@ void GROUP::pruneAndHypothesize( int maxDepth,
     /* replace the old G_HYPOs with the new ones */
     m_gHypoList.removeAll();
     m_gHypoList.splice( newGHypoList );
-
-    G_timeSpentInPruneAndHypothesize += timer0.elapsedTime();
 }
 
 void GROUP::clear( int maxDepth)
@@ -849,25 +839,8 @@ void G_HYPO::makeProblem()
     SortAssignmentProblem( &rcc[ 0 ], numRCCs );
     g_apqueue.addProblem( this, &rcc[ 0 ], rccNum, maxRow + 1, colNum );
 
-    G_numApqueueProblems++;
-    G_totalApqueueProblemSizes += numRCCs;
-    if( numRCCs > G_maxApqueueProblemSize )
-    {
-        G_maxApqueueProblemSize = numRCCs;
-    }
-
     double problemCoverage = (double)numRCCs /
                              ((double)(maxRow + 2) * (colNum + 1) - 1.);
-
-    G_totalApqueueProblemCoverage += problemCoverage;
-    if( problemCoverage < G_minApqueueProblemCoverage )
-    {
-        G_minApqueueProblemCoverage = problemCoverage;
-    }
-    if( problemCoverage > G_maxApqueueProblemCoverage )
-    {
-        G_maxApqueueProblemCoverage = problemCoverage;
-    }
 }
 
 /*-------------------------------------------------------------------*

@@ -44,7 +44,6 @@
 #include <stdio.h>
 
 #include "mht.h"
-#include "timer.h"
 #include <list>
 #include "corner.h"
 
@@ -53,13 +52,8 @@
  *-------------------------------------------------------------------*/
 int MHT::scan()
 {
-    Timer timer;
-
-    G_numCallsToScan++;
-
     if (m_reportsQueue.empty())
     {
-        G_timeSpentInScan += timer.elapsedTime();
         return 0;
     }
 
@@ -79,7 +73,6 @@ int MHT::scan()
 
     if( m_tTreeList.isEmpty() )
     {
-        G_timeSpentInScan += timer.elapsedTime();
         return 0;
     }
 
@@ -109,7 +102,6 @@ int MHT::scan()
     }
 
     m_isFirstScan = false;
-    G_timeSpentInScan += timer.elapsedTime();
     return 1;
 }
 
