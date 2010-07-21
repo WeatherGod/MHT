@@ -1,0 +1,64 @@
+; position varianceX
+1.0
+;
+; position varianceY
+1.0
+;
+; gradient variance
+0.01
+;
+; intensity Variance
+100.0
+;
+; process variance
+0.5
+;
+; probability of detection
+.999
+;
+;Lamda_x
+20
+;
+; mean new tracks per scan
+.004
+;
+; mean false alarms per scan
+.00002
+;
+; maximum number of global hypotheses per group
+300
+;
+; maximum depth of track trees
+3
+;
+; minimum ratio between likelihoods of worst and best
+;   global hypotheses
+.001
+;
+; Intensity Threshold
+0.90
+;
+;
+; maximum mahalanobis distance for validationi MODEL 1
+5.9
+;
+; maximum mahalanobis distance for validationi MODEL 2 (CONSTANTVEL with z=2)
+5.9
+;
+; maximum mahalanobis distance for validationi MODEL 3
+12.6
+;
+;Initial state Variance(Velocity component)
+200.0
+;
+; number of scans to make
+999999
+;
+; scan at which to start diagnostic A
+999999
+;
+; scan at which to start diagnostic B
+999999
+;
+; scan at which to start diagnostic C
+999999
