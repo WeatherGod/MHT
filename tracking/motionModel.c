@@ -812,7 +812,11 @@ double CONSTVEL_MDL::getCorr(CONSTVEL_STATE *state, CONSTPOS_REPORT *report)
                             (double)(report->m_textureInfo[index] - reportMean);
                 }
             }
-            corr = corr / (9.0 * reportSigma * stateSigma);
+
+            corr = corr != 0.0 || 
+                   reportSigma * stateSigma != 0.0 ? corr / (9.0 * reportSigma * stateSigma)
+                                                   : 1.0;
+
             assert(corr >= -1.0 && corr <= 1.0);// {
             //   fprintf(stderr, "Error in corr calculation\n");
             //   exit(1);
@@ -825,6 +829,7 @@ double CONSTVEL_MDL::getCorr(CONSTVEL_STATE *state, CONSTPOS_REPORT *report)
 #ifdef DEBUG3
             printf("Corr(%d %d)=%lf  ",ym,xm,corr);
 #endif
+
 
         }
     }
