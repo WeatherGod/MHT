@@ -26,7 +26,7 @@ int g_time;
 
 void PrintSyntax()
 {
-    std::cerr << "trackCorners -o OUTFILE [-p PARAM_FILE] -i INFILE\n"
+    std::cerr << "trackCorners -o OUTFILE [-p PARAM_FILE] [-d DIRNAME] -i INFILE\n"
               << "             [--syntax | -x] [--help | -h]\n";
 }
 
@@ -44,6 +44,9 @@ void PrintHelp()
               << "INFILE contains the filestem of the corner files, the range of frames\n"
               << "and the number of identified features for each frame.\n\n";
 
+    std::cerr << "-d --dir      DIRNAME\n"
+              << "DIRNAME to prepend to the corner files.  Default is .\n\n";
+
     std::cerr << "-x  --syntax\n"
               << "Print the syntax for running this program.\n\n";
 
@@ -60,7 +63,8 @@ int main(int argc, char **argv)
                               const Parameter &param,
                               const std::list< CORNER_TRACK > &cornerTracks,
                               const std::list< FALARM > &falarms);
-    std::list<CORNERLIST> readCorners(const std::string &inputFileName);
+    std::list<CORNERLIST> readCorners(const std::string &inputFileName,
+				      const std::string &dirName);
 
     std::list<CORNERLIST> inputData;
     ptrDLIST_OF<MODEL> mdl;
@@ -68,6 +72,7 @@ int main(int argc, char **argv)
     std::string outputFileName = "";
     std::string paramFileName = "./Parameters";
     std::string inputFileName = "";
+    std::string dirName = ".";
 
     int OptionIndex = 0;
     int OptionChar = 0;
@@ -79,12 +84,13 @@ int main(int argc, char **argv)
         {"output", 1, NULL, 'o'},
         {"param", 1, NULL, 'p'},
         {"input", 1, NULL, 'i'},
+	{"dir", 1, NULL, 'd'},
         {"syntax", 0, NULL, 'x'},
         {"help", 0, NULL, 'h'},
         {0, 0, 0, 0}
     };
 
-    while ((OptionChar = getopt_long(argc, argv, "o:p:i:xh", TheLongOptions, &OptionIndex)) != -1)
+    while ((OptionChar = getopt_long(argc, argv, "o:p:i:d:xh", TheLongOptions, &OptionIndex)) != -1)
     {
         switch (OptionChar)
         {
@@ -97,6 +103,9 @@ int main(int argc, char **argv)
         case 'i':
             inputFileName = optarg;
             break;
+	case 'd':
+	    dirName = optarg;
+	    break;
         case 'x':
             PrintSyntax();
             return(1);
@@ -147,6 +156,13 @@ int main(int argc, char **argv)
         return(-1);
     }
 
+    if (dirName.empty())
+    {
+	std::cerr << "ERROR: Missing or empty DIRNAME\n";
+        PrintSyntax();
+        return(-1);
+    }
+
 
     /*
      * Create the global list of CornerTracks & false alarms
@@ -167,7 +183,7 @@ int main(int argc, char **argv)
      * Read the corners
      */
 
-    inputData = readCorners(inputFileName);
+    inputData = readCorners(inputFileName, dirName);
 
     /*
      * Create constant velocity model
@@ -571,7 +587,9 @@ void writeCornerTrackFile(const std::string &name, const Parameter &param,
  *------------------------------------------------------------------*/
 
 
-std::list<CORNERLIST> readCorners(const std::string &inputFileName)
+std::list<CORNERLIST> readCorners(const std::string &inputFileName, const std::string &dirName)
+// TODO: Make this platform-independent by dynamically choosing the correct path separator.
+//       Right now, it assumes Unix-based paths
 {
     std::list<CORNERLIST> inputData;
     std::vector<int> ncorners(0);
@@ -622,7 +640,8 @@ std::list<CORNERLIST> readCorners(const std::string &inputFileName)
         size_t cornerID;
         std::stringstream stringRep;
         stringRep << basename << '.' << i++;
-        std::string fname = stringRep.str();
+	// NOTE: this is where I lose platform-independence by statically using '/'
+        std::string fname = dirName + "/" + stringRep.str();
         std::ifstream inDataFile(fname.c_str(), std::ios_base::in);
 //    std::cout << "Reading file " << fname << "\n";
 
