@@ -614,6 +614,12 @@ std::list<CORNERLIST> readCorners(const std::string &inputFileName, const std::s
      */
 
     controlFile >> basename >> totalFrames >> startFrame;
+    // There are also some additional optional pieces of data that we don't need here.
+    // We will just advance the stream to the end of the line.
+    std::string optionalData;
+    std::getline(controlFile, optionalData);
+
+    // Now, find out how many features are in each frame.
     for (int frameIndex=0; frameIndex < totalFrames; frameIndex++)
     {
         controlFile >> npoints;
