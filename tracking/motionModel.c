@@ -62,14 +62,14 @@
 //#define SUM_SQUAREDIFF
 #define CORR_COEFF
 
+#include <iostream>
+
 double EPSILON = 0.00000000000001;
 
 //extern CORNERLIST *g_currentCornerList;
 //extern int g_isFirstScan;
 extern int g_time;
 
-using std::cout;
-using std::endl;
 /*------------------------------------------------------*
  * findTrack():  look for the track with given id in the
  * cornerTrackList and return a ptr to it.  If
@@ -561,8 +561,6 @@ CONSTVEL_MDL::CONSTVEL_MDL( double positionMeasureVarianceX,
                  0., m_stateVariance, 0., 0.,
                  0., 0., pVy, 0.,
                  0., 0., 0., m_stateVariance );
-    std::cout << "\nstartP:\n";
-    m_startP.print();
 #ifdef DEBUG1
     std::cout << "\nstartP:\n";
     m_startP.print();
@@ -600,52 +598,52 @@ void CORNER_TRACK_MHT::describe(int spaces)
     int k;
 
     Indent( spaces );
-    cout << "MHT ";
+    std::cout << "MHT ";
     print();
-    cout << endl;
+    std::cout << std::endl;
     spaces += 2;
 
     Indent( spaces );
-    cout << "lastTrackUsed = " << m_lastTrackIdUsed;
-    cout << ", time = " << m_currentTime;
-    cout << endl;
+    std::cout << "lastTrackUsed = " << m_lastTrackIdUsed;
+    std::cout << ", time = " << m_currentTime;
+    std::cout << std::endl;
 
     Indent( spaces );
-    cout << "maxDepth = " << m_maxDepth;
-    cout << ", logMinRatio = " << m_logMinGHypoRatio;
-    cout << ", maxGHypos = " << m_maxGHypos;
-    cout << endl;
+    std::cout << "maxDepth = " << m_maxDepth;
+    std::cout << ", logMinRatio = " << m_logMinGHypoRatio;
+    std::cout << ", maxGHypos = " << m_maxGHypos;
+    std::cout << std::endl;
 
     Indent( spaces );
-    cout << "active tHypo's:";
+    std::cout << "active tHypo's:";
     k = 0;
 
     LOOP_DLIST( tHypoPtr, m_activeTHypoList )
     {
         if( k++ >= 3 )
         {
-            cout << endl;
+            std::cout << std::endl;
             Indent( spaces );
-            cout << "               ";
+            std::cout << "               ";
             k = 0;
         }
 
-        cout << " ";
+        std::cout << " ";
         (*tHypoPtr).print();
     }
-    cout << endl;
+    std::cout << std::endl;
 
     Indent( spaces );
-    cout << "===== clusters";
-    cout << endl;
+    std::cout << "===== clusters";
+    std::cout << std::endl;
     LOOP_DLIST( groupPtr, m_groupList )
     {
         (*groupPtr).describe( spaces + 2 );
     }
 
     Indent( spaces );
-    cout << "===== oldReports";
-    cout << endl;
+    std::cout << "===== oldReports";
+    std::cout << std::endl;
     LOOP_DLIST( reportPtr, m_oldReportList )
     {
         CONSTPOS_REPORT *creport=(CONSTPOS_REPORT*)(reportPtr.get());
@@ -653,8 +651,8 @@ void CORNER_TRACK_MHT::describe(int spaces)
     }
 
     Indent( spaces );
-    cout << "===== newReports";
-    cout << endl;
+    std::cout << "===== newReports";
+    std::cout << std::endl;
     LOOP_DLIST( reportPtr, m_newReportList )
     {
         CONSTPOS_REPORT *creport=(CONSTPOS_REPORT*)(reportPtr.get());
@@ -662,18 +660,18 @@ void CORNER_TRACK_MHT::describe(int spaces)
     }
 
     Indent( spaces );
-    cout << "===== oldTrees";
-    cout << endl;
+    std::cout << "===== oldTrees";
+    std::cout << std::endl;
     LOOP_DLIST( tTreePtr, m_tTreeList )
     {
         if( tTreePtr == m_nextNewTTree )
         {
             Indent( spaces );
-            cout << "===== newTrees";
-            cout << endl;
+            std::cout << "===== newTrees";
+            std::cout << std::endl;
         }
 
-        cout << endl;
+        std::cout << std::endl;
         (**(*tTreePtr).getTree()).describeTree( spaces + 2 );
     }
 }

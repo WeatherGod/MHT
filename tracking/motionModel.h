@@ -176,6 +176,7 @@ public:
         m_falarmLogLikelihood( src.m_falarmLogLikelihood ),
         m_z( src.m_z ),
         m_frameNo(src.m_frameNo),
+	m_textureInfo(src.m_textureInfo),
         m_cornerID(src.m_cornerID)
     {
     }
