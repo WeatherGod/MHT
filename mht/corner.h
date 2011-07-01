@@ -4,8 +4,6 @@
 #include "list.h"		// for DLISTnode
 #include <vector>		// for std::vector<>
 
-typedef unsigned short USHORT;
-
 /*-----------------------------------------------*
  * Data structures for storing input corner data
  *-----------------------------------------------*/
@@ -16,7 +14,7 @@ class Texture_t
 // temporary and only exists for legacy's sake.
 {
 private:
-    std::vector<USHORT> m_int;
+    std::vector<float> m_int;
 
 public:
     Texture_t() :
@@ -25,11 +23,11 @@ public:
     }
 
 
-    Texture_t(USHORT I1, USHORT I2, USHORT I3, USHORT I4, USHORT I5,
-              USHORT I6, USHORT I7, USHORT I8, USHORT I9, USHORT I10,
-              USHORT I11, USHORT I12, USHORT I13, USHORT I14, USHORT I15,
-              USHORT I16, USHORT I17, USHORT I18, USHORT I19, USHORT I20,
-              USHORT I21, USHORT I22, USHORT I23, USHORT I24, USHORT I25):
+    Texture_t(float I1, float I2, float I3, float I4, float I5,
+              float I6, float I7, float I8, float I9, float I10,
+              float I11, float I12, float I13, float I14, float I15,
+              float I16, float I17, float I18, float I19, float I20,
+              float I21, float I22, float I23, float I24, float I25):
         m_int(25)
     {
         m_int[0] = I1;
@@ -59,12 +57,12 @@ public:
         m_int[24] = I25;
     }
 
-    USHORT& operator[](const int &index)
+    float& operator[](const size_t &index)
     {
         return(m_int[index]);
     }
 
-    const USHORT& operator[](const int &index) const
+    const float& operator[](const size_t &index) const
     {
         return(m_int[index]);
     }

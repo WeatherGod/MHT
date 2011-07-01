@@ -444,12 +444,12 @@ CONSTVEL_STATE* CONSTVEL_MDL::getNextState( CONSTVEL_STATE *state,
                 printf("\nMahalinobus dist(innovTrans * s_inv * innov)=%lf maxDist=%lf\n",
                        distance,m_maxDistance);
                 printf("intDist=%lf\n",intDistance);
-                printf("Prev Int = %hd %hd %hd %hd %hd %hd %hd %hd\n",
+                printf("Prev Int = %f %f %f %f %f %f %f %f\n",
                        state->m_prevTextureInfo[0],state->m_prevTextureInfo[1],
                        state->m_prevTextureInfo[2],state->m_prevTextureInfo[3],
                        state->m_prevTextureInfo[4],state->m_prevTextureInfo[5],
                        state->m_prevTextureInfo[6],state->m_prevTextureInfo[7]);
-                printf("Current Int = %hd %hd %hd %hd %hd %hd %hd %hd\n",
+                printf("Current Int = %f %f %f %f %f %f %f %f\n",
                        report->m_textureInfo[0],report->m_textureInfo[1],
                        report->m_textureInfo[2],report->m_textureInfo[3],
                        report->m_textureInfo[4],report->m_textureInfo[5],

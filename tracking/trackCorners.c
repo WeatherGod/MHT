@@ -641,8 +641,8 @@ std::list<CORNERLIST> readCorners(const std::string &inputFileName, const std::s
          aCornerList++)
     {
         float x,y;
-        USHORT i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15;
-        USHORT i16,i17,i18,i19,i20,i21,i22,i23,i24,i25;
+        float i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15;
+        float i16,i17,i18,i19,i20,i21,i22,i23,i24,i25;
         size_t cornerID;
         std::stringstream stringRep;
         stringRep << basename << '.' << i++;
@@ -659,7 +659,7 @@ std::list<CORNERLIST> readCorners(const std::string &inputFileName, const std::s
         int j=0;
         while (std::getline(inDataFile, str) && j < ncorners[i-startFrame-1])
         {
-            sscanf(str.c_str(),"%f %f %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %zd",
+            sscanf(str.c_str(),"%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %zd",
                    &x,&y,&i1,&i2,&i3,&i4,&i5,&i6,&i7,&i8, &i9, &i10, &i11, &i12, &i13, &i14,
                    &i15,&i16, &i17, &i18, &i19, &i20, &i21, &i22, &i23, &i24, &i25, &cornerID );
 
