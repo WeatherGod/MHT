@@ -223,7 +223,7 @@ int main(int argc, char **argv)
      *  1st frame
      */
 
-    std::list<CORNERLIST>::iterator cornerListIter = inputData.begin();
+    //std::list<CORNERLIST>::iterator cornerListIter = inputData.begin();
     //g_currentCornerList = cornerPtr.get();
 
 
@@ -614,10 +614,18 @@ std::list<CORNERLIST> readCorners(const std::string &inputFileName, const std::s
      */
 
     controlFile >> basename >> totalFrames >> startFrame;
-    // There are also some additional optional pieces of data that we don't need here.
-    // We will just advance the stream to the end of the line.
+    // There can be additional optional pieces of data.
+    // Therefore, we grab the rest of the line, and load it into
+    // a stringstream so that we can load those value(s) separately.
+    // The reason for the awkward approach is because we don't want
+    // to grab a value on the next line.
     std::string optionalData;
     std::getline(controlFile, optionalData);
+
+    std::stringstream optionStrm(optionalData);
+
+    float timeDelta = 1.;
+    optionStrm >> timeDelta;
 
     // Now, find out how many features are in each frame.
     for (int frameIndex=0; frameIndex < totalFrames; frameIndex++)
@@ -625,7 +633,7 @@ std::list<CORNERLIST> readCorners(const std::string &inputFileName, const std::s
         controlFile >> npoints;
         ncorners.push_back(npoints);
         std::cout << "ncorners[" << frameIndex << "]=" << ncorners[frameIndex] << std::endl;
-        inputData.push_back(CORNERLIST(npoints));
+        inputData.push_back(CORNERLIST(npoints, timeDelta));
     }
 
     controlFile.close();

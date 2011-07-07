@@ -96,8 +96,9 @@ class CORNERLIST: public DLISTnode
 public:
     int ncorners;
     std::list<CORNER> list;
-    CORNERLIST(int npts):
-        ncorners(npts), list(), DLISTnode()
+    float m_dT;
+    CORNERLIST(int npts, float deltaT=1.0):
+        ncorners(npts), list(), m_dT(deltaT), DLISTnode()
     {
     }
 
