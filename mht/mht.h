@@ -1016,7 +1016,8 @@ protected:
 
 protected:
 
-    virtual void measureAndValidate(const std::list<CORNER> &newReports)
+    virtual void measureAndValidate(const std::list<CORNER> &newReports,
+				    const double &deltaT)
     {
         assert(false);
     }//THROW_ERR( "Call to MHT::measureAndValidate()" ) }

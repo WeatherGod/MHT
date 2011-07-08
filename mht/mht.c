@@ -60,7 +60,7 @@ int MHT::scan()
     const CORNERLIST newReports = m_reportsQueue.front();
     m_reportsQueue.pop();
 
-    measureAndValidate(newReports.list);
+    measureAndValidate(newReports.list, newReports.m_dT);
     m_currentTime++;
 
     if( m_dbgStartA <= m_currentTime && m_currentTime < m_dbgEndA )

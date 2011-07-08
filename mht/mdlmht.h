@@ -550,8 +550,10 @@ public:
 
 protected:
 
-    virtual void measure(const std::list<CORNER> &newReports) {}
-    virtual void measureAndValidate(const std::list<CORNER> &newReports);
+    virtual void measure(const std::list<CORNER> &newReports,
+			 const double &deltaT) {}
+    virtual void measureAndValidate(const std::list<CORNER> &newReports,
+				    const double &deltaT);
 
     virtual void startTrack( int, int,
                              MDL_STATE *, MDL_REPORT * )

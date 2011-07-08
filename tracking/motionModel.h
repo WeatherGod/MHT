@@ -151,6 +151,7 @@ private:
                                      // this report is a false alarm
                                      // (not really part of a CORNER_TRACK)
     MATRIX m_z;                      // (x, dx, y, dy)
+    double m_dt;		     // Time delta
 
 public:
     Texture_t m_textureInfo;
@@ -158,11 +159,13 @@ public:
     size_t m_cornerID;
     CONSTPOS_REPORT( const double &falarmLogLikelihood,
                      const double &x, const double &y,
+		     const double &dt,
                      const Texture_t &textureInfo,
                      const int &f, const size_t &cornerID):
         MDL_REPORT(),
         m_falarmLogLikelihood( falarmLogLikelihood ),
         m_z( 2, 1 ),
+	m_dt( dt ),
         m_frameNo(f),
         m_textureInfo(textureInfo),
         m_cornerID(cornerID)
@@ -175,6 +178,7 @@ public:
         MDL_REPORT(),
         m_falarmLogLikelihood( src.m_falarmLogLikelihood ),
         m_z( src.m_z ),
+	m_dt( src.m_dt ),
         m_frameNo(src.m_frameNo),
 	m_textureInfo(src.m_textureInfo),
         m_cornerID(src.m_cornerID)
@@ -208,6 +212,10 @@ public:
     double getY()
     {
         return m_z( 1 );
+    }
+    double getDT()
+    {
+        return m_dt;
     }
     void printMeas()
     {
@@ -361,6 +369,7 @@ private:
                     const double &dx,
                     const double &y,
                     const double &dy,
+		    const double &dt,
                     const Texture_t &info,
                     MATRIX &P,
                     const double &logLikelihood,
@@ -371,7 +380,7 @@ private:
         m_numSkipped(numSkipped),
         m_x(4,1),
         m_P(P),
-        m_ds( 0 ),
+        m_ds( dt ),
         m_x1( 0 ),
         m_nextP( 0 ),
         m_Sinv( 0 ),
@@ -392,7 +401,7 @@ private:
         m_logLikelihood( src.m_logLikelihood ),
         m_hasBeenSetup( 0 ),
         m_numSkipped(src.m_numSkipped),
-        m_ds( 0 ),
+        m_ds( src.m_ds ),
         m_x1( 0 ),
         m_nextP( 0 ),
         m_Sinv( 0 ),
@@ -692,7 +701,8 @@ private:
 
 protected:
 
-    virtual void measure(const std::list<CORNER> &newReports);
+    virtual void measure(const std::list<CORNER> &newReports,
+                         const double &deltaT);
 
     virtual void startTrack( int trackId, int,
                              MDL_STATE *state, MDL_REPORT *report )

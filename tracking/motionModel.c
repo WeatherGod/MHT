@@ -127,7 +127,8 @@ void CORNER_TRACK_MHT::verify( int trackId, double r_x, double r_y, double s_x, 
  * them as reports
  *-------------------------------------------------------------------*/
 
-void CORNER_TRACK_MHT::measure(const std::list<CORNER> &newReports)
+void CORNER_TRACK_MHT::measure(const std::list<CORNER> &newReports,
+			       const double &deltaT)
 {
     for (std::list<CORNER>::const_iterator cornerPtr = newReports.begin();
          cornerPtr != newReports.end();
@@ -135,6 +136,7 @@ void CORNER_TRACK_MHT::measure(const std::list<CORNER> &newReports)
     {
         installReport(new CONSTPOS_REPORT(m_falarmLogLikelihood,
                                           cornerPtr->x, cornerPtr->y,
+                                          deltaT,
                                           cornerPtr->m_textureInfo,
                                           cornerPtr->m_frameNo,cornerPtr->m_cornerID)
                      );
@@ -166,7 +168,7 @@ void CONSTVEL_STATE::setup( double processVariance, const MATRIX &R )
         return;
     }
 
-    m_ds = 1;
+    //m_ds = 1;
 
     /* compute the state transition matrix and process covariance matrix
        based on the above time step */
@@ -350,13 +352,13 @@ CONSTVEL_STATE* CONSTVEL_MDL::getNextState( CONSTVEL_STATE *state,
     H.set(1., 0., 0., 0.,
           0., 0., 1., 0.);
 
-
     if( state == 0 )
     {
         /* starting a new track */
 
         double x=report->getX();
         double y=report->getY();
+	double dt=report->getDT();
 
 #ifdef DEBUG1
         printf("\nStart a new State/Contour with Cov:");
@@ -369,6 +371,7 @@ CONSTVEL_STATE* CONSTVEL_MDL::getNextState( CONSTVEL_STATE *state,
                                         0.,
                                         y,
                                         0.,
+					dt,
                                         report->m_textureInfo,
                                         m_startP,
                                         m_startLogLikelihood,
@@ -391,6 +394,7 @@ CONSTVEL_STATE* CONSTVEL_MDL::getNextState( CONSTVEL_STATE *state,
                                         state->getDX1(),
                                         state->getY1(),
                                         state->getDY1(),
+					state->getDS(),
                                         state->m_prevTextureInfo,
                                         state->getNextP(),
                                         0.,
@@ -476,6 +480,7 @@ CONSTVEL_STATE* CONSTVEL_MDL::getNextState( CONSTVEL_STATE *state,
                                                 new_m_x(1),
                                                 new_m_x(2),
                                                 new_m_x(3),
+						report->getDT(),
                                                 report->m_textureInfo,
                                                 state->getNextP(),
                                                 state->getLogLikelihoodCoef() -
