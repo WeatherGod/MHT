@@ -4,6 +4,19 @@ official releases from the original author. The master branch, however,
 has significant differences that may introduce undesired behaviors for your
 application, but which are desired for storm cell tracking.
 
+Some changes that have been made :
+    * Original implementation operated until no detections were found.
+      This is no longer the case and will operate until the end of data is
+      is reached.
+    * Cross-Correlation of no change in intensity now returns 1.0
+    * Coordinates are now given as floating point numbers instead of integers.
+      Coordinates of NaNs are now used for invalid points instead of integer
+      zeros. Negative coordinates are also allowed now.
+    * Each detection now has an identification number that is read in
+      from the corner data and is saved in the final tracking data.
+    * Input corner data may also contain timestep data, but support for using
+      this information is experimental.
+
 This library was originally written by Ingemar J. Cox.
 Benjamin Root has been given permission to host the original source code
 on GitHub.

@@ -15,6 +15,8 @@
 #include <unistd.h>	// for optarg, opterr, optopt
 #include <getopt.h>	// for getopt_long()
 
+
+
 /*
  * External Variables
  */
@@ -590,6 +592,8 @@ void writeCornerTrackFile(const std::string &name, const Parameter &param,
 std::list<CORNERLIST> readCorners(const std::string &inputFileName, const std::string &dirName)
 // TODO: Make this platform-independent by dynamically choosing the correct path separator.
 //       Right now, it assumes Unix-based paths
+// NOTE: Supposedly, using forward-slashes should work for Windows.
+//       I don't have a Windows machine to test this, though.
 {
     std::list<CORNERLIST> inputData;
     std::vector<int> ncorners(0);
